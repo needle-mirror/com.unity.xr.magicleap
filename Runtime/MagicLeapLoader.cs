@@ -161,6 +161,8 @@ namespace UnityEngine.XR.MagicLeap
                     return false;
             }
 #endif
+            Application.onBeforeRender -= CameraEnforcement.EnforceCameraProperties;
+            Application.onBeforeRender += CameraEnforcement.EnforceCameraProperties;
             ApplySettings();
 
             // Display Subsystem depends on Input Subsystem, so initialize that first.

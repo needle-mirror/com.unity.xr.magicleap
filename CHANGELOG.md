@@ -4,6 +4,10 @@ uid: magic-leap-changelog
 
 # Changelog
 
+## [7.0.0-pre.1] - 2922-10-10
+
+- Added enforcement that the camera's near clipping plane will be at least the amount specified by MagicLeap Graphics API.
+
 ## [7.0.0-exp.6] - 2022-10-05
 
 - Updating to the latest MLSDK (Sept 23, 2022).
@@ -45,7 +49,7 @@ uid: magic-leap-changelog
 - Addition of the global segmented dimmer
 - Support and bugfixes for ZI.
 - Added Performance stats as well as exposing a C# class, `MagicLeapPerformance` for access to those stats.
-- Initial upate to version 7.0.0.
+- Initial update to version 7.0.0.
 - Updated the bee pipeline to use a local version of the NDK first, rather than defaulting to Stevedore.
 - Removed dead classes `MLWarning` and the associated cs file
 - Removed `MagicLeapCamera` class

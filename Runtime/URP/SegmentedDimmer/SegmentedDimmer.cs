@@ -44,8 +44,14 @@ namespace URP.SegmentedDimmer
             [SerializeField] public LayerMask layerMask;
             [Tooltip("Clear value for the Segmented Dimmer texture, values can be between [0..1]")]
             [SerializeField, Range(0.0f, 1.0f)] public float clearValue = 0.0f;
-            [Tooltip("When this option is true, URP will override all the mesh materials with a fully opaque shader")]
-            [SerializeField] public bool overrideMaterial = true;
+
+            // overrideMaterial is now deprecated, we are keeping it around since we could need it later.
+            // Allow users to re-add it by adding MAGIC_LEAP_SEGMENTED_DIMMER_EXPOSE_OVERRIDE_MATERIAL_OPTION define to the project
+            [Tooltip("DEPRECATED - When this option is true, URP will override all the mesh materials with a fully opaque shader")]
+        #if !MAGIC_LEAP_SEGMENTED_DIMMER_EXPOSE_OVERRIDE_MATERIAL_OPTION
+            [HideInInspector] 
+        #endif
+            [SerializeField] public bool overrideMaterial = false;
 
             [Header("Resolution")]
             [Tooltip("Using the full resolution will try to render the mask directly in the alpha channel of the color target, if possible")]
@@ -95,6 +101,12 @@ namespace URP.SegmentedDimmer
 
         private bool Init()
         {
+        #if !MAGIC_LEAP_SEGMENTED_DIMMER_EXPOSE_OVERRIDE_MATERIAL_OPTION
+            // Deprecating "overrideMaterial", but we will keep it around until we are sure we won't use it
+            if (settings.overrideMaterial)
+                settings.overrideMaterial = false;
+        #endif
+
             if (m_InitDone)
                 return true;
 
@@ -283,11 +295,13 @@ namespace URP.SegmentedDimmer
                     throw new ArgumentOutOfRangeException();
             }
 
+#if !MAGIC_LEAP_SEGMENTED_DIMMER_EXPOSE_OVERRIDE_MATERIAL_OPTION
             if (settings.overrideMaterial && m_SegmentedDimmerMaterial != null)
             {
                 m_ScriptablePass[passId].overrideMaterial = m_SegmentedDimmerMaterial;
                 m_ScriptablePass[passId].overrideMaterialPassIndex = 0;
             }
+#endif
 
             // Make sure Segmented dimmer feature is active from now on
             SegmentedDimmerEnable(true);

@@ -14,8 +14,10 @@ namespace URP.SegmentedDimmer
         public Material clearAlphaMaterial { get; set; }
         public int alphaClearMaterialPassIndex { get; set; }
         
+#if !MAGIC_LEAP_SEGMENTED_DIMMER_EXPOSE_OVERRIDE_MATERIAL_OPTION
         public Material overrideMaterial { get; set; }
         public int overrideMaterialPassIndex { get; set; }
+#endif
 
         private static readonly int ClearValueShaderProperty = Shader.PropertyToID("_ClearValue");
         private static readonly ShaderTagId ShaderTagId = new ShaderTagId("SRPDefaultUnlit");
@@ -40,8 +42,10 @@ namespace URP.SegmentedDimmer
             renderPassEvent = renderPassEventArg;
             clearAlphaMaterial = null;
             alphaClearMaterialPassIndex = 0;
+#if !MAGIC_LEAP_SEGMENTED_DIMMER_EXPOSE_OVERRIDE_MATERIAL_OPTION
             overrideMaterial = null;
             overrideMaterialPassIndex = 0;
+#endif
             
 #if UNITY_2023_1
             m_LayerMask = layerMask;
@@ -101,8 +105,10 @@ namespace URP.SegmentedDimmer
                         sortingCriteria = SortingCriteria.CommonOpaque,
                         renderQueueRange = RenderQueueRange.opaque,
                         layerMask = m_LayerMask,
+    #if !MAGIC_LEAP_SEGMENTED_DIMMER_EXPOSE_OVERRIDE_MATERIAL_OPTION
                         overrideMaterial = overrideMaterial,
                         overrideMaterialPassIndex = overrideMaterialPassIndex,
+    #endif
                     };
 
                 var rendererList = context.CreateRendererList(renderListDesc);
@@ -110,8 +116,10 @@ namespace URP.SegmentedDimmer
 #else
                 // Draw Renderers
                 var drawingSettings = CreateDrawingSettings(ShaderTagId, ref renderingData, SortingCriteria.CommonOpaque);
+    #if !MAGIC_LEAP_SEGMENTED_DIMMER_EXPOSE_OVERRIDE_MATERIAL_OPTION
                 drawingSettings.overrideMaterial = overrideMaterial;
                 drawingSettings.overrideMaterialPassIndex = overrideMaterialPassIndex;
+    #endif
                 drawingSettings.perObjectData = PerObjectData.None;
                 
                 context.DrawRenderers(renderingData.cullResults, ref drawingSettings, ref m_FilteringSettings, ref m_RenderStateBlock);
