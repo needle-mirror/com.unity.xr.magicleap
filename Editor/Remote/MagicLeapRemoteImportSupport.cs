@@ -69,6 +69,30 @@ namespace UnityEditor.XR.MagicLeap
             public List<string> dependencies = new List<string>();
         }
 
+        internal static bool IsXcodeToolInstalled(string toolName)
+        {
+            var psi = new ProcessStartInfo {
+                FileName = "/bin/bash",
+                Arguments = String.Format("-c 'if lp=$( xcrun -f {0} 2> /dev/null ) && test -x \"${{lp}}\"; then echo \"YES\"; else echo \"NO\"; fi'", toolName),
+                WindowStyle = ProcessWindowStyle.Hidden,
+                CreateNoWindow = true,
+                RedirectStandardError = true,
+                RedirectStandardOutput = true,
+                UseShellExecute = false
+            };
+            using (Process process = Process.Start(psi))
+            {
+                string output = process.StandardOutput.ReadLine();
+                process.WaitForExit();
+                if (output.Equals("NO"))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
         internal static IEnumerable<string> LaunchOtool(string filepath)
         {
             var psi = new ProcessStartInfo {
@@ -346,6 +370,11 @@ ZI_SHIM_PATH_linux64=$(MLREMOTE_BASE)/lib/linux64;$(STUB_PATH)
             {
                 //UnityDebug.Log(lib);
 #if UNITY_EDITOR_OSX
+                if (!(MacOSDependencyChecker.IsXcodeToolInstalled("lipo") && MacOSDependencyChecker.IsXcodeToolInstalled("otool")))
+                {
+                    throw new Exception("Cannot import MLRemote libraries. Please install Xcode and try again.");
+                }
+
                 var target = GetOSXTargetPath(destFolder, lib);
                 if (target == null) continue;
                 CheckIfFileCanBeCopiedAndThrow(lib, target);

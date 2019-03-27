@@ -56,6 +56,8 @@ namespace UnityEngine.XR.MagicLeap.Rendering
         private StabilizationMode m_StabilizationMode;
         [SerializeField]
         private float m_StabilizationDistance;
+        [SerializeField]
+        private bool m_ProtectedSurface;
 
         public Transform stereoConvergencePoint
         {
@@ -76,6 +78,11 @@ namespace UnityEngine.XR.MagicLeap.Rendering
         {
             get { return m_StabilizationDistance; }
             set { m_StabilizationDistance = value; }
+        }
+        public bool protectedSurface
+        {
+            get { return m_ProtectedSurface; }
+            set { m_ProtectedSurface = value; }
         }
 
 #if PLATFORM_LUMIN && !UNITY_EDITOR
@@ -129,6 +136,9 @@ namespace UnityEngine.XR.MagicLeap.Rendering
             m_Camera = GetComponent<Camera>();
             RenderingSettings.frameTimingHint = frameTimingHint;
             RenderingSettings.singlePassEnabled = XRSettings.stereoRenderingMode == XRSettings.StereoRenderingMode.SinglePassInstanced;
+#if PLATFORM_LUMIN && !UNITY_EDITOR
+            RenderingSettings.useProtectedSurface = m_ProtectedSurface;
+#endif
         }
 
         void LateUpdate()
@@ -303,6 +313,7 @@ namespace UnityEngine.XR.MagicLeap.Rendering
         private static GUIContent kFrameTimingHintText = new GUIContent("Frame Timing Hint");
         private static GUIContent kStabilizationModeText = new GUIContent("Stabilization Mode");
         private static GUIContent kStabilizationDistanceText = new GUIContent("Stabilization Distance");
+        private static GUIContent kProtectedSurfaceText = new GUIContent("Protected Surface");
 
 #if ML_RENDERING_VALIDATION
         SerializedProperty previousClearColorProp;
@@ -312,6 +323,7 @@ namespace UnityEngine.XR.MagicLeap.Rendering
         SerializedProperty frameTimingHintProp;
         SerializedProperty stabilizationModeProp;
         SerializedProperty stabilizationDistanceProp;
+        SerializedProperty protectedSurfaceProp;
 
         private bool renderingValidationEnabled
         {
@@ -331,6 +343,7 @@ namespace UnityEngine.XR.MagicLeap.Rendering
             frameTimingHintProp = serializedObject.FindProperty("m_FrameTimingHint");
             stabilizationModeProp = serializedObject.FindProperty("m_StabilizationMode");
             stabilizationDistanceProp = serializedObject.FindProperty("m_StabilizationDistance");
+            protectedSurfaceProp = serializedObject.FindProperty("m_ProtectedSurface");
         }
 
         public override void OnInspectorGUI()
@@ -351,6 +364,7 @@ namespace UnityEngine.XR.MagicLeap.Rendering
             EditorGUILayout.PropertyField(stabilizationModeProp, kStabilizationModeText);
             using (new EditorGUI.DisabledScope(stabilizationModeProp.enumValueIndex != (int)StabilizationMode.Custom))
                 EditorGUILayout.PropertyField(stabilizationDistanceProp, kStabilizationDistanceText);
+            protectedSurfaceProp.boolValue = EditorGUILayout.Toggle(kProtectedSurfaceText, protectedSurfaceProp.boolValue);
 
             serializedObject.ApplyModifiedProperties();
         }

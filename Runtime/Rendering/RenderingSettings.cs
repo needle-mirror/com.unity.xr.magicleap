@@ -49,6 +49,11 @@ namespace UnityEngine.XR.MagicLeap.Rendering
             get { return UnityMagicLeap_RenderingGetParameter("StabilizationDistance", 100.0f); }
             internal set { UnityMagicLeap_RenderingSetParameter("StabilizationDistance", value); }
         }
+        public static bool useProtectedSurface
+        {
+            get { return UnityMagicLeap_RenderingGetParameter("UseProtectedSurface", 0.0f) != 0.0f; }
+            internal set { UnityMagicLeap_RenderingSetParameter("UseProtectedSurface", value ? 1.0f : 0.0f); }
+        }
         internal static bool useLegacyFrameParameters
         {
             get { return UnityMagicLeap_RenderingGetParameter("UseLegacyFrameParameters", 0.0f) != 0.0f; }

@@ -244,6 +244,15 @@ ZI_SHIM_PATH_linux64=$(MLREMOTE_BASE)/lib/linux64;$(STUB_PATH)
             using (new WorkingDirectoryShift(Path.GetDirectoryName(graphicsLib)))
                 Assert.That(dm.dependencies, Has.All.Exist);
         }
+
+        [Test]
+        public void MachineHasXCodeTools()
+        {
+            if (string.IsNullOrEmpty(MagicLeapRemoteImportSupport.sdkPath))
+                Assert.Ignore("Ignoring test because the environment is not properly configured");
+            var areToolsInstalled = (MacOSDependencyChecker.IsXcodeToolInstalled("lipo") && MacOSDependencyChecker.IsXcodeToolInstalled("otool"));
+            Assert.IsTrue(areToolsInstalled);
+        }
     }
 #endif
 }
