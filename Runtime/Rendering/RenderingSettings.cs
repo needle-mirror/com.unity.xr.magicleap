@@ -13,12 +13,12 @@ namespace UnityEngine.XR.MagicLeap.Rendering
         }
         public static float farClipDistance
         {
-            get { return UnityMagicLeap_RenderingGetParameter("FarClipDistance", 100.0f); }
+            get { return UnityMagicLeap_RenderingGetParameter("FarClipDistance", 10.0f); }
             internal set { UnityMagicLeap_RenderingSetParameter("FarClipDistance", value); }
         }
         public static float focusDistance
         {
-            get { return UnityMagicLeap_RenderingGetParameter("FocusDistance", 100.0f); }
+            get { return UnityMagicLeap_RenderingGetParameter("FocusDistance", 10.0f); }
             internal set { UnityMagicLeap_RenderingSetParameter("FocusDistance", value); }
         }
         public static FrameTimingHint frameTimingHint
@@ -32,11 +32,11 @@ namespace UnityEngine.XR.MagicLeap.Rendering
         }
         public static float maxNearClipDistance
         {
-            get { return UnityMagicLeap_RenderingGetParameter("MaxNearClipDistance", 0.42926f); }
+            get { return UnityMagicLeap_RenderingGetParameter("MaxNearClipDistance", 0.37037f); }
         }
         public static float nearClipDistance
         {
-            get { return UnityMagicLeap_RenderingGetParameter("NearClipDistance", 0.42926f); }
+            get { return UnityMagicLeap_RenderingGetParameter("NearClipDistance", 0.37037f); }
             internal set { UnityMagicLeap_RenderingSetParameter("NearClipDistance", value); }
         }
         public static bool singlePassEnabled

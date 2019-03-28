@@ -306,14 +306,13 @@ namespace UnityEngine.XR.MagicLeap.Rendering
     {
         private const string kDefineRenderingValidation = "ML_RENDERING_VALIDATION";
 
-        private static GUIContent kRenderingValidationText = new GUIContent("Runtime Rendering Validation");
-        private static GUIContent kFarClipEnforcementText = new GUIContent("Far Clip Enforcement");
-        private static GUIContent kNearClipEnforcementText = new GUIContent("Near Clip Enforcement");
-        private static GUIContent kStereoConvergencePointText = new GUIContent("Stereo Convergence Point");
-        private static GUIContent kFrameTimingHintText = new GUIContent("Frame Timing Hint");
-        private static GUIContent kStabilizationModeText = new GUIContent("Stabilization Mode");
-        private static GUIContent kStabilizationDistanceText = new GUIContent("Stabilization Distance");
-        private static GUIContent kProtectedSurfaceText = new GUIContent("Protected Surface");
+        private static GUIContent kRenderingValidationText = new GUIContent("Runtime Rendering Validation", "Enable runtime checks for multiple camera settings");
+        private static GUIContent kStereoConvergencePointText = new GUIContent("Stereo Convergence Point", "Transform you want to be the focus point of the camera");
+        private static GUIContent kFrameTimingHintText = new GUIContent("Frame Timing Hint", "Select the frame timing hint render setting");
+        private static GUIContent kStabilizationModeText = new GUIContent("Stabilization Mode", "Select the distance at which Stabilization mode activates");
+        private static GUIContent kStabilizationDistanceText = new GUIContent("Stabilization Distance", "Custom value for Stabilization Distance");
+        private static GUIContent kProtectedSurfaceText = new GUIContent("Protected Surface", "Content for this app is protected and should not be recorded or captured");
+        private static GUIContent kSurfaceScaleText = new GUIContent("Surface Scale", "Scale Factor for the Render Surfaces");
 
 #if ML_RENDERING_VALIDATION
         SerializedProperty previousClearColorProp;
@@ -350,12 +349,6 @@ namespace UnityEngine.XR.MagicLeap.Rendering
         {
             //var rect = GUILayoutUtility.GetRect(kRenderingValidationText, EditorGUIUtility.GetBuiltinSkin(EditorSkin.Inspector).label);
             renderingValidationEnabled = EditorGUILayout.Toggle(kRenderingValidationText, renderingValidationEnabled, GUILayout.ExpandWidth(true));
-            // TODO :: For now, we're always doing enforcement, but we might not always want to.
-            using (new EditorGUI.DisabledScope(true))
-            {
-                EditorGUILayout.Toggle(kFarClipEnforcementText, true);
-                EditorGUILayout.Toggle(kNearClipEnforcementText, true);
-            }
 
             serializedObject.Update();
 

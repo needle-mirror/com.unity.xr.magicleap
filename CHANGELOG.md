@@ -1,5 +1,10 @@
 # Changelog
 
+## [2.0.0-preview.17] - 2019-03-28
+- Hide UI toggles for clipping plane enforcement from MagicLeapCamera (toggles were previously disabled)
+- Do not fail when requesting confidence for a zero-vertex mesh
+- Update tooltips for MagicLeapCamera
+
 ## [2.0.0-preview.16] - 2019-03-27
 - Properly report when Xcode is missing on OSX, which is required as part of the remote library import process.
 - Fix duplicate yamato jobs.
