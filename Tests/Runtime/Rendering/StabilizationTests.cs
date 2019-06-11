@@ -4,9 +4,9 @@ using UnityEngine;
 using UnityEngine.TestTools;
 using UnityEngine.XR.MagicLeap.Rendering;
 
-namespace Rendering
+namespace Unity.XR.MagicLeap.Tests
 {
-    public class StabilizationTests
+    public class StabilizationTests : TestBaseSetup
     {
         [UnitySetUp]
         public void Setup()
@@ -21,6 +21,7 @@ namespace Rendering
         }
 
         [UnityTest]
+        [RequireMagicLeapDevice]
         public IEnumerator CanCreateABunchOfStabilizerObjects()
         {
             var box = new Bounds(Vector3.zero, Vector3.one * 10);

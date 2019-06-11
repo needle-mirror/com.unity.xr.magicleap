@@ -1,7 +1,9 @@
 {
     "name": "Unity.XR.MagicLeap.Tests.Runtime",
     "references": [
-        "UnityEngine.XR.MagicLeap"
+        "UnityEngine.SpatialTracking",
+        "UnityEngine.XR.MagicLeap",
+        "Unity.ugui"
     ],
     "optionalUnityReferences": [
         "TestAssemblies"
@@ -10,7 +12,6 @@
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,
-    "precompiledReferences": [],
     "autoReferenced": true,
-    "defineConstraints": []
+    "versionDefines": []
 }

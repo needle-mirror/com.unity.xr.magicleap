@@ -4,11 +4,13 @@ using UnityEngine;
 using UnityEngine.TestTools;
 using UnityEngine.XR;
 using Assert = UnityEngine.Assertions.Assert;
+using Unity.XR.MagicLeap.Tests;
 
 [UnityPlatform(include = new[] { RuntimePlatform.Lumin })]
-public class LuminSmokeTest : EnableXRPrebuildStep
+public class LuminSmokeTest : TestBaseSetup
 {
     [UnityTest]
+    [RequireMagicLeapDevice]
     [Explicit] // Added to ensure this is only run against Magic Leap Devices
                // Requires that --testFilter=LuminSmokeTest parameter is used to run.
     public IEnumerator CanDeployAndRunOnLuminDevice()
@@ -24,7 +26,7 @@ public class LuminMonoBehaviourTest : MonoBehaviour, IMonoBehaviourTest
     void Awake()
     {
         Assert.IsTrue(XRSettings.enabled);
-        Assert.AreEqual("lumin", XRSettings.loadedDeviceName);
+        Assert.AreEqual("Lumin", XRSettings.loadedDeviceName);
         IsTestFinished = true;
     }
 }

@@ -36,7 +36,8 @@ namespace UnityEngine.XR.MagicLeap.Rendering
         Custom
     }
 
-    [AddComponentMenu("AR/Magic Leap/Camera")]
+    [AddComponentMenu("AR/Magic Leap/MagicLeapCamera")]
+    [DefaultExecutionOrder(-15000)]
     [RequireComponent(typeof(Camera))]
     [UsesLuminPlatformLevel(2)]
     public sealed class MagicLeapCamera : MonoBehaviour
@@ -58,6 +59,8 @@ namespace UnityEngine.XR.MagicLeap.Rendering
         private float m_StabilizationDistance;
         [SerializeField]
         private bool m_ProtectedSurface;
+        [SerializeField]
+        private float m_SurfaceScale = 1f;
 
         public Transform stereoConvergencePoint
         {
@@ -74,6 +77,7 @@ namespace UnityEngine.XR.MagicLeap.Rendering
             get { return m_StabilizationMode; }
             set { m_StabilizationMode = value; }
         }
+        /// Expressed in Unity scene units.
         public float stabilizationDistance
         {
             get { return m_StabilizationDistance; }
@@ -84,33 +88,24 @@ namespace UnityEngine.XR.MagicLeap.Rendering
             get { return m_ProtectedSurface; }
             set { m_ProtectedSurface = value; }
         }
+        public float surfaceScale
+        {
+            get { return m_SurfaceScale; }
+            set { m_SurfaceScale = value; }
+        }
 
-#if PLATFORM_LUMIN && !UNITY_EDITOR
-        private static Lazy<bool> _enforceNearClip = new Lazy<bool>(() => RenderingSettings.GetSystemProperty("persist.ml.render.min_clip") == "true");
-        private static Lazy<bool> _enforceFarClip = new Lazy<bool>(() => RenderingSettings.GetSystemProperty("persist.ml.render.max_clip") == "true");
-#endif // PLATFORM_LUMIN
-        public static bool enforceNearClip
+        public bool enforceNearClip
         {
             get
             {
-#if PLATFORM_LUMIN && !UNITY_EDITOR
-                return _enforceNearClip.Value;
-#elif UNITY_EDITOR
-                return true; // ML Remote needs near clip enforcement too!
-#else
-                return false;
-#endif
+                return true;
             }
         }
-        public static bool enforceFarClip
+        public bool enforceFarClip
         {
             get
             {
-#if PLATFORM_LUMIN && !UNITY_EDITOR
-                return _enforceFarClip.Value;
-#else
-                return false;
-#endif
+                return true;
             }
         }
 
@@ -118,7 +113,11 @@ namespace UnityEngine.XR.MagicLeap.Rendering
         {
             frameTimingHint = FrameTimingHint.Max_60Hz;
             stabilizationMode = StabilizationMode.FarClip;
-            stabilizationDistance = (GetComponent<Camera>() != null) ? GetComponent<Camera>().farClipPlane : 1000.0f;
+            stabilizationDistance = (GetComponent<Camera>() != null) ? GetComponent<Camera>().farClipPlane : 100f;
+        }
+
+        void OnDestroy()
+        {
         }
 
         void OnDisable()
@@ -131,7 +130,7 @@ namespace UnityEngine.XR.MagicLeap.Rendering
             RenderingSettings.useLegacyFrameParameters = false;
         }
 
-        void Start()
+        void Awake()
         {
             m_Camera = GetComponent<Camera>();
             RenderingSettings.frameTimingHint = frameTimingHint;
@@ -153,15 +152,14 @@ namespace UnityEngine.XR.MagicLeap.Rendering
                 _TransformList.Clear();
             }
 
-            var scale = GetCameraScale();
-            RenderingSettings.cameraScale = scale;
-            // only perform clipping plane validation if the user has added the requisite components.
-            ValidateFarClip(scale);
-            ValidateNearClip(scale);
+            RenderingSettings.cameraScale = RenderingUtility.GetParentScale(transform);
+            ValidateFarClip();
+            ValidateNearClip();
 
-            RenderingSettings.farClipDistance = GetFarClippingPlane(scale);
-            RenderingSettings.nearClipDistance = GetNearClippingPlane(scale);
-            RenderingSettings.focusDistance = actualStereoConvergence / scale;
+            RenderingSettings.farClipDistance = m_Camera.farClipPlane;
+            RenderingSettings.nearClipDistance = m_Camera.nearClipPlane;
+            RenderingSettings.focusDistance = actualStereoConvergence;
+            RenderingSettings.surfaceScale = m_SurfaceScale;
 #if ML_RENDERING_VALIDATION
             CheckClearColor();
 #endif
@@ -171,7 +169,7 @@ namespace UnityEngine.XR.MagicLeap.Rendering
                     RenderingSettings.stabilizationDistance = ClampToClippingPlanes(stabilizationDistance);
                     break;
                 case StabilizationMode.FarClip:
-                    RenderingSettings.stabilizationDistance = GetFarClippingPlane(scale);
+                    RenderingSettings.stabilizationDistance = m_Camera.farClipPlane;
                     break;
                 case StabilizationMode.FurthestObject:
                     _Handle.Complete();
@@ -182,27 +180,27 @@ namespace UnityEngine.XR.MagicLeap.Rendering
             }
         }
 
-        public void ValidateFarClip(float scale)
+        public void ValidateFarClip()
         {
             if (!m_Camera) return;
-            var farClip = m_Camera.farClipPlane / scale;
+            var farClip = m_Camera.farClipPlane;
             var max = RenderingSettings.maxFarClipDistance;
             if (enforceFarClip && farClip > max)
             {
                 MLWarnings.WarnedAboutFarClippingPlane.Trigger(farClip, max);
-                m_Camera.farClipPlane = max * scale;
+                m_Camera.farClipPlane = max;
             }
         }
 
-        public void ValidateNearClip(float scale)
+        public void ValidateNearClip()
         {
             if (!m_Camera) return;
-            var nearClip = m_Camera.nearClipPlane / scale;
-            var max = RenderingSettings.maxNearClipDistance;
-            if (enforceNearClip && nearClip < max)
+            var nearClip = m_Camera.nearClipPlane;
+            var min = RenderingSettings.minNearClipDistance;
+            if (enforceNearClip && nearClip < min)
             {
-                MLWarnings.WarnedAboutNearClippingPlane.Trigger(nearClip, max);
-                m_Camera.nearClipPlane = max * scale;
+                MLWarnings.WarnedAboutNearClippingPlane.Trigger(nearClip, min);
+                m_Camera.nearClipPlane = min;
             }
         }
 
@@ -241,7 +239,7 @@ namespace UnityEngine.XR.MagicLeap.Rendering
         public float ClampToClippingPlanes(float value)
         {
             return Mathf.Clamp(value,
-                RenderingSettings.maxNearClipDistance,
+                RenderingSettings.minNearClipDistance,
                 RenderingSettings.maxFarClipDistance);
         }
 
@@ -265,32 +263,6 @@ namespace UnityEngine.XR.MagicLeap.Rendering
             }
         }
 #endif
-        private float GetCameraScale()
-        {
-            var scale = Vector3.one;
-            var parent = transform.parent;
-            if (parent)
-                scale = parent.lossyScale;
-#if ML_RENDERING_VALIDATION
-            if (!(Mathf.Approximately(scale.x, scale.y) && Mathf.Approximately(scale.x, scale.z)))
-            {
-                MLWarnings.WarnedAboutNonUniformScale.Trigger();
-                return (scale.x + scale.y + scale.z) / 3;
-            }
-#endif
-            // Avoid precision error caused by averaging x, y and z components.
-            return scale.x;
-        }
-
-        private float GetFarClippingPlane(float scale)
-        {
-            return m_Camera.farClipPlane / scale;
-        }
-
-        private float GetNearClippingPlane(float scale)
-        {
-            return m_Camera.nearClipPlane / scale;
-        }
 
         private void UpdateTransformList(Transform transform)
         {
@@ -323,6 +295,7 @@ namespace UnityEngine.XR.MagicLeap.Rendering
         SerializedProperty stabilizationModeProp;
         SerializedProperty stabilizationDistanceProp;
         SerializedProperty protectedSurfaceProp;
+        SerializedProperty surfaceScaleProp;
 
         private bool renderingValidationEnabled
         {
@@ -343,6 +316,7 @@ namespace UnityEngine.XR.MagicLeap.Rendering
             stabilizationModeProp = serializedObject.FindProperty("m_StabilizationMode");
             stabilizationDistanceProp = serializedObject.FindProperty("m_StabilizationDistance");
             protectedSurfaceProp = serializedObject.FindProperty("m_ProtectedSurface");
+            surfaceScaleProp = serializedObject.FindProperty("m_SurfaceScale");
         }
 
         public override void OnInspectorGUI()
@@ -357,8 +331,9 @@ namespace UnityEngine.XR.MagicLeap.Rendering
             EditorGUILayout.PropertyField(stabilizationModeProp, kStabilizationModeText);
             using (new EditorGUI.DisabledScope(stabilizationModeProp.enumValueIndex != (int)StabilizationMode.Custom))
                 EditorGUILayout.PropertyField(stabilizationDistanceProp, kStabilizationDistanceText);
-            protectedSurfaceProp.boolValue = EditorGUILayout.Toggle(kProtectedSurfaceText, protectedSurfaceProp.boolValue);
+            EditorGUILayout.PropertyField(protectedSurfaceProp, kProtectedSurfaceText);
 
+            EditorGUILayout.Slider(surfaceScaleProp, 0f, 1f, kSurfaceScaleText);
             serializedObject.ApplyModifiedProperties();
         }
 

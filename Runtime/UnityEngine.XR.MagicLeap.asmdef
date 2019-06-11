@@ -1,13 +1,16 @@
 {
     "name": "UnityEngine.XR.MagicLeap",
-    "references": [],
+    "references": [
+        "Unity.XR.InteractionSubsystems",
+        "Unity.XR.Management"
+    ],
     "optionalUnityReferences": [],
     "includePlatforms": [
         "Editor",
         "Lumin"
     ],
     "excludePlatforms": [],
-    "allowUnsafeCode": false,
+    "allowUnsafeCode": true,
     "overrideReferences": false,
     "precompiledReferences": [],
     "autoReferenced": true,

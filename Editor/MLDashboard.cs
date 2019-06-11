@@ -140,7 +140,7 @@ namespace UnityEditor.XR.MagicLeap
             }
         }
 
-        [MenuItem("Magic Leap/Lauch MLRemote", true)]
+        [MenuItem("Magic Leap/ML Remote/Launch MLRemote", true)]
         private static bool CanLaunchRemote()
         {
             return HasVirtualDevice;

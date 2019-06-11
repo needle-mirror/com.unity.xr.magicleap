@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -67,30 +68,6 @@ namespace UnityEditor.XR.MagicLeap
         {
             public string file = null;
             public List<string> dependencies = new List<string>();
-        }
-
-        internal static bool IsXcodeToolInstalled(string toolName)
-        {
-            var psi = new ProcessStartInfo {
-                FileName = "/bin/bash",
-                Arguments = String.Format("-c 'if lp=$( xcrun -f {0} 2> /dev/null ) && test -x \"${{lp}}\"; then echo \"YES\"; else echo \"NO\"; fi'", toolName),
-                WindowStyle = ProcessWindowStyle.Hidden,
-                CreateNoWindow = true,
-                RedirectStandardError = true,
-                RedirectStandardOutput = true,
-                UseShellExecute = false
-            };
-            using (Process process = Process.Start(psi))
-            {
-                string output = process.StandardOutput.ReadLine();
-                process.WaitForExit();
-                if (output.Equals("NO"))
-                {
-                    return false;
-                }
-            }
-
-            return true;
         }
 
         internal static IEnumerable<string> LaunchOtool(string filepath)
@@ -188,6 +165,8 @@ ZI_SHIM_PATH_linux64=$(MLREMOTE_BASE)/lib/linux64;$(STUB_PATH)
 ";
         const string kMacOSDependencyPath = "{0}/VirtualDevice/bin";
 
+        private static Dictionary<string, string> s_PluginLookupCache = new Dictionary<string, string>();
+
         internal static IEnumerable<string> discoveryFileOrFallbackData
         {
             get
@@ -213,6 +192,22 @@ ZI_SHIM_PATH_linux64=$(MLREMOTE_BASE)/lib/linux64;$(STUB_PATH)
             }
         }
 
+        internal static string hostExtension
+        {
+            get
+            {
+#if UNITY_EDITOR_WIN
+                return ".dll";
+#elif UNITY_EDITOR_OSX
+                return ".bundle"; // extension checking is handled later for OSX.
+#elif UNITY_EDITOR_LINUX
+                return "*.so";
+#else
+                throw new NotSupportedException("Not supported on this platform!");
+#endif
+            }
+        }
+
         internal static string hostExtensionGlob
         {
             get
@@ -227,6 +222,35 @@ ZI_SHIM_PATH_linux64=$(MLREMOTE_BASE)/lib/linux64;$(STUB_PATH)
                 throw new NotSupportedException("Not supported on this platform!");
 #endif
             }
+        }
+
+        public static bool TryResolveMLPluginPath(string name, out string path)
+        {
+            if (!s_PluginLookupCache.TryGetValue(name, out path))
+            {
+                //Debug.LogFormat("{0} not cached, querying plugin importers", name);
+                foreach (var importer in PluginImporter.GetAllImporters().Where(ap => LooksLikeRemoteLibrary(ap.assetPath)))
+                {
+                    var filename = Path.GetFileNameWithoutExtension(importer.assetPath);
+                    if (filename.EndsWith(name))
+                    {
+                        path = Path.GetFullPath(importer.assetPath);
+                        s_PluginLookupCache[name] = path;
+                        //Debug.LogFormat("found {0} -> {1}", name, path);
+                        return true;
+                    }
+                }
+                path = null;
+                return false;
+            }
+            //Debug.LogFormat("using cached value for {0} ({1})", name, path);
+            return true;
+        }
+
+        static bool LooksLikeRemoteLibrary(string path)
+        {
+            var fileName = Path.GetFileName(path);
+            return fileName.StartsWith("ml_") && fileName.EndsWith(hostExtension);
         }
 
         internal static bool hasDiscoveryFile
@@ -250,8 +274,7 @@ ZI_SHIM_PATH_linux64=$(MLREMOTE_BASE)/lib/linux64;$(STUB_PATH)
         {
             get
             {
-                if (string.IsNullOrEmpty(sdkPath)) return false;
-                return File.Exists(Path.Combine(sdkPath, kManifestPath));
+                return SDKUtility.sdkAvailable;
             }
         }
 
@@ -259,7 +282,7 @@ ZI_SHIM_PATH_linux64=$(MLREMOTE_BASE)/lib/linux64;$(STUB_PATH)
         {
             get
             {
-                return EditorPrefs.GetString("LuminSDKRoot", null);
+                return SDKUtility.sdkPath;
             }
         }
 
@@ -370,11 +393,6 @@ ZI_SHIM_PATH_linux64=$(MLREMOTE_BASE)/lib/linux64;$(STUB_PATH)
             {
                 //UnityDebug.Log(lib);
 #if UNITY_EDITOR_OSX
-                if (!(MacOSDependencyChecker.IsXcodeToolInstalled("lipo") && MacOSDependencyChecker.IsXcodeToolInstalled("otool")))
-                {
-                    throw new Exception("Cannot import MLRemote libraries. Please install Xcode and try again.");
-                }
-
                 var target = GetOSXTargetPath(destFolder, lib);
                 if (target == null) continue;
                 CheckIfFileCanBeCopiedAndThrow(lib, target);

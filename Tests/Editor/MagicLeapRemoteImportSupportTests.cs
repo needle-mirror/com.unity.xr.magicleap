@@ -1,8 +1,9 @@
-namespace Tests
+namespace MLRemote
 {
     using System;
     using System.IO;
     using System.Linq;
+    using System.Runtime.InteropServices;
     using System.Text;
 
     using NUnit.Framework;
@@ -113,6 +114,167 @@ ZI_SHIM_PATH_linux64=$(MLREMOTE_BASE)/lib/linux64;$(STUB_PATH)
                 MagicLeapRemoteImportSupport.ImportSupportLibrares(tp.path);
                 Assert.That(() => MagicLeapRemoteImportSupport.ImportSupportLibrares(tp.path), Throws.InstanceOf<ImportFailureException>());
             }
+        }
+
+        static class Native
+        {
+            [DllImport("ml_platform")]
+            public static extern int MLPlatformGetAPILevel(ref uint platformLevel);
+            [DllImport("ml_remote")]
+            public static extern int MLRemoteIsServerConfigured([MarshalAs(UnmanagedType.U1)] ref bool isConfigured);
+        }
+        [Test]
+        public void CanResolveMLGraphicsLibrary()
+        {
+            if (string.IsNullOrEmpty(MagicLeapRemoteImportSupport.sdkPath))
+                Assert.Ignore("Ignoring test because the environment is not properly configured");
+            string path;
+            using (var tp = new TemporaryAssetPath(kImportTestPath))
+            {
+                Assert.That(() => MagicLeapRemoteImportSupport.ImportSupportLibrares(tp.path), Throws.Nothing);
+                Assert.That(MagicLeapRemoteImportSupport.TryResolveMLPluginPath("ml_graphics", out path), Is.True);
+                Assert.That(path, Is.Not.Null);
+                Assert.That(path.EndsWith(MagicLeapRemoteImportSupport.hostExtension), Is.True);
+            }
+        }
+
+        [Test]
+        public void CanResolveMLPerceptionLibrary()
+        {
+            if (string.IsNullOrEmpty(MagicLeapRemoteImportSupport.sdkPath))
+                Assert.Ignore("Ignoring test because the environment is not properly configured");
+            string path;
+            using (var tp = new TemporaryAssetPath(kImportTestPath))
+            {
+                Assert.That(() => MagicLeapRemoteImportSupport.ImportSupportLibrares(tp.path), Throws.Nothing);
+                Assert.That(MagicLeapRemoteImportSupport.TryResolveMLPluginPath("ml_perception_client", out path), Is.True);
+                Assert.That(path, Is.Not.Null);
+                Assert.That(path.EndsWith(MagicLeapRemoteImportSupport.hostExtension), Is.True);
+            }
+        }
+
+        [Test]
+        public void CanResolveMLInputLibrary()
+        {
+            if (string.IsNullOrEmpty(MagicLeapRemoteImportSupport.sdkPath))
+                Assert.Ignore("Ignoring test because the environment is not properly configured");
+            string path;
+            using (var tp = new TemporaryAssetPath(kImportTestPath))
+            {
+                Assert.That(() => MagicLeapRemoteImportSupport.ImportSupportLibrares(tp.path), Throws.Nothing);
+                Assert.That(MagicLeapRemoteImportSupport.TryResolveMLPluginPath("ml_input", out path), Is.True);
+                Assert.That(path, Is.Not.Null);
+                Assert.That(path.EndsWith(MagicLeapRemoteImportSupport.hostExtension), Is.True);
+            }
+        }
+
+        [Test]
+        public void CanResolveMLRemoteLibrary()
+        {
+            if (string.IsNullOrEmpty(MagicLeapRemoteImportSupport.sdkPath))
+                Assert.Ignore("Ignoring test because the environment is not properly configured");
+            string path;
+            using (var tp = new TemporaryAssetPath(kImportTestPath))
+            {
+                Assert.That(() => MagicLeapRemoteImportSupport.ImportSupportLibrares(tp.path), Throws.Nothing);
+                Assert.That(MagicLeapRemoteImportSupport.TryResolveMLPluginPath("ml_remote", out path), Is.True);
+                Assert.That(path, Is.Not.Null);
+                Assert.That(path.EndsWith(MagicLeapRemoteImportSupport.hostExtension), Is.True);
+            }
+        }
+
+        [Test]
+        public void CanResolveMLPlatformLibrary()
+        {
+            if (string.IsNullOrEmpty(MagicLeapRemoteImportSupport.sdkPath))
+                Assert.Ignore("Ignoring test because the environment is not properly configured");
+            string path;
+            using (var tp = new TemporaryAssetPath(kImportTestPath))
+            {
+                Assert.That(() => MagicLeapRemoteImportSupport.ImportSupportLibrares(tp.path), Throws.Nothing);
+                Assert.That(MagicLeapRemoteImportSupport.TryResolveMLPluginPath("ml_platform", out path), Is.True);
+                Assert.That(path, Is.Not.Null);
+                Assert.That(path.EndsWith(MagicLeapRemoteImportSupport.hostExtension), Is.True);
+            }
+        }
+
+        [Test]
+        public void CanResolveMLLifecycleLibrary()
+        {
+            if (string.IsNullOrEmpty(MagicLeapRemoteImportSupport.sdkPath))
+                Assert.Ignore("Ignoring test because the environment is not properly configured");
+            string path;
+            using (var tp = new TemporaryAssetPath(kImportTestPath))
+            {
+                Assert.That(() => MagicLeapRemoteImportSupport.ImportSupportLibrares(tp.path), Throws.Nothing);
+                Assert.That(MagicLeapRemoteImportSupport.TryResolveMLPluginPath("ml_lifecycle", out path), Is.True);
+                Assert.That(path, Is.Not.Null);
+                Assert.That(path.EndsWith(MagicLeapRemoteImportSupport.hostExtension), Is.True);
+            }
+        }
+
+        [Test]
+        public void CanResolveMLAudioLibrary()
+        {
+            if (string.IsNullOrEmpty(MagicLeapRemoteImportSupport.sdkPath))
+                Assert.Ignore("Ignoring test because the environment is not properly configured");
+            string path;
+            using (var tp = new TemporaryAssetPath(kImportTestPath))
+            {
+                Assert.That(() => MagicLeapRemoteImportSupport.ImportSupportLibrares(tp.path), Throws.Nothing);
+                Assert.That(MagicLeapRemoteImportSupport.TryResolveMLPluginPath("ml_audio", out path), Is.True);
+                Assert.That(path, Is.Not.Null);
+                Assert.That(path.EndsWith(MagicLeapRemoteImportSupport.hostExtension), Is.True);
+            }
+        }
+
+        [Test]
+        public void CanResolveMLGraphicsUtilsLibrary()
+        {
+            if (string.IsNullOrEmpty(MagicLeapRemoteImportSupport.sdkPath))
+                Assert.Ignore("Ignoring test because the environment is not properly configured");
+            string path;
+            using (var tp = new TemporaryAssetPath(kImportTestPath))
+            {
+                Assert.That(() => MagicLeapRemoteImportSupport.ImportSupportLibrares(tp.path), Throws.Nothing);
+                Assert.That(MagicLeapRemoteImportSupport.TryResolveMLPluginPath("ml_graphics_utils", out path), Is.True);
+                Assert.That(path, Is.Not.Null);
+                Assert.That(path.EndsWith(MagicLeapRemoteImportSupport.hostExtension), Is.True);
+            }
+        }
+
+        [Test]
+        public void CanResolveMLIdentityLibrary()
+        {
+            if (string.IsNullOrEmpty(MagicLeapRemoteImportSupport.sdkPath))
+                Assert.Ignore("Ignoring test because the environment is not properly configured");
+            string path;
+            using (var tp = new TemporaryAssetPath(kImportTestPath))
+            {
+                Assert.That(() => MagicLeapRemoteImportSupport.ImportSupportLibrares(tp.path), Throws.Nothing);
+                Assert.That(MagicLeapRemoteImportSupport.TryResolveMLPluginPath("ml_identity", out path), Is.True);
+                Assert.That(path, Is.Not.Null);
+                Assert.That(path.EndsWith(MagicLeapRemoteImportSupport.hostExtension), Is.True);
+            }
+        }
+
+        [Test]
+        [Ignore("Test is disabled because it loads the plugin, which prevents it from being unloaded")]
+        public void CanLoadAndCallIntoMLPlatformLibrary()
+        {
+            uint level = 0;
+            var result = Native.MLPlatformGetAPILevel(ref level);
+            Assert.That(result, Is.EqualTo(0));
+            Assert.That(level, Is.Not.EqualTo(0));
+        }
+
+        [Test]
+        [Ignore("Test is disabled because it loads the plugin, which prevents it from being unloaded")]
+        public void CanLoadAndCallIntoMLRemoteLibrary()
+        {
+            bool configured = false;
+            var result = Native.MLRemoteIsServerConfigured(ref configured);
+            Assert.That(result, Is.EqualTo(0));
         }
     }
 
@@ -243,15 +405,6 @@ ZI_SHIM_PATH_linux64=$(MLREMOTE_BASE)/lib/linux64;$(STUB_PATH)
             var dm = MacOSDependencyChecker.GetDependencies(graphicsLib);
             using (new WorkingDirectoryShift(Path.GetDirectoryName(graphicsLib)))
                 Assert.That(dm.dependencies, Has.All.Exist);
-        }
-
-        [Test]
-        public void MachineHasXCodeTools()
-        {
-            if (string.IsNullOrEmpty(MagicLeapRemoteImportSupport.sdkPath))
-                Assert.Ignore("Ignoring test because the environment is not properly configured");
-            var areToolsInstalled = (MacOSDependencyChecker.IsXcodeToolInstalled("lipo") && MacOSDependencyChecker.IsXcodeToolInstalled("otool"));
-            Assert.IsTrue(areToolsInstalled);
         }
     }
 #endif

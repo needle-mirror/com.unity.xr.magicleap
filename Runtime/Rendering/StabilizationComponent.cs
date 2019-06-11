@@ -4,13 +4,13 @@ using UnityEngine;
 
 namespace UnityEngine.XR.MagicLeap.Rendering
 {
-    public class StabilizationComponent : MonoBehaviour
+    public sealed class StabilizationComponent : MonoBehaviour
     {
-        private void OnBecameInvisible()
+        void OnBecameInvisible()
         {
             enabled = false;
         }
-        private void OnBecameVisible()
+        void OnBecameVisible()
         {
             enabled = true;
         }
