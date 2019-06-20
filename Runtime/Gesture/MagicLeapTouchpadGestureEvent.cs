@@ -56,6 +56,11 @@ namespace UnityEngine.XR.MagicLeap
         public GestureState state { get { return m_State; } }
 
         /// <summary>
+        /// The controller id associated with this gesture.
+        /// </summary>
+        public byte controllerId { get { return m_ControllerId; } }
+
+        /// <summary>
         /// Angle from the center of the touchpad to the finger.
         /// </summary>
         public float angle { get { return m_Angle; } }
@@ -102,7 +107,7 @@ namespace UnityEngine.XR.MagicLeap
         public static MagicLeapTouchpadGestureEvent GetDefault()
         {
             return new MagicLeapTouchpadGestureEvent(GestureId.invalidId, GestureState.Invalid,
-                0.0f, MagicLeapTouchpadGestureDirection.None, 0.0f, 0.0f, Vector3.zero,
+                0, 0.0f, MagicLeapTouchpadGestureDirection.None, 0.0f, 0.0f, Vector3.zero,
                 0.0f, 0.0f, MagicLeapInputControllerTouchpadGestureType.None);
         }
 
@@ -110,7 +115,8 @@ namespace UnityEngine.XR.MagicLeap
         /// Constructs a new <see cref="MagicLeapTouchpadGestureEvent"/>.
         /// </summary>
         /// <param name="id">The <see cref="GestureId"/> associated with the gesture.</param>
-        /// <param name="state">The <see cref="GestureId"/> associated with the gesture.</param>
+        /// <param name="state">The <see cref="GestureState"/> associated with the gesture.</param>
+        /// <param name="controllerId">The controller id associated with this gesture.</param>
         /// <param name="angle">The angel of the touch of the gesture.</param>
         /// <param name="direction">The direction of the touch of the gesture.</param>
         /// <param name="distance">The distance of the gesture.</param>
@@ -119,12 +125,13 @@ namespace UnityEngine.XR.MagicLeap
         /// <param name="radius">The radius of the touch of the gesture.</param>
         /// <param name="speed">The speed of the gesture.</param>
         /// <param name="type">The <see cref="MagicLeapInputControllerTouchpadGestureType"/> type of the gesture.</param>
-        public MagicLeapTouchpadGestureEvent(GestureId id, GestureState state, float angle,
+        public MagicLeapTouchpadGestureEvent(GestureId id, GestureState state, byte controllerId, float angle,
             MagicLeapTouchpadGestureDirection direction, float distance, float fingerGap, Vector3 positionAndForce,
             float radius, float speed, MagicLeapInputControllerTouchpadGestureType type)
         {
             m_Id = id;
             m_State = state;
+            m_ControllerId = controllerId;
             m_Angle = angle;
             m_Direction = direction;
             m_Distance = distance;
@@ -142,8 +149,8 @@ namespace UnityEngine.XR.MagicLeap
         public override string ToString()
         {
             return string.Format(
-                "Touchpad Gesture:\n\tgestureId: {0}\n\tgestureState: {1}\n\tangle: {2}\n\tdirection: {3}\n\tdistance: {4}\n\tfingerGap: {5}\n\tpositionAndForce: {6}\n\tradius: {7}\n\tspeed: {8}\n\ttype: {9}",
-                id, state, angle, direction, distance, fingerGap, positionAndForce, radius, speed, type);
+                "Touchpad Gesture:\n\tgestureId: {0}\n\tgestureState: {1}\n\tcontrollerId: {2}\n\tangle: {3}\n\tdirection: {4}\n\tdistance: {5}\n\tfingerGap: {6}\n\tpositionAndForce: {7}\n\tradius: {8}\n\tspeed: {9}\n\ttype: {10}",
+                id, state, controllerId, angle, direction, distance, fingerGap, positionAndForce, radius, speed, type);
         }
 
         public override bool Equals(object obj)
@@ -158,6 +165,7 @@ namespace UnityEngine.XR.MagicLeap
             {
                 var hashCode = m_Id.GetHashCode();
                 hashCode = (hashCode * 486187739) + ((int)m_State).GetHashCode();
+                hashCode = (hashCode * 486187739) + ((int)m_ControllerId).GetHashCode();
                 hashCode = (hashCode * 486187739) + ((int)m_Angle).GetHashCode();
                 hashCode = (hashCode * 486187739) + ((int)m_Direction).GetHashCode();
                 hashCode = (hashCode * 486187739) + ((int)m_Distance).GetHashCode();
@@ -186,6 +194,7 @@ namespace UnityEngine.XR.MagicLeap
             return
                 m_Id == other.id &&
                 m_State == other.state &&
+                m_ControllerId == other.controllerId &&
                 m_Angle == other.angle &&
                 m_Direction == other.direction &&
                 m_Distance == other.distance &&
@@ -198,6 +207,7 @@ namespace UnityEngine.XR.MagicLeap
 
         GestureId m_Id;
         GestureState m_State;
+        byte m_ControllerId;
         float m_Angle;
         MagicLeapTouchpadGestureDirection m_Direction;
         float m_Distance;

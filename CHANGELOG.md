@@ -1,5 +1,20 @@
 # Changelog
 
+## [3.0.0-preview.6] - 2019-06-20
+- Fix an issue with meshing causing settings values to use garbage data
+- Add support for determining the origin controller of a touchpas gesture event
+- Fix a couple issues around proper handling of multiple controllers
+- Properly support standalone subsystems that depend on the perception system
+- Add support for standalone Planes, Raycast, and ReferencePoint subsystems
+- Update Gestures documentation
+- Fix a type collision with MagicLeap's Unity framework
+- Add initial support for custom MagicLeap settings when using XR SDK
+- Fix a couple issues that arise when using XR SDK, ML Remote, and repeatedly going in and out of playmode
+- Bump Legacy Input Helpers to 1.3.2
+- Fix an issue where timeouts from the ML Graphics API would cause the XR Display subsystem to shutdown
+- Add support for multipass rendering on Lumin hardware and on ML Remote on Windows
+- Fix an issue where XRSettings.renderViewportScale wasn't being propagated to ML's Graphics API
+
 ## [3.0.0-preview.5] - 2019-06-11
 - Fix the native controller api loader to properly reference `ml_perception_client` instead of `ml_input`
 - Fix an issue that prevented the Display provider from properly initializing in Editor using ML Remote

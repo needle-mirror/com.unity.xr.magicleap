@@ -28,12 +28,12 @@ namespace UnityEngine.XR.MagicLeap.Meshing
 
         public static MLMeshingSettings meshingSettings
         {
-            set { UnityMagicLeap_MeshingUpdateSettings(value); }
+            set { UnityMagicLeap_MeshingUpdateSettings(ref value); }
         }
 
 #if PLATFORM_LUMIN
         [DllImport("UnityMagicLeap")]
-        internal static extern void UnityMagicLeap_MeshingUpdateSettings(MLMeshingSettings newSettings);
+        internal static extern void UnityMagicLeap_MeshingUpdateSettings(ref MLMeshingSettings newSettings);
 
         [DllImport("UnityMagicLeap")]
         internal static extern void UnityMagicLeap_MeshingSetLod(MLSpatialMapper.LevelOfDetail lod);
@@ -50,7 +50,7 @@ namespace UnityEngine.XR.MagicLeap.Meshing
         [DllImport("UnityMagicLeap")]
         internal static extern void UnityMagicLeap_MeshingReleaseConfidence(TrackableId meshId);
 #else
-        internal static void UnityMagicLeap_MeshingUpdateSettings(MLMeshingSettings newSettings) { }
+        internal static void UnityMagicLeap_MeshingUpdateSettings(ref MLMeshingSettings newSettings) { }
 
         internal static void UnityMagicLeap_MeshingSetLod(MLSpatialMapper.LevelOfDetail lod) { }
 

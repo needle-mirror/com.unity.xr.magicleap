@@ -6,6 +6,27 @@ using System.Text;
 
 namespace UnityEngine.XR.MagicLeap.Rendering
 {
+    public enum DepthPrecision : int
+    {
+        Depth32,
+        Depth24Stencil8
+    }
+
+    public enum FrameTimingHint : int
+    {
+        Unspecified = 0,
+        Maximum,
+        Max_60Hz,
+        Max_120Hz,
+    }
+
+    public enum StabilizationMode : byte
+    {
+        None,
+        FarClip,
+        FurthestObject,
+        Custom
+    }
     public static class RenderingSettings
     {
         const float kDefaultFarClip = 10f;
@@ -27,6 +48,18 @@ namespace UnityEngine.XR.MagicLeap.Rendering
             {
                 s_CachedCameraScale = value;
                 UnityMagicLeap_RenderingSetParameter("CameraScale", s_CachedCameraScale);
+            }
+        }
+        internal static DepthPrecision depthPrecision
+        {
+            get
+            {
+                return UnityMagicLeap_RenderingGetDepthPrecision();
+            }
+
+            set
+            {
+                UnityMagicLeap_RenderingSetDepthPrecision(value);
             }
         }
         public static float farClipDistance
@@ -87,6 +120,7 @@ namespace UnityEngine.XR.MagicLeap.Rendering
             }
             internal set { UnityMagicLeap_RenderingSetParameter("NearClipDistance", RenderingUtility.ToMagicLeapUnits(value, s_CachedCameraScale)); }
         }
+        [Obsolete("use MagicLeapSettings.forceMultipass to force multipass rendering instead")]
         public static bool singlePassEnabled
         {
             get
@@ -117,6 +151,7 @@ namespace UnityEngine.XR.MagicLeap.Rendering
             }
             internal set { UnityMagicLeap_RenderingSetParameter("UseProtectedSurface", value ? 1.0f : 0.0f); }
         }
+        [Obsolete("Use UnityEngine.XR.XRSettings.renderViewportScale instead")]
         public static float surfaceScale
         {
             get
@@ -127,6 +162,7 @@ namespace UnityEngine.XR.MagicLeap.Rendering
             }
             internal set { UnityMagicLeap_RenderingSetParameter("SurfaceScale", value); }
         }
+        [Obsolete("useLegacyFrameParameters is ignored on XR SDK")]
         internal static bool useLegacyFrameParameters
         {
             get
@@ -155,11 +191,17 @@ namespace UnityEngine.XR.MagicLeap.Rendering
         [DllImport(kLibrary, CharSet = CharSet.Ansi)]
         [return: MarshalAs(UnmanagedType.I1)]
         internal static extern bool UnityMagicLeap_RenderingTryGetParameter(string key, out float value);
+        [DllImport(kLibrary)]
+        internal static extern DepthPrecision UnityMagicLeap_RenderingGetDepthPrecision();
+        [DllImport(kLibrary)]
+        internal static extern void UnityMagicLeap_RenderingSetDepthPrecision(DepthPrecision depthPrecision);
 #else
         internal static FrameTimingHint UnityMagicLeap_RenderingGetFrameTimingHint() { return FrameTimingHint.Unspecified; }
         internal static void UnityMagicLeap_RenderingSetFrameTimingHint(FrameTimingHint newValue) {}
         internal static void UnityMagicLeap_RenderingSetParameter(string key, float newValue) {}
         internal static bool UnityMagicLeap_RenderingTryGetParameter(string key, out float value) { value = 0f; return false; }
+        internal static DepthPrecision UnityMagicLeap_RenderingGetDepthPrecision() { return DepthPrecision.Depth32; }
+        internal static void UnityMagicLeap_RenderingSetDepthPrecision(DepthPrecision depthPrecision) {}
 #endif
 
         // device-specific calls.

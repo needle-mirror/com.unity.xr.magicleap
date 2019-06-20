@@ -6,6 +6,7 @@ using System.Linq;
 using Unity.Collections;
 #if UNITY_EDITOR
 using UnityEditor;
+using UnityEditor.AnimatedValues;
 using UnityEditor.XR.MagicLeap.Remote;
 #endif
 using UnityEngine.Experimental;
@@ -20,23 +21,7 @@ using UnityObject = UnityEngine.Object;
 
 namespace UnityEngine.XR.MagicLeap.Rendering
 {
-    public enum FrameTimingHint : int
-    {
-        Unspecified = 0,
-        Maximum,
-        Max_60Hz,
-        Max_120Hz,
-    }
-
-    public enum StabilizationMode : byte
-    {
-        None,
-        FarClip,
-        FurthestObject,
-        Custom
-    }
-
-    [AddComponentMenu("AR/Magic Leap/MagicLeapCamera")]
+    [AddComponentMenu("AR/Magic Leap/Magic Leap Camera")]
     [DefaultExecutionOrder(-15000)]
     [RequireComponent(typeof(Camera))]
     [UsesLuminPlatformLevel(2)]
@@ -67,6 +52,7 @@ namespace UnityEngine.XR.MagicLeap.Rendering
             get { return m_StereoConvergencePoint; }
             set { m_StereoConvergencePoint = value; }
         }
+        [Obsolete("Set frame timing hints via MagicLeapSettings.frameTimingHint instead")]
         public FrameTimingHint frameTimingHint
         {
             get { return m_FrameTimingHint; }
@@ -88,6 +74,7 @@ namespace UnityEngine.XR.MagicLeap.Rendering
             get { return m_ProtectedSurface; }
             set { m_ProtectedSurface = value; }
         }
+        [Obsolete("Use UnityEngine.XR.XRSettings.renderViewportScale instead")]
         public float surfaceScale
         {
             get { return m_SurfaceScale; }
@@ -111,7 +98,10 @@ namespace UnityEngine.XR.MagicLeap.Rendering
 
         void Reset()
         {
+            // allow obsolete usage for now.
+#pragma warning disable 0618
             frameTimingHint = FrameTimingHint.Max_60Hz;
+#pragma warning restore 0618
             stabilizationMode = StabilizationMode.FarClip;
             stabilizationDistance = (GetComponent<Camera>() != null) ? GetComponent<Camera>().farClipPlane : 100f;
         }
@@ -122,19 +112,26 @@ namespace UnityEngine.XR.MagicLeap.Rendering
 
         void OnDisable()
         {
+#pragma warning disable 0618
             RenderingSettings.useLegacyFrameParameters = true;
+#pragma warning restore 0618
         }
 
         void OnEnable()
         {
+#pragma warning disable 0618
             RenderingSettings.useLegacyFrameParameters = false;
+#pragma warning restore 0618
         }
 
         void Awake()
         {
             m_Camera = GetComponent<Camera>();
+            // allow obsolete usage for now.
+#pragma warning disable 0618
             RenderingSettings.frameTimingHint = frameTimingHint;
             RenderingSettings.singlePassEnabled = XRSettings.stereoRenderingMode == XRSettings.StereoRenderingMode.SinglePassInstanced;
+#pragma warning restore 0618
 #if PLATFORM_LUMIN && !UNITY_EDITOR
             RenderingSettings.useProtectedSurface = m_ProtectedSurface;
 #endif
@@ -159,7 +156,9 @@ namespace UnityEngine.XR.MagicLeap.Rendering
             RenderingSettings.farClipDistance = m_Camera.farClipPlane;
             RenderingSettings.nearClipDistance = m_Camera.nearClipPlane;
             RenderingSettings.focusDistance = actualStereoConvergence;
+#pragma warning disable 0618
             RenderingSettings.surfaceScale = m_SurfaceScale;
+#pragma warning disable 0618
 #if ML_RENDERING_VALIDATION
             CheckClearColor();
 #endif
@@ -297,6 +296,8 @@ namespace UnityEngine.XR.MagicLeap.Rendering
         SerializedProperty protectedSurfaceProp;
         SerializedProperty surfaceScaleProp;
 
+        AnimBool showDistanceField;
+
         private bool renderingValidationEnabled
         {
             get { return IsDefineSet(kDefineRenderingValidation); }
@@ -317,6 +318,8 @@ namespace UnityEngine.XR.MagicLeap.Rendering
             stabilizationDistanceProp = serializedObject.FindProperty("m_StabilizationDistance");
             protectedSurfaceProp = serializedObject.FindProperty("m_ProtectedSurface");
             surfaceScaleProp = serializedObject.FindProperty("m_SurfaceScale");
+
+            showDistanceField = new AnimBool(stabilizationModeProp.enumValueIndex == (int)StabilizationMode.Custom);
         }
 
         public override void OnInspectorGUI()
@@ -327,13 +330,27 @@ namespace UnityEngine.XR.MagicLeap.Rendering
             serializedObject.Update();
 
             EditorGUILayout.ObjectField(stereoConvergencePointProp, typeof(Transform), kStereoConvergencePointText);
-            EditorGUILayout.PropertyField(frameTimingHintProp, kFrameTimingHintText);
+
+            bool foundLoader = MagicLeapLoader.assetInstance.IsEnabledForPlatform(EditorUserBuildSettings.activeBuildTarget);
+            using (new EditorGUI.DisabledScope(foundLoader))
+                EditorGUILayout.PropertyField(frameTimingHintProp, kFrameTimingHintText);
+            if (foundLoader)
+                EditorGUILayout.HelpBox("Frame Timing Hint is now set on the Magic Leap Settings panel in Player Settings -> XR", MessageType.Info);
             EditorGUILayout.PropertyField(stabilizationModeProp, kStabilizationModeText);
-            using (new EditorGUI.DisabledScope(stabilizationModeProp.enumValueIndex != (int)StabilizationMode.Custom))
+            showDistanceField.target = stabilizationModeProp.enumValueIndex == (int)StabilizationMode.Custom;
+            using (var group = new EditorGUILayout.FadeGroupScope(showDistanceField.faded))
+            if (group.visible)
+            {
+                EditorGUI.indentLevel++;
                 EditorGUILayout.PropertyField(stabilizationDistanceProp, kStabilizationDistanceText);
+                EditorGUI.indentLevel--;
+            }
             EditorGUILayout.PropertyField(protectedSurfaceProp, kProtectedSurfaceText);
 
-            EditorGUILayout.Slider(surfaceScaleProp, 0f, 1f, kSurfaceScaleText);
+            using (new EditorGUI.DisabledScope(foundLoader))
+                EditorGUILayout.Slider(surfaceScaleProp, 0f, 1f, kSurfaceScaleText);
+            if (foundLoader)
+                EditorGUILayout.HelpBox("Surface scale is now controlled via XRSettings.renderViewportScale", MessageType.Info);
             serializedObject.ApplyModifiedProperties();
         }
 

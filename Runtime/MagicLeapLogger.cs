@@ -78,5 +78,10 @@ namespace UnityEngine.XR.MagicLeap
         {
             Native.Log(LogLevel.Warning, tag, string.Format(format, args));
         }
+
+        public static void Error(string tag, string format, params object[] args)
+        {
+            Native.Log(LogLevel.Error, tag, string.Format(format, args));
+        }
     }
 }

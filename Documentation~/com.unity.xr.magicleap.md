@@ -65,6 +65,37 @@ If you wish to have the device start at a different location within the Unity sc
 
 ![alt text](images/magic_leap_root_with_transform.png "Magic Leap Root")
 
+## Gesture
+
+Subsystem implementation to provide for recognition and tracking of gestures provided from the appropriate device.  This subsystem relies on the `com.unity.xr.interactionsubsystem` package for it's core implementation (see that package's documentation for further details/types).
+
+The `MagicLeapGestureSubsystem` component manages a low-level interface for polling for Magic Leap gesture changes.  If this component is added to a scene, it is possible to poll for any gesture events each frame.  The following gestures and gesture data are provided:
+
+* __MagicLeapKeyPoseGestureEvent__ - Event that fires when a key pose gesture changes.  See the Magic Leap documentation for further documenation on key poses.
+  * __id__ - Unique `GestureId` that identifies this gesture. 
+  * __state__ - `GestureState` that indicates the state of this gesture (`Started`, `Updated`, `Completed`, `Canceled` or `Discrete`).
+  * __keyPose__ - `MagicLeapKeyPose` indicating type of key pose that has been detected.  Valid key poses are `Finger`, `Fist`, `Pinch`, `Thumb`, `LShape`, `OpenHand`, `Ok`, `CShape`, `NoPose`, `NoHand` are all valid key poses.
+  * __hand__ - `MagicLeapHand` indicating the hand source for this gesture (`Left` or `Right`);
+* __MagicLeapTouchpadGestureEvent__ - Event that fires when a touchpad gesture changes.  See the Magic Leap documentation for further documenation on the touchpad.
+  * __id__ - Unique `GestureId` that identifies this gesture. 
+  * __state__ - `GestureState` that indicates the state of this gesture (`Started`, `Updated`, `Completed`, `Canceled` or `Discrete`).
+  * __controllerId__ - The controller id associated with this gesture.
+  * __angle__ - Angle from the center of the touchpad to the finger.
+  * __direction__ - `MagicLeapTouchpadGestureDirection` indicating the direction of this gesture (`None`, `Up`, `Down`, `Left`, `Right`, `In`, `Out`, `Clockwise`, `CounterClockwise`).
+  * __fingerGap__ - Distance between the two fingers performing the gestures in touchpad distance. The touchpad is defined as having extents of [-1.0,1.0] so this distance has a range of [0.0,2.0].
+  * __positionAndForce__ - Gesture position (x,y) and force (z). Position is in the [-1.0,1.0] range and force is in the [0.0,1.0] range.
+  * __radius__ - For radial gestures, this is the radius of the gesture. The touchpad is defined as having extents of [-1.0,1.0] so this radius has a range of [0.0,2.0].
+  * __speed__ - Speed of gesture. Note that this takes on different meanings depending on the gesture type being performed:
+  * __type__ - `MagicLeapInputControllerTouchpadGestureType` indicating the type of this gesture (`None`, `Tap`, `ForceTapDown`, `ForceTapUp`, `ForceDwell`, `SecondForceDown`, `LongHold`, `RadialScroll`, `Swipe`, `Scroll`, `Pinch`).
+
+Additionally, the `MagicLeapGestures` component can be used to provide a simpler polling mechanism for a simpler, event-based interface for listening to gestures.  This component provides a number of events that be hooked into to detect gesture events when they occur:
+
+* __onKeyPoseGestureChanged__ - Occurs whenever a key pose gesture changes state.
+* __onTouchpadGestureChanged__ - Occurs whenever a touchpad gesture changes state.
+* __onActivate__ - Occurs whenever the cross-platform activate gesture occurs.  See the `com.unity.xr.interactionsubsystems` package documentation for more details.
+
+Also see the relevant Magic Leap documentation about gestures for supported device information.
+
 # Technical details
 ## Requirements
 
