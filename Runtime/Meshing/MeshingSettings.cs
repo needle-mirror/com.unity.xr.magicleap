@@ -13,7 +13,12 @@ namespace UnityEngine.XR.MagicLeap.Meshing
         public static void ReleaseConfidence(TrackableId meshId) => UnityMagicLeap_MeshingReleaseConfidence(meshId);
         public static void SetBounds(Transform transform, Vector3 extents)
         {
-            UnityMagicLeap_MeshingSetBounds(transform.localPosition, transform.localRotation, extents);
+            SetBounds(transform.localPosition, transform.localRotation, extents);
+        }
+
+        public static void SetBounds(Vector3 position, Quaternion rotation, Vector3 extents)
+        {
+            UnityMagicLeap_MeshingSetBounds(position, rotation, extents);
         }
 
         public static int batchSize

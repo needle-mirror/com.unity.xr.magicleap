@@ -6,6 +6,7 @@ using System.Runtime.InteropServices;
 using UnityEngine.Experimental;
 using UnityEngine.Experimental.XR;
 using UnityEngine.XR;
+using UnityEngine.XR.MagicLeap.Meshing;
 using UnityEngine.XR.Management;
 
 #if UNITY_EDITOR
@@ -74,7 +75,16 @@ namespace UnityEngine.XR.MagicLeap
             CreateSubsystem<XRDisplaySubsystemDescriptor, XRDisplaySubsystem>(s_DisplaySubsystemDescriptors, "MagicLeap-Display");
 
             if (CanCreateMeshSubsystem())
+            {
                 CreateSubsystem<XRMeshSubsystemDescriptor, XRMeshSubsystem>(s_MeshSubsystemDescriptor, "MagicLeap-Mesh");
+                if (meshSubsystem != null)
+                {
+                    MeshingSettings.meshingSettings = MLSpatialMapper.GetDefaultMeshingSettings();
+                    MeshingSettings.batchSize = MLSpatialMapper.Defaults.batchSize;
+                    MeshingSettings.lod = MLSpatialMapper.Defaults.levelOfDetail;
+                    MeshingSettings.SetBounds(Vector3.zero, Quaternion.identity, MLSpatialMapper.Defaults.boundsExtents);
+                }
+            }
 
             return true;
         }

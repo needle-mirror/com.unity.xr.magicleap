@@ -1,5 +1,11 @@
 # Changelog
 
+## [3.0.0-preview.7] - 2019-07-09
+- Update documentation for 2019.2
+- Robustify Meshing
+- Fix an issue where the frame timing hint was being incorrectly overridden
+- Disable support for Legacy XR
+
 ## [3.0.0-preview.6] - 2019-06-20
 - Fix an issue with meshing causing settings values to use garbage data
 - Add support for determining the origin controller of a touchpas gesture event

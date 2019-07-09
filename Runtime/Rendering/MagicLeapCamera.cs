@@ -127,11 +127,7 @@ namespace UnityEngine.XR.MagicLeap.Rendering
         void Awake()
         {
             m_Camera = GetComponent<Camera>();
-            // allow obsolete usage for now.
-#pragma warning disable 0618
-            RenderingSettings.frameTimingHint = frameTimingHint;
-            RenderingSettings.singlePassEnabled = XRSettings.stereoRenderingMode == XRSettings.StereoRenderingMode.SinglePassInstanced;
-#pragma warning restore 0618
+
 #if PLATFORM_LUMIN && !UNITY_EDITOR
             RenderingSettings.useProtectedSurface = m_ProtectedSurface;
 #endif

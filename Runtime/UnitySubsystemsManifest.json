@@ -5,11 +5,11 @@
     "displays": [
         {
             "id": "MagicLeap-Display",
-            "disablesLegacyVR": true
+            "disablesLegacyVr": true
         }],
     "inputs": [
         {
-            "disablesLegacyInput": false,
+            "disablesLegacyInput": true,
             "id": "MagicLeap-Input"
         }],
     "meshings": [

@@ -2,8 +2,8 @@
 
 Use the *Magic Leap XR Plugin* package enables Magic Leap Spatial Mapping support via Unity's multi-platform XR API. This package implements the following XR Subsystems:
 
-* [Display](https://docs.unity3d.com/2018.3/Documentation/ScriptReference/Experimental.XR.XRDisplaySubsystem.html) (Not Yet Implemented)
-* [Input](https://docs.unity3d.com/2018.3/Documentation/ScriptReference/Experimental.XR.XRInputSubsystem.html) (Not Yet Implemented)
+* [Display](https://docs.unity3d.com/2018.3/Documentation/ScriptReference/Experimental.XR.XRDisplaySubsystem.html)
+* [Input](https://docs.unity3d.com/2018.3/Documentation/ScriptReference/Experimental.XR.XRInputSubsystem.html)
 * [Meshing](https://docs.unity3d.com/2018.3/Documentation/ScriptReference/Experimental.XR.XRMeshingSubsystem.html)
 
 This version of *Magic Leap XR Plugin* supports the meshing functionality provided by the Magic Leap One:
@@ -23,7 +23,7 @@ Inclusion of the *Magic Leap XR Plugin* will result in the inclusion of a C# com
 
 ## Spatial Mapper
 
-This package includes one component, `MLSpatialMapper`:
+This package includes the `MLSpatialMapper` component:
 
 ![alt text](images/mlspatialmapper_component.png "MLSpatialMapper Component")
 
@@ -72,12 +72,12 @@ Subsystem implementation to provide for recognition and tracking of gestures pro
 The `MagicLeapGestureSubsystem` component manages a low-level interface for polling for Magic Leap gesture changes.  If this component is added to a scene, it is possible to poll for any gesture events each frame.  The following gestures and gesture data are provided:
 
 * __MagicLeapKeyPoseGestureEvent__ - Event that fires when a key pose gesture changes.  See the Magic Leap documentation for further documenation on key poses.
-  * __id__ - Unique `GestureId` that identifies this gesture. 
+  * __id__ - Unique `GestureId` that identifies this gesture.
   * __state__ - `GestureState` that indicates the state of this gesture (`Started`, `Updated`, `Completed`, `Canceled` or `Discrete`).
   * __keyPose__ - `MagicLeapKeyPose` indicating type of key pose that has been detected.  Valid key poses are `Finger`, `Fist`, `Pinch`, `Thumb`, `LShape`, `OpenHand`, `Ok`, `CShape`, `NoPose`, `NoHand` are all valid key poses.
   * __hand__ - `MagicLeapHand` indicating the hand source for this gesture (`Left` or `Right`);
 * __MagicLeapTouchpadGestureEvent__ - Event that fires when a touchpad gesture changes.  See the Magic Leap documentation for further documenation on the touchpad.
-  * __id__ - Unique `GestureId` that identifies this gesture. 
+  * __id__ - Unique `GestureId` that identifies this gesture.
   * __state__ - `GestureState` that indicates the state of this gesture (`Started`, `Updated`, `Completed`, `Canceled` or `Discrete`).
   * __controllerId__ - The controller id associated with this gesture.
   * __angle__ - Angle from the center of the touchpad to the finger.
@@ -101,7 +101,7 @@ Also see the relevant Magic Leap documentation about gestures for supported devi
 
 This version of *Magic Leap XR Plugin* is compatible with the following versions of the Unity Editor:
 
-* 2018.3 Magic Leap Technical Preview 9 and later (recommended)
+* Unity 2019.2
 
 ## Known limitations
 
@@ -119,3 +119,4 @@ This version of *Magic Leap XR Plugin* includes:
 |---|---|
 |June 1, 2018|Create initial documentation.|
 |August 17, 2018|Minor updates to docs to refer to 2018.3 version.|
+|June 20, 2019|Minor updates to reflect 2019.2|

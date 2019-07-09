@@ -413,6 +413,28 @@ namespace UnityEngine.XR.MagicLeap
         }
 #endif
 
+        static internal MLMeshingSettings GetDefaultMeshingSettings()
+        {
+            var flags = MLMeshingFlags.IndexOrderCCW;
+            if (Defaults.computeNormals)
+                flags |= MLMeshingFlags.ComputeNormals;
+            if (Defaults.requestVertexConfidence)
+                flags |= MLMeshingFlags.ComputeConfidence;
+            if (Defaults.planarize)
+                flags |= MLMeshingFlags.Planarize;
+            if (Defaults.removeMeshSkirt)
+                flags |= MLMeshingFlags.RemoveMeshSkirt;
+            if (Defaults.meshType == MeshType.PointCloud)
+                flags |= MLMeshingFlags.PointCloud;
+
+            return new MLMeshingSettings
+            {
+                flags = flags,
+                fillHoleLength = Defaults.fillHoleLength,
+                disconnectedComponentArea = Defaults.disconnectedComponentArea,
+            };
+        }
+
         MLMeshingSettings GetMeshingSettings()
         {
             var flags = MLMeshingFlags.IndexOrderCCW;
@@ -792,8 +814,7 @@ namespace UnityEngine.XR.MagicLeap
                 meshRemoved(meshId);
         }
 
-
-        static class Defaults
+        internal static class Defaults
         {
             public static Vector3 boundsExtents = Vector3.one * 10f;
             public static float fillHoleLength = 1f;
