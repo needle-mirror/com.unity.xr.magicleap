@@ -3,9 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using UnityEngine;
-using UnityEngine.Experimental;
-using UnityEngine.Experimental.XR;
 using UnityEngine.Lumin;
+using UnityEngine.XR;
 using UnityEngine.XR.Management;
 using UnityEngine.XR.MagicLeap.Meshing;
 
@@ -246,7 +245,7 @@ namespace UnityEngine.XR.MagicLeap
         /// <summary>
         /// When enabled, the system will generate confidence values for each vertex, ranging from 0-1.
         /// </summary>
-        /// <seealso cref="TryGetConfidence(TrackableId, List{float})"/>
+        /// <seealso cref="TryGetConfidence(MeshId, List{float})"/>
         public bool requestVertexConfidence
         {
             get { return m_RequestVertexConfidence; }
@@ -287,32 +286,32 @@ namespace UnityEngine.XR.MagicLeap
         /// <summary>
         /// A <c>Dictionary</c> which maps mesh ids to their <c>GameObject</c>s.
         /// </summary>
-        public Dictionary<TrackableId, GameObject> meshIdToGameObjectMap { get; private set; }
+        public Dictionary<MeshId, GameObject> meshIdToGameObjectMap { get; private set; }
 
         /// <summary>
         /// An event which is invoked whenever a new mesh is added
         /// </summary>
-        public event Action<TrackableId> meshAdded;
+        public event Action<MeshId> meshAdded;
 
         /// <summary>
         /// An event which is invoked whenever an existing mesh is updated (regenerated).
         /// </summary>
-        public event Action<TrackableId> meshUpdated;
+        public event Action<MeshId> meshUpdated;
 
         /// <summary>
         /// An event which is invoked whenever an existing mesh is removed.
         /// </summary>
-        public event Action<TrackableId> meshRemoved;
+        public event Action<MeshId> meshRemoved;
 
         /// <summary>
         /// Retrieve the confidence values associated with a mesh. Confidence values
         /// range from 0..1. <see cref="requestVertexConfidence"/> must be enabled.
         /// </summary>
         /// <seealso cref="requestVertexConfidence"/>
-        /// <param name="meshId">The unique <c>TrackableId</c> of the mesh.</param>
+        /// <param name="meshId">The unique <c>MeshId</c> of the mesh.</param>
         /// <param name="confidenceOut">A <c>List</c> of floats, one for each vertex in the mesh.</param>
         /// <returns>True if confidence values were successfully retrieved for the mesh with id <paramref name="meshId"/>.</returns>
-        public bool TryGetConfidence(TrackableId meshId, List<float> confidenceOut)
+        public bool TryGetConfidence(MeshId meshId, List<float> confidenceOut)
         {
             if (confidenceOut == null)
                 throw new ArgumentNullException("confidenceOut");
@@ -361,8 +360,8 @@ namespace UnityEngine.XR.MagicLeap
         /// <summary>
         /// 'Refresh' a single mesh. This forces the mesh to be regenerated with the current settings.
         /// </summary>
-        /// <param name="meshId">The <c>TrackableId</c> of the mesh to regenerate.</param>
-        public void RefreshMesh(TrackableId meshId)
+        /// <param name="meshId">The <c>MeshId</c> of the mesh to regenerate.</param>
+        public void RefreshMesh(MeshId meshId)
         {
             if (m_MeshesBeingGenerated.ContainsKey(meshId))
                 return;
@@ -468,7 +467,7 @@ namespace UnityEngine.XR.MagicLeap
         }
 
         // Create new GameObject and parent to ourself
-        GameObject CreateGameObject(TrackableId meshId)
+        GameObject CreateGameObject(MeshId meshId)
         {
             GameObject newGameObject = Instantiate(m_MeshPrefab, meshParent);
             newGameObject.name = string.Format("Mesh {0}", meshId);
@@ -476,7 +475,7 @@ namespace UnityEngine.XR.MagicLeap
             return newGameObject;
         }
 
-        GameObject GetOrCreateGameObject(TrackableId meshId)
+        GameObject GetOrCreateGameObject(MeshId meshId)
         {
             GameObject go = null;
             if (!meshIdToGameObjectMap.TryGetValue(meshId, out go))
@@ -490,9 +489,9 @@ namespace UnityEngine.XR.MagicLeap
 
         void Awake()
         {
-            meshIdToGameObjectMap = new Dictionary<TrackableId, GameObject>();
-            m_MeshesNeedingGeneration = new Dictionary<TrackableId, MeshInfo>();
-            m_MeshesBeingGenerated = new Dictionary<TrackableId, MeshInfo>();
+            meshIdToGameObjectMap = new Dictionary<MeshId, GameObject>();
+            m_MeshesNeedingGeneration = new Dictionary<MeshId, MeshInfo>();
+            m_MeshesBeingGenerated = new Dictionary<MeshId, MeshInfo>();
         }
 
         IEnumerator Init()
@@ -678,7 +677,7 @@ namespace UnityEngine.XR.MagicLeap
 
             if (meshPrefab != null)
             {
-                TrackableId meshId;
+                MeshId meshId;
                 while (m_MeshesBeingGenerated.Count < meshQueueSize && GetNextMeshToGenerate(out meshId))
                 {
                     GameObject meshGameObject = GetOrCreateGameObject(meshId);
@@ -705,9 +704,9 @@ namespace UnityEngine.XR.MagicLeap
         }
 
         // Find the oldest one. Prioritize new ones.
-        bool GetNextMeshToGenerate(out TrackableId meshId)
+        bool GetNextMeshToGenerate(out MeshId meshId)
         {
-            Nullable<KeyValuePair<TrackableId, MeshInfo>> highestPriorityPair = null;
+            Nullable<KeyValuePair<MeshId, MeshInfo>> highestPriorityPair = null;
             foreach (var pair in m_MeshesNeedingGeneration)
             {
                 // Skip meshes currently being generated
@@ -752,7 +751,7 @@ namespace UnityEngine.XR.MagicLeap
             }
             else
             {
-                meshId = TrackableId.InvalidId;
+                meshId = MeshId.InvalidId;
                 return false;
             }
         }
@@ -796,19 +795,19 @@ namespace UnityEngine.XR.MagicLeap
             }
         }
 
-        void RaiseMeshAdded(TrackableId meshId)
+        void RaiseMeshAdded(MeshId meshId)
         {
             if (meshAdded != null)
                 meshAdded(meshId);
         }
 
-        void RaiseMeshUpdated(TrackableId meshId)
+        void RaiseMeshUpdated(MeshId meshId)
         {
             if (meshUpdated != null)
                 meshUpdated(meshId);
         }
 
-        void RaiseMeshRemoved(TrackableId meshId)
+        void RaiseMeshRemoved(MeshId meshId)
         {
             if (meshRemoved != null)
                 meshRemoved(meshId);
@@ -834,9 +833,9 @@ namespace UnityEngine.XR.MagicLeap
 
         DateTime m_TimeLastUpdated = DateTime.MinValue;
 
-        Dictionary<TrackableId, MeshInfo> m_MeshesNeedingGeneration;
+        Dictionary<MeshId, MeshInfo> m_MeshesNeedingGeneration;
 
-        Dictionary<TrackableId, MeshInfo> m_MeshesBeingGenerated;
+        Dictionary<MeshId, MeshInfo> m_MeshesBeingGenerated;
 
         static List<MeshInfo> s_MeshInfos = new List<MeshInfo>();
         static float[] s_FloatBuffer;

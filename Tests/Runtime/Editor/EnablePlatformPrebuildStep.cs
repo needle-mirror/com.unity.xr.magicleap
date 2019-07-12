@@ -8,6 +8,7 @@ using NDesk.Options;
 
 public class EnablePlatformPrebuildStep : IPrebuildSetup
 {
+#if ENABLE_PLATFORM_PREBUILD
     private const string kLuminSdkEnvironment = "LUMINSDK_UNITY";
     public void Setup()
     {
@@ -71,7 +72,7 @@ public class EnablePlatformPrebuildStep : IPrebuildSetup
         }
 
         ConfigureSettings();
-        
+
         PlatformSettings.SerializeToAsset();
 
     }
@@ -210,5 +211,8 @@ public class EnablePlatformPrebuildStep : IPrebuildSetup
                 }
         }
     }
+#else
+    public void Setup() {}
+#endif // ENABLE_PLATFORM_PREBUILD
 }
 

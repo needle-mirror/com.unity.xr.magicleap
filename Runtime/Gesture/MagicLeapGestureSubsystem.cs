@@ -117,7 +117,7 @@ namespace UnityEngine.XR.MagicLeap
                 {
                     if (gestureEvent.state == GestureState.Started && gestureEvent.keyPose == MagicLeapKeyPose.Finger)
                         m_ActivateGestureEvents[iActivateGestureEvent++] = 
-                            new ActivateGestureEvent(GetNextGUID(), gestureEvent.state, Vector3.zero, Vector3.one);
+                            new ActivateGestureEvent(GetNextGUID(), gestureEvent.state);
                 }
             }
 

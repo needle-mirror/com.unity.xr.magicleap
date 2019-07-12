@@ -16,10 +16,10 @@ public class TestBaseSetup
     public CurrentSettings settings;
 
     public static Camera m_Camera;
-            
+
     public static GameObject m_Light;
     public static GameObject m_Cube;
-            
+
     public static GameObject m_XrManager;
     public static GameObject m_TrackingRig;
     public static GameObject m_MLWireFrame;
@@ -53,6 +53,7 @@ public class TestBaseSetup
     [UnitySetUp]
     public IEnumerator SetUpAndEnableXR()
     {
+#if !UNITY_2019_2_OR_NEWER // this doesn't work in XR SDK
         if (XRSettings.loadedDeviceName != settings.enabledXrTarget)
         {
             XRSettings.LoadDeviceByName(settings.enabledXrTarget);
@@ -60,6 +61,10 @@ public class TestBaseSetup
 
         yield return null;
 
+
         XRSettings.enabled = true;
+#else
+        yield return null;
+#endif
     }
 }

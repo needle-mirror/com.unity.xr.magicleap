@@ -1,10 +1,20 @@
 # Changelog
 
-## [3.0.0-preview.7] - 2019-07-09
+## [4.0.0-preview.2] - 2019-07-12
+- Add some sample Base Pose Provider implementations based on XR Input
+- Update XR Display provider header to latest from trunk
+- Update XR Management to version 3
+
+## [4.0.0-preview.1] - 2019-07-07
+- Upgrade XR SDK to require Unity 2019.3
+- Update package name
+- Fix some issues preventing CI from completing successfully
+- Update to latest version of XR Management package
+- Update to latest version of Interaction Subsystems package
+
+## [3.0.0-preview.7] - 2019-06-27
 - Update documentation for 2019.2
 - Robustify Meshing
-- Fix an issue where the frame timing hint was being incorrectly overridden
-- Disable support for Legacy XR
 
 ## [3.0.0-preview.6] - 2019-06-20
 - Fix an issue with meshing causing settings values to use garbage data

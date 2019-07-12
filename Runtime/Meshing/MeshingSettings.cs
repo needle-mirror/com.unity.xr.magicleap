@@ -2,15 +2,15 @@ using System;
 using System.Runtime.InteropServices;
 
 using UnityEngine;
-using UnityEngine.Experimental.XR;
+using UnityEngine.XR;
 
 namespace UnityEngine.XR.MagicLeap.Meshing
 {
     public static class MeshingSettings
     {
 
-        public static IntPtr AcquireConfidence(TrackableId meshId, out int count) => UnityMagicLeap_MeshingAcquireConfidence(meshId, out count);
-        public static void ReleaseConfidence(TrackableId meshId) => UnityMagicLeap_MeshingReleaseConfidence(meshId);
+        public static IntPtr AcquireConfidence(MeshId meshId, out int count) => UnityMagicLeap_MeshingAcquireConfidence(meshId, out count);
+        public static void ReleaseConfidence(MeshId meshId) => UnityMagicLeap_MeshingReleaseConfidence(meshId);
         public static void SetBounds(Transform transform, Vector3 extents)
         {
             SetBounds(transform.localPosition, transform.localRotation, extents);
@@ -50,10 +50,10 @@ namespace UnityEngine.XR.MagicLeap.Meshing
         internal static extern void UnityMagicLeap_MeshingSetBatchSize(int batchSize);
 
         [DllImport("UnityMagicLeap")]
-        internal static extern IntPtr UnityMagicLeap_MeshingAcquireConfidence(TrackableId meshId, out int count);
+        internal static extern IntPtr UnityMagicLeap_MeshingAcquireConfidence(MeshId meshId, out int count);
 
         [DllImport("UnityMagicLeap")]
-        internal static extern void UnityMagicLeap_MeshingReleaseConfidence(TrackableId meshId);
+        internal static extern void UnityMagicLeap_MeshingReleaseConfidence(MeshId meshId);
 #else
         internal static void UnityMagicLeap_MeshingUpdateSettings(ref MLMeshingSettings newSettings) { }
 
@@ -63,9 +63,9 @@ namespace UnityEngine.XR.MagicLeap.Meshing
 
         internal static void UnityMagicLeap_MeshingSetBatchSize(int batchSize) {}
 
-        internal static IntPtr UnityMagicLeap_MeshingAcquireConfidence(TrackableId meshId, out int count) { count = 0; return IntPtr.Zero; }
+        internal static IntPtr UnityMagicLeap_MeshingAcquireConfidence(MeshId meshId, out int count) { count = 0; return IntPtr.Zero; }
 
-        internal static void UnityMagicLeap_MeshingReleaseConfidence(TrackableId meshId) { }
+        internal static void UnityMagicLeap_MeshingReleaseConfidence(MeshId meshId) { }
 #endif
     }
 
