@@ -1,8 +1,6 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
-namespace UnityEngine.XR.MagicLeap.Rendering
+namespace Unity.MagicLeap.Samples.Rendering
 {
     public sealed class StabilizationComponent : MonoBehaviour
     {

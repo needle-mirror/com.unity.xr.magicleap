@@ -1,0 +1,22 @@
+{
+    "name": "Unity.MagicLeap.Samples.Rendering.Tests",
+    "references": [
+        "GUID:28d8685fae23c21419ef42894cb9b075",
+        "GUID:27619889b8ba8c24980f49ee34dbb44a",
+        "GUID:0acc523941302664db1f4e527237feb3",
+        "GUID:ac7d6d76b81edde4c9cac4bfa6471e65",
+        "GUID:4e3c30dd36847b044bbb0be47153a753"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "nunit.framework.dll"
+    ],
+    "autoReferenced": false,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": []
+}

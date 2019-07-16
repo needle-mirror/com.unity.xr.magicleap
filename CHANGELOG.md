@@ -1,5 +1,13 @@
 # Changelog
 
+## [4.0.0-preview.3] - 2019-07-16
+- Update package description with note about disabled legacy XR
+- Update XR Display provider header to latest from trunk
+- Update Lumin SDK to 0.21.0
+- Require Unity 2019.3.0a10 to ensure compatibility with XR Display headers
+- Set the default frame timing hint to 60Hz
+- Move StabilizationComponent into a Rendering sample
+
 ## [4.0.0-preview.2] - 2019-07-12
 - Add some sample Base Pose Provider implementations based on XR Input
 - Update XR Display provider header to latest from trunk

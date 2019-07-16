@@ -2,9 +2,10 @@
 
 using UnityEngine;
 using UnityEngine.TestTools;
-using UnityEngine.XR.MagicLeap.Rendering;
 
-namespace Unity.XR.MagicLeap.Tests
+using Unity.XR.MagicLeap.Tests;
+
+namespace Unity.MagicLeap.Samples.Rendering.Tests
 {
     public class StabilizationTests : TestBaseSetup
     {
