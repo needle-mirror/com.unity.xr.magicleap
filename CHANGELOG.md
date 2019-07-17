@@ -1,5 +1,9 @@
 # Changelog
 
+## [2.0.0-preview.19] - 2019-07-17
+- Update Yamato build configs
+- Disable phantom collision geometry when switching meshing to point-cloud mode
+
 ## [2.0.0-preview.18] - 2019-05-20
 - Fixed a CI issue causing native artifacts not to be included in the package
 

@@ -726,6 +726,15 @@ namespace UnityEngine.XR.MagicLeap
                     default:
                         break;
                 }
+
+                GameObject meshGameObject = null;
+                if (meshIdToGameObjectMap.TryGetValue(result.MeshId, out meshGameObject))
+                {
+                    // Disable the collision mesh if we're in point cloud mode
+                    var meshCollider = meshGameObject.GetComponent<MeshCollider>();
+                    if (meshCollider != null)
+                        meshCollider.enabled = (meshType != MeshType.PointCloud);
+                }                
             }
             else
             {
