@@ -73,7 +73,7 @@ namespace UnityEngine.XR.MagicLeap
         bool m_ForceMultipass;
 
         [SerializeField, Tooltip("Defines the minimum frame time interval, or the maximum speed at which the system will process frames")]
-        Rendering.FrameTimingHint m_FrameTimingHint;
+        Rendering.FrameTimingHint m_FrameTimingHint = Rendering.FrameTimingHint.Max_60Hz;
 
         [SerializeField, Tooltip("Allows OpenGLES shaders to be cached on device, saving compilation time on subsequent runs")]
         GLCache m_GLCacheSettings;

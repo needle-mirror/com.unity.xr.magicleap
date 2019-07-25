@@ -46,7 +46,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_MeshPrefab: {fileID: 2873433981749998117}
   m_ComputeNormals: 1
-  m_LevelOfDetail: 2
+  m_Density: 1
   m_MeshParent: {fileID: 0}
   m_MeshType: 0
   m_FillHoleLength: 1

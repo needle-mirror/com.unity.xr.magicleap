@@ -39,7 +39,8 @@ namespace UnityEngine.XR.MagicLeap
         }
 
         /// <summary>
-        /// Describes the level of detail (LOD) to request from the generated meshes
+        /// Describes the level of detail (LOD) to request from the generated meshes. This property is
+        /// deprecated, and has been replaced by density.
         /// </summary>
         public enum LevelOfDetail
         {
@@ -93,18 +94,51 @@ namespace UnityEngine.XR.MagicLeap
             }
         }
 
-        [SerializeField]
-        LevelOfDetail m_LevelOfDetail = Defaults.levelOfDetail;
+        public static float LevelOfDetailToDensity( LevelOfDetail lod )
+        {
+            if (lod == LevelOfDetail.Minimum)
+                return 0.0f;
+            else if (lod == LevelOfDetail.Medium)
+                return 0.5f;
+            else 
+                return 1.0f;
+        }
 
+        public static LevelOfDetail DensityToLevelOfDetail( float density )
+        {
+            if (density < 0.33f)
+                return LevelOfDetail.Minimum;
+            else if (density < 0.66f)
+                return LevelOfDetail.Medium;
+            else
+                return LevelOfDetail.Maximum;
+        }
+
+        [Obsolete("Replaced by density")]
         public LevelOfDetail levelOfDetail
         {
-            get { return m_LevelOfDetail; }
+            get 
+            {
+                return DensityToLevelOfDetail(m_Density);
+            }
             set
             {
-                if (m_LevelOfDetail != value)
+                m_Density = LevelOfDetailToDensity(value);
+            }
+        }
+
+        [SerializeField]
+        float m_Density = Defaults.density;
+
+        public float density
+        {
+            get { return m_Density; }
+            set
+            {
+                if (m_Density != value)
                 {
-                    m_LevelOfDetail = value;
-                    SetLod();
+                    m_Density = value;
+                    m_SettingsDirty = true;
                 }
             }
         }
@@ -356,6 +390,8 @@ namespace UnityEngine.XR.MagicLeap
             }
 
             meshIdToGameObjectMap.Clear();
+            m_MeshesBeingGenerated.Clear();
+            m_MeshesNeedingGeneration.Clear();
         }
 
         /// <summary>
@@ -390,15 +426,7 @@ namespace UnityEngine.XR.MagicLeap
 
 #if UNITY_EDITOR
         MLMeshingSettings m_CachedSettings;
-        LevelOfDetail m_CachedLod;
-
-        bool hasLodChanged
-        {
-            get
-            {
-                return m_CachedLod != levelOfDetail;
-            }
-        }
+        float m_CachedDensity;
 
         bool haveSettingsChanged
         {
@@ -406,6 +434,7 @@ namespace UnityEngine.XR.MagicLeap
             {
                 var currentSettings = GetMeshingSettings();
                 return
+                    (m_CachedDensity != density) ||
                     (m_CachedSettings.fillHoleLength != currentSettings.fillHoleLength) ||
                     (m_CachedSettings.flags != currentSettings.flags) ||
                     (m_CachedSettings.disconnectedComponentArea != currentSettings.disconnectedComponentArea);
@@ -454,7 +483,7 @@ namespace UnityEngine.XR.MagicLeap
             {
                 flags = flags,
                 fillHoleLength = fillHoleLength,
-                disconnectedComponentArea = disconnectedComponentArea,
+                disconnectedComponentArea = disconnectedComponentArea
             };
 
             return settings;
@@ -535,7 +564,6 @@ namespace UnityEngine.XR.MagicLeap
             UpdateSettings();
             UpdateBounds();
             UpdateBatchSize();
-            SetLod();
 
             StartSubsystem();
         }
@@ -579,22 +607,19 @@ namespace UnityEngine.XR.MagicLeap
             m_MeshesNeedingGeneration[meshInfo.MeshId] = meshInfo;
         }
 
-        void SetLod()
-        {
-            MeshingSettings.lod = levelOfDetail;
-#if UNITY_EDITOR
-            m_CachedLod = levelOfDetail;
-#endif
-        }
-
         void UpdateSettings()
         {
+            DestroyAllMeshes();
             UpdateBatchSize();
+
             var settings = GetMeshingSettings();
             MeshingSettings.meshingSettings = settings;
+            MeshingSettings.density = density;
+
             m_SettingsDirty = false;
 #if UNITY_EDITOR
             m_CachedSettings = settings;
+            m_CachedDensity = density;
 #endif
         }
 
@@ -627,9 +652,6 @@ namespace UnityEngine.XR.MagicLeap
 
 #if UNITY_EDITOR
             m_SettingsDirty |= haveSettingsChanged;
-
-            if (hasLodChanged)
-                SetLod();
 #endif
 
             if (m_SettingsDirty)
@@ -827,7 +849,7 @@ namespace UnityEngine.XR.MagicLeap
             public static int batchSize = 16;
             public static bool requestVertexConfidence = false;
             public static bool removeMeshSkirt = false;
-            public static LevelOfDetail levelOfDetail = LevelOfDetail.Maximum;
+            public static float density = 1.0f;
         }
 
         bool m_SettingsDirty;

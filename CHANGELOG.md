@@ -1,5 +1,13 @@
 # Changelog
 
+## [3.0.0-preview.9] - 2019-07-25
+- Fix an issue with Yamato promotion pipeline
+
+## [3.0.0-preview.8] - 2019-07-12
+- Update package description to include note about legacy XR
+- Set the default frame timing hint to 60Hz
+- Deprecate the "LOD" setting on MLSpatialMapper; it's now exposed as "Density" to be consistent with the XR Mesh subsystem API in 2019.3
+
 ## [3.0.0-preview.7] - 2019-07-09
 - Update documentation for 2019.2
 - Robustify Meshing
