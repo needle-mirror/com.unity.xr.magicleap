@@ -9,8 +9,6 @@ using UnityEditor;
 using UnityEditor.AnimatedValues;
 using UnityEditor.XR.MagicLeap.Remote;
 #endif
-using UnityEngine.Experimental;
-using UnityEngine.Experimental.XR;
 using UnityEngine.Jobs;
 using UnityEngine.Lumin;
 #if !NETFX_CORE && !NET_4_6 && !NET_STANDARD_2_0

@@ -510,23 +510,7 @@ namespace UnityEngine.XR.MagicLeap
             }
             m_Loader = XRGeneralSettings.Instance.Manager.ActiveLoaderAs<MagicLeapLoader>();
             MLLog.Assert(m_Loader != null, kLogTag, "Cannot get reference to MagicLeapLoader!");
-            if (m_Loader == null)
-            {
-                //MagicLeapLogger.Debug(kLogTag, "Waiting for MagicleapLegacyLoader to spawn");
-                while (MagicLeapLegacyLoader.instance == null)
-                    yield return null;
-                //MagicLeapLogger.Debug(kLogTag, "Waiting for MagicleapLegacyLoader to initialize");
-                while (!MagicLeapLegacyLoader.instance.isInitialized)
-                    yield return null;
-                //MagicLeapLogger.Debug(kLogTag, "Attempting to load mesh subsystem from MagicLeapLegacyLoader");
-                m_MeshSubsystem = MagicLeapLegacyLoader.instance.meshSubsystem;
-                if (m_MeshSubsystem == null)
-                {
-                    enabled = false;
-                    yield break;
-                }
-            }
-            else
+            if (m_Loader != null)
                 m_MeshSubsystem = m_Loader.meshSubsystem;
 
             MLLog.Assert(m_MeshSubsystem != null, kLogTag, "Cannot get reference to Mesh Subsystem!");
@@ -541,20 +525,13 @@ namespace UnityEngine.XR.MagicLeap
 
         void StartSubsystem()
         {
-            if (m_Loader == null)
-            {
-                if (m_MeshSubsystem != null)
-                    m_MeshSubsystem.Start();
-            }
-            else
+            if (m_Loader != null)
                 m_Loader.StartMeshSubsystem();
         }
 
         void StopSubsystem()
         {
-            if (m_Loader == null)
-                m_MeshSubsystem.Stop();
-            else
+            if (m_Loader != null)
                 m_Loader.StopMeshSubsystem();
             m_MeshSubsystem = null;
         }

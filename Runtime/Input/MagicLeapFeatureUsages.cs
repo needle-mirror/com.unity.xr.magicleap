@@ -1,6 +1,6 @@
 using UnityEngine.XR;
 
-namespace UnityEngine.Experimental.XR.MagicLeap
+namespace UnityEngine.XR.MagicLeap
 {
     public static class MagicLeapHeadUsages
     {

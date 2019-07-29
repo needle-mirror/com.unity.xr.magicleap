@@ -1,5 +1,15 @@
 # Changelog
 
+## [4.0.1-preview.1] - 2019-07-29
+- Bump LIH to 1.3.4, which is the actual verified version in 2019.3
+- Remove custom Input usages from the Experimental namespace
+- Bump ARSubsystems to 2.1.0, which is the actual verified version in 2019.3
+- Update XRDisplaySubstem to no longer use the Experimental namespace
+- Update release field to 0a12, to indicate new required version
+
+## [4.0.0] - 2019-07-17
+- Initial 2019.3 Verified Release
+
 ## [4.0.0-preview.3] - 2019-07-16
 - Update package description with note about disabled legacy XR
 - Update XR Display provider header to latest from trunk

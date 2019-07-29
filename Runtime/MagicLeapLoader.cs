@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 
-using UnityEngine.Experimental;
-using UnityEngine.Experimental.XR;
 using UnityEngine.XR;
 using UnityEngine.XR.MagicLeap.Meshing;
 using UnityEngine.XR.Management;

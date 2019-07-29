@@ -2,9 +2,9 @@
 
 Use the *Magic Leap XR Support* package to enable Magic Leap via Unity's multi-platform XR SDK. This package implements the following XR Subsystems:
 
-* [Display](https://docs.unity3d.com/2018.3/Documentation/ScriptReference/Experimental.XR.XRDisplaySubsystem.html)
-* [Input](https://docs.unity3d.com/2018.3/Documentation/ScriptReference/Experimental.XR.XRInputSubsystem.html)
-* [Meshing](https://docs.unity3d.com/2018.3/Documentation/ScriptReference/Experimental.XR.XRMeshingSubsystem.html)
+* [Display](https://docs.unity3d.com/2018.3/Documentation/ScriptReference/XR.XRDisplaySubsystem.html)
+* [Input](https://docs.unity3d.com/2018.3/Documentation/ScriptReference/XR.XRInputSubsystem.html)
+* [Meshing](https://docs.unity3d.com/2018.3/Documentation/ScriptReference/XR.XRMeshingSubsystem.html)
 
 This version of *Magic Leap XR Support* supports the meshing functionality provided by the Magic Leap One:
 
