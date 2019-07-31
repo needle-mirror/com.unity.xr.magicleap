@@ -79,7 +79,7 @@ namespace UnityEngine.XR.MagicLeap
                 {
                     MeshingSettings.meshingSettings = MLSpatialMapper.GetDefaultMeshingSettings();
                     MeshingSettings.batchSize = MLSpatialMapper.Defaults.batchSize;
-                    MeshingSettings.lod = MLSpatialMapper.Defaults.levelOfDetail;
+                    MeshingSettings.density = MLSpatialMapper.Defaults.density;
                     MeshingSettings.SetBounds(Vector3.zero, Quaternion.identity, MLSpatialMapper.Defaults.boundsExtents);
                 }
             }

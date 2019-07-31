@@ -84,7 +84,7 @@ namespace UnityEngine.XR.MagicLeap
 
         void Update()
         {
-            if (gestureSubsystem == null && !gestureSubsystem.running)
+            if (gestureSubsystem == null || !gestureSubsystem.running)
                 return;
 
             gestureSubsystem.Update();

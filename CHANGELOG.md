@@ -1,5 +1,16 @@
 # Changelog
 
+## [4.0.2-preview.1] - 2019-07-31
+- Make package name consistent with other XR provider plugins
+- Add an additional define constraint for the rendering samples tests so they're not built by default
+- Support both LIH 1.x and 2.x BasePoseProvider APIs
+- Don't scale the near clipping plane
+- Use updated clipping extents API function
+- Add support for setting meshing density
+
+## [4.0.1] - 2019-07-29
+- Update to 2019.3 Verified Release
+
 ## [4.0.1-preview.1] - 2019-07-29
 - Bump LIH to 1.3.4, which is the actual verified version in 2019.3
 - Remove custom Input usages from the Experimental namespace

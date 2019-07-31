@@ -11,5 +11,12 @@
     "precompiledReferences": [],
     "autoReferenced": true,
     "defineConstraints": [],
-    "versionDefines": []
+    "versionDefines": [
+        {
+            "name": "com.unity.xr.legacyinputhelpers",
+            "expression": "2.0",
+            "define": "LIH_2_OR_NEWER"
+        }
+    ],
+    "noEngineReferences": false
 }

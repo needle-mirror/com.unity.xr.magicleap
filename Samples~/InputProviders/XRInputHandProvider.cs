@@ -2,6 +2,9 @@
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Experimental.XR.Interaction;
+#if LIH_2_OR_NEWER
+using UnityEngine.SpatialTracking;
+#endif
 using UnityEngine.XR;
 using UnityEngine.XR.MagicLeap;
 
@@ -34,7 +37,22 @@ namespace UnityEngine.XR.MagicLeap.Samples
             device = devices.First();
             return true;
         }
+#if LIH_2_OR_NEWER
+        public override PoseDataFlags GetPoseFromProvider(out Pose output)
+        {
+            output = default(Pose);
+            var result = PoseDataFlags.NoData;
 
+            if (!TryGetHandDevice(out var device) || !device.isValid)
+                return result;
+
+            if (device.TryGetFeatureValue(CommonUsages.devicePosition, out output.position))
+                result = result | PoseDataFlags.Position;
+            if (device.TryGetFeatureValue(CommonUsages.deviceRotation, out output.rotation))
+                result = result | PoseDataFlags.Rotation;
+            return result;
+        }
+#else
         public override bool TryGetPoseFromProvider(out Pose output)
         {
             output = default(Pose);
@@ -49,5 +67,6 @@ namespace UnityEngine.XR.MagicLeap.Samples
                 result = true;
             return result;
         }
+#endif // LIH_2_OR_NEWER
     }
 }
