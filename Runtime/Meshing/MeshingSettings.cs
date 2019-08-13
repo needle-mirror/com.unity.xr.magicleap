@@ -26,9 +26,9 @@ namespace UnityEngine.XR.MagicLeap.Meshing
             set { UnityMagicLeap_MeshingSetBatchSize(value); }
         }
 
-        public static float density
+        public static MLSpatialMapper.LevelOfDetail lod
         {
-            set { UnityMagicLeap_MeshingSetDensity(value); }
+            set { UnityMagicLeap_MeshingSetLod(value); }
         }
 
         public static MLMeshingSettings meshingSettings
@@ -41,7 +41,7 @@ namespace UnityEngine.XR.MagicLeap.Meshing
         internal static extern void UnityMagicLeap_MeshingUpdateSettings(ref MLMeshingSettings newSettings);
 
         [DllImport("UnityMagicLeap")]
-        internal static extern void UnityMagicLeap_MeshingSetDensity(float density);
+        internal static extern void UnityMagicLeap_MeshingSetLod(MLSpatialMapper.LevelOfDetail lod);
 
         [DllImport("UnityMagicLeap")]
         internal static extern void UnityMagicLeap_MeshingSetBounds(Vector3 center, Quaternion rotation, Vector3 extents);
@@ -57,7 +57,7 @@ namespace UnityEngine.XR.MagicLeap.Meshing
 #else
         internal static void UnityMagicLeap_MeshingUpdateSettings(ref MLMeshingSettings newSettings) { }
 
-        internal static void UnityMagicLeap_MeshingSetDensity(float density) { }
+        internal static void UnityMagicLeap_MeshingSetLod(MLSpatialMapper.LevelOfDetail lod) { }
 
         internal static void UnityMagicLeap_MeshingSetBounds(Vector3 center, Quaternion rotation, Vector3 extents) { }
 
@@ -87,5 +87,6 @@ namespace UnityEngine.XR.MagicLeap.Meshing
         public MLMeshingFlags flags;
         public float fillHoleLength;
         public float disconnectedComponentArea;
+        public int batchSize;
     }
 }

@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.0.0-preview.10] - 2019-08-13
+- Stop scaling the near clip plane
+- Revert the "LOD" setting change from 3.0.0-preview.7
+- Fix Issue 1174014: Play in Editor in PC mode with Magic Leap loader and AR gestures will crash Unity Editor
+- Add an explicit binary check when looking to launch ML Remote
+- Allow for loading of gesture subsystem via XR Management
+
 ## [3.0.0-preview.9] - 2019-07-25
 - Fix an issue with Yamato promotion pipeline
 

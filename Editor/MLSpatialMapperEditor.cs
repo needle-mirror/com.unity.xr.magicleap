@@ -9,7 +9,7 @@ namespace UnityEditor.XR.MagicLeap
     {
         SerializedProperty m_MeshPrefab;
         SerializedProperty m_ComputeNormals;
-        SerializedProperty m_Density;
+        SerializedProperty m_LevelOfDetail;
         SerializedProperty m_MeshParent;
         SerializedProperty m_MeshType;
         SerializedProperty m_FillHoleLength;
@@ -33,9 +33,9 @@ namespace UnityEditor.XR.MagicLeap
                 "Compute Normals",
                 "When enabled, the system will compute the normals for the triangle vertices.");
 
-            public static readonly GUIContent Density = new GUIContent(
-                "Mesh Density",
-                "Controls the size and spacing of triangles in meshes. The scale goes from low density at 0 (big triangles) to high density at 1 (small triangles). Higher density meshes require mor CPU and GPU resources.");
+            public static readonly GUIContent LevelOfDetail = new GUIContent(
+                "Level of Detail",
+                "The level of detail (LOD) with which to generate meshes. Higher LODs will be more accurate, but take more time to render.");
 
             public static readonly GUIContent MeshParent = new GUIContent(
                 "Mesh Parent",
@@ -98,7 +98,7 @@ namespace UnityEditor.XR.MagicLeap
         {
             m_MeshPrefab = this.serializedObject.FindProperty("m_MeshPrefab");
             m_ComputeNormals = this.serializedObject.FindProperty("m_ComputeNormals");
-            m_Density = this.serializedObject.FindProperty("m_Density");
+            m_LevelOfDetail = this.serializedObject.FindProperty("m_LevelOfDetail");
             m_MeshParent = this.serializedObject.FindProperty("m_MeshParent");
             m_MeshType = this.serializedObject.FindProperty("m_MeshType");
             m_FillHoleLength = this.serializedObject.FindProperty("m_FillHoleLength");
@@ -109,10 +109,6 @@ namespace UnityEditor.XR.MagicLeap
             m_DisconnectedComponentArea = this.serializedObject.FindProperty("m_DisconnectedComponentArea");
             m_RequestVertexConfidence = this.serializedObject.FindProperty("m_RequestVertexConfidence");
             m_RemoveMeshSkirt = this.serializedObject.FindProperty("m_RemoveMeshSkirt");
-
-            SerializedProperty legacyLod = this.serializedObject.FindProperty("m_LevelOfDetail");
-            if (legacyLod != null)
-                m_Density.floatValue = MLSpatialMapper.LevelOfDetailToDensity((MLSpatialMapper.LevelOfDetail) legacyLod.intValue);
         }
 
         void LayoutGUI()
@@ -128,6 +124,7 @@ namespace UnityEditor.XR.MagicLeap
 
             if (m_AdvancedOptionsExpanded)
             {
+                EditorGUILayout.PropertyField(m_LevelOfDetail, Tooltips.LevelOfDetail);
                 EditorGUILayout.PropertyField(m_MeshQueueSize, Tooltips.MeshQueueSize);
                 EditorGUILayout.PropertyField(m_PollingRate, Tooltips.PollingRate);
                 EditorGUILayout.PropertyField(m_BatchSize, Tooltips.BatchSize);
@@ -138,7 +135,6 @@ namespace UnityEditor.XR.MagicLeap
                 m_DisconnectedComponentArea.floatValue = Mathf.Max(0f, m_DisconnectedComponentArea.floatValue);
                 EditorGUILayout.PropertyField(m_RequestVertexConfidence, Tooltips.RequestVertexConfidence);
                 EditorGUILayout.PropertyField(m_RemoveMeshSkirt, Tooltips.RemoveMeshSkirt);
-                EditorGUILayout.Slider(m_Density, 0.0f, 1.0f, Tooltips.Density);
             }
         }
     }

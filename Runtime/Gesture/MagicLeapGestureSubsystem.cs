@@ -38,12 +38,16 @@ namespace UnityEngine.XR.MagicLeap
 
         internal void EnableControllerGestures(bool value)
         {
+#if PLATFORM_LUMIN
             NativeApi.SetControllerGesturesEnabled(value);
+#endif
         }
 
         internal void EnableHandGestures(bool value)
         {
+#if PLATFORM_LUMIN
             NativeApi.SetHandGesturesEnabled(value);
+#endif
         }
 
         class MagicLeapGestureProvider : Provider
@@ -52,25 +56,33 @@ namespace UnityEngine.XR.MagicLeap
 
             public MagicLeapGestureProvider(MagicLeapGestureSubsystem subsystem)
             {
+#if PLATFORM_LUMIN
                 NativeApi.Create();
                 m_Subsystem = subsystem;
+#endif
             }
 
             public override void Start()
             {
+#if PLATFORM_LUMIN
                 NativeApi.Start();
+#endif
             }
 
             public override void Stop()
             {
+#if PLATFORM_LUMIN
                 NativeApi.Stop();
+#endif
             }
 
             public override void Update()
             {
+#if PLATFORM_LUMIN
                 NativeApi.Update();
 
                 RetrieveGestureEvents();
+#endif
             }
 
             public unsafe delegate void* GetGesturesDelegate(out int gestureEventsLength, out int elementSize);
@@ -123,10 +135,12 @@ namespace UnityEngine.XR.MagicLeap
 
             public override void Destroy()
             {
+#if PLATFORM_LUMIN
                 NativeApi.Destroy();
 
                 m_KeyPoseGestureEvents.Dispose();
                 m_TouchpadGestureEvents.Dispose();
+#endif
                 base.Destroy();
             }
 

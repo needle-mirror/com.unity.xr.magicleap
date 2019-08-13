@@ -78,6 +78,9 @@ namespace UnityEngine.XR.MagicLeap
         [SerializeField, Tooltip("Allows OpenGLES shaders to be cached on device, saving compilation time on subsequent runs")]
         GLCache m_GLCacheSettings;
 
+        [SerializeField, Tooltip("Enables gesture subsystem, allowing for the detection of touch and hand gestures")]
+        bool m_EnableGestures;
+
         public Rendering.DepthPrecision depthPrecision
         {
             get { return m_DepthPrecision; }
@@ -100,6 +103,12 @@ namespace UnityEngine.XR.MagicLeap
         {
             get { return m_GLCacheSettings; }
             internal set { m_GLCacheSettings = value; }
+        }
+
+        public bool enableGestures
+        {
+            get { return m_EnableGestures; }
+            internal set { m_EnableGestures = value; }
         }
 
         void Awake()
