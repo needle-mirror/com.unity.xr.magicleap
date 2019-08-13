@@ -1,5 +1,14 @@
 # Changelog
 
+## [4.0.3-preview.1] - 2019-08-13
+- Update the Manifest editor to work with new trunk changes
+- Fix Issue 1174014: Play in Editor in PC mode with Magic Leap loader and AR gestures will crash Unity Editor
+- Add an explicit binary check when looking to launch ML Remote
+- Allow for loading of gesture subsystem via XR Management 
+
+## [4.0.2] - 2019-08-01
+- Update to 2019.3 Verified Release
+
 ## [4.0.2-preview.1] - 2019-07-31
 - Make package name consistent with other XR provider plugins
 - Add an additional define constraint for the rendering samples tests so they're not built by default

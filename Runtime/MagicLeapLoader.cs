@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 
 using UnityEngine.XR;
+using UnityEngine.XR.InteractionSubsystems;
 using UnityEngine.XR.MagicLeap.Meshing;
 using UnityEngine.XR.Management;
 
@@ -45,16 +46,19 @@ namespace UnityEngine.XR.MagicLeap
         static List<XRDisplaySubsystemDescriptor> s_DisplaySubsystemDescriptors = new List<XRDisplaySubsystemDescriptor>();
         static List<XRInputSubsystemDescriptor> s_InputSubsystemDescriptors = new List<XRInputSubsystemDescriptor>();
         static List<XRMeshSubsystemDescriptor> s_MeshSubsystemDescriptor = new List<XRMeshSubsystemDescriptor>();
+        static List<XRGestureSubsystemDescriptor> s_GestureSubsystemDescriptors = new List<XRGestureSubsystemDescriptor>();
 
         public XRDisplaySubsystem displaySubsystem => GetLoadedSubsystem<XRDisplaySubsystem>();
         public XRInputSubsystem inputSubsystem => GetLoadedSubsystem<XRInputSubsystem>();
         public XRMeshSubsystem meshSubsystem => GetLoadedSubsystem<XRMeshSubsystem>();
+        public XRGestureSubsystem gestureSubsystem => GetLoadedSubsystem<XRGestureSubsystem>();
 
 #if UNITY_EDITOR
         public static MagicLeapLoader assetInstance => (MagicLeapLoader)AssetDatabase.LoadAssetAtPath("Packages/com.unity.xr.magicleap/XR/Loaders/Magic Leap Loader.asset", typeof(MagicLeapLoader));
 #endif // UNITY_EDITOR
 
         private bool m_DisplaySubsystemRunning = false;
+        private bool m_GestureSubsystemRunning = false;
         private int m_MeshSubsystemRefcount = 0;
 
         public override bool Initialize()
@@ -71,6 +75,8 @@ namespace UnityEngine.XR.MagicLeap
             CheckForInputRelatedPermissions();
             CreateSubsystem<XRInputSubsystemDescriptor, XRInputSubsystem>(s_InputSubsystemDescriptors, "MagicLeap-Input");
             CreateSubsystem<XRDisplaySubsystemDescriptor, XRDisplaySubsystem>(s_DisplaySubsystemDescriptors, "MagicLeap-Display");
+            if (MagicLeapSettings.currentSettings != null && MagicLeapSettings.currentSettings.enableGestures)
+                CreateSubsystem<XRGestureSubsystemDescriptor, XRGestureSubsystem>(s_GestureSubsystemDescriptors, "MagicLeap-Gesture");
 
             if (CanCreateMeshSubsystem())
             {
@@ -90,6 +96,11 @@ namespace UnityEngine.XR.MagicLeap
         public override bool Start()
         {
             StartSubsystem<XRInputSubsystem>();
+            if (MagicLeapSettings.currentSettings != null && MagicLeapSettings.currentSettings.enableGestures)
+            {
+                StartSubsystem<XRGestureSubsystem>();
+                m_GestureSubsystemRunning = true;
+            }
 
             if (!isLegacyDeviceActive)
             {
@@ -111,6 +122,11 @@ namespace UnityEngine.XR.MagicLeap
                 StopSubsystem<XRDisplaySubsystem>();
                 m_DisplaySubsystemRunning = false;
             }
+            if (m_GestureSubsystemRunning)
+            {
+                StopSubsystem<XRGestureSubsystem>();
+                m_GestureSubsystemRunning = false;
+            }
             if (CanCreateMeshSubsystem() && m_MeshSubsystemRefcount > 0)
             {
                 m_MeshSubsystemRefcount = 0;
@@ -124,7 +140,7 @@ namespace UnityEngine.XR.MagicLeap
         {
             DestroySubsystem<XRMeshSubsystem>();
             DestroySubsystem<XRDisplaySubsystem>();
-            DestroySubsystem<XRInputSubsystem>();
+            DestroySubsystem<XRGestureSubsystem>();
             MagicLeapPrivileges.Shutdown();
             return true;
         }

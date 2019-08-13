@@ -12,7 +12,7 @@ using UnityEngine;
 
 namespace UnityEditor.XR.MagicLeap
 {
-    class MagicLeapManifestBuildProcessor : IPostprocessBuildWithReport, IPreprocessBuildWithReport
+    class MagicLeapManifestBuildProcessor : IPreprocessBuildWithReport
     {
         const string kManifestTemplate = @"
 <?xml version=""1.0"" encoding=""utf-8""?>
@@ -28,38 +28,30 @@ namespace UnityEditor.XR.MagicLeap
         const string kManifestFailureError = "The manifest.xml file contained unexpected or deprecated content. Please correct the manifest file and try again. \n https://creator.magicleap.com/learn/guides/declare-your-manifest";
         const string kMinAPILevelAttributeName = "min_api_level";
 
-        private bool m_WroteManifest = false;
-
         public int callbackOrder { get { return 0; } }
 
-        public void OnPostprocessBuild(BuildReport report)
-        {
-            if (m_WroteManifest)
-                File.Delete(MagicLeapManifestSettings.kDefaultManifestPath);
-        }
         public void OnPreprocessBuild(BuildReport report)
         {
             //Debug.LogFormat("PreprocessBuild : Manifest");
-            var path = MagicLeapManifestSettings.kDefaultManifestPath;
+            var path = MagicLeapManifestSettings.kBuildManifestPath;
             if (MagicLeapManifestSettings.customManifestExists)
             {
-                Debug.LogWarningFormat(kManifestExistsWarning, path);
+                Debug.LogWarningFormat(kManifestExistsWarning, MagicLeapManifestSettings.kCustomManifestPath);
                 return;
             }
             MergeToCustomManifest(MagicLeap.MagicLeapManifestSettings.GetOrCreateSettings(), path);
         }
 
-        private XDocument GetManifestTemplate(string path)
+        private XDocument GetManifestTemplate()
         {
             return XDocument.Load(new StringReader(kManifestTemplate.Trim()));
         }
 
         private void MergeToCustomManifest(MagicLeapManifestSettings ctx, string path)
         {
-            m_WroteManifest = false;
             try
             {
-                XDocument customManifest = GetManifestTemplate(path);
+                XDocument customManifest = GetManifestTemplate();
                 customManifest.Declaration = new XDeclaration("1.0", "utf-8", null);
 
                 // Find "manifest, ml:package" attribute and set to PlayerSettings.applicationIdentifier
@@ -121,8 +113,10 @@ namespace UnityEditor.XR.MagicLeap
 
                 SetPrivileges(applicationElement, ctx.requiredPermissions.ToArray());
 
+                var dir = Path.GetDirectoryName(path);
+                if (!Directory.Exists(dir))
+                    Directory.CreateDirectory(dir);
                 customManifest.Save(path);
-                m_WroteManifest = true;
             }
             catch (System.Exception e)
             {

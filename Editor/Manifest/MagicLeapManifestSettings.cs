@@ -13,7 +13,8 @@ namespace UnityEditor.XR.MagicLeap
     // Create a new type of Settings Asset.
     public class MagicLeapManifestSettings : ScriptableObject
     {
-        public const string kDefaultManifestPath = "Assets/Plugins/Lumin/manifest.xml";
+        public const string kBuildManifestPath = "Temp/StagingArea/Temp/manifest.xml";
+        public const string kCustomManifestPath = "Assets/Plugins/Lumin/manifest.xml";
         public const string kDefaultSettingsPath = "Assets/Plugins/Lumin/MagicLeapManifestSettings.asset";
 
         [SerializeField]
@@ -59,7 +60,7 @@ namespace UnityEditor.XR.MagicLeap
 
         public static bool customManifestExists
         {
-            get { return File.Exists(kDefaultManifestPath); }
+            get { return File.Exists(kCustomManifestPath); }
         }
 
         public static MagicLeapManifestSettings GetOrCreateSettings(string path = kDefaultSettingsPath)

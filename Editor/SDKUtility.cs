@@ -9,6 +9,7 @@ namespace UnityEditor.XR.MagicLeap
     internal static class SDKUtility
     {
         const string kManifestPath = ".metadata/sdk.manifest";
+        const string kRemoteLauncher = "VirtualDevice/bin/UIFrontend/MLRemote";
 
         static class Native
         {
@@ -18,7 +19,19 @@ namespace UnityEditor.XR.MagicLeap
             public static extern uint GetAPILevel();
         }
 
-        public static bool isCompatibleSDK
+        internal static string hostBinaryExtension
+        {
+            get
+            {
+#if UNITY_EDITOR_WIN
+                return ".exe";
+#else
+                return "";
+#endif
+            }
+        }
+
+        internal static bool isCompatibleSDK
         {
             get
             {
@@ -27,21 +40,31 @@ namespace UnityEditor.XR.MagicLeap
                 return min <= max;
             }
         }
-        public static int pluginAPILevel
+        internal static int pluginAPILevel
         {
             get
             {
                 return (int)Native.GetAPILevel();
             }
         }
-        public static int sdkAPILevel
+        internal static bool remoteLauncherAvailable
+        {
+            get
+            {
+                if (!sdkAvailable)
+                    return false;
+                var launcher = Path.ChangeExtension(Path.Combine(sdkPath, kRemoteLauncher), hostBinaryExtension);
+                return File.Exists(launcher);
+            }
+        }
+        internal static int sdkAPILevel
         {
             get
             {
                 return PrivilegeParser.ParsePlatformLevelFromHeader(Path.Combine(SDKUtility.sdkPath, PrivilegeParser.kPlatformHeaderPath));
             }
         }
-        public static bool sdkAvailable
+        internal static bool sdkAvailable
         {
             get
             {
@@ -49,7 +72,7 @@ namespace UnityEditor.XR.MagicLeap
                 return File.Exists(Path.Combine(sdkPath, kManifestPath));
             }
         }
-        public static string sdkPath
+        internal static string sdkPath
         {
             get
             {
