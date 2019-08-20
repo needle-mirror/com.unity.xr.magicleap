@@ -1,5 +1,8 @@
 # Changelog
 
+## [3.0.0-preview.11] - 2019-08-20
+- Fix an issue where the ML Remote check was wrong on OSX
+
 ## [3.0.0-preview.10] - 2019-08-13
 - Stop scaling the near clip plane
 - Revert the "LOD" setting change from 3.0.0-preview.7
