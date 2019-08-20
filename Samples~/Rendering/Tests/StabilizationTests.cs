@@ -1,13 +1,15 @@
 ﻿using System.Collections;
-
 using UnityEngine;
 using UnityEngine.TestTools;
-
-using Unity.XR.MagicLeap.Tests;
+using System;
+using NUnit.Framework;
+using NUnit.Framework.Interfaces;
+using NUnit.Framework.Internal;
+using UnityRandom = UnityEngine.Random;
 
 namespace Unity.MagicLeap.Samples.Rendering.Tests
 {
-    public class StabilizationTests : TestBaseSetup
+    public class StabilizationTests
     {
         [UnitySetUp]
         public void Setup()
@@ -37,7 +39,7 @@ namespace Unity.MagicLeap.Samples.Rendering.Tests
 
         private Vector3 GetRandomPointFromBoundingBox(Bounds bounds)
         {
-            var r = Random.insideUnitSphere;
+            var r = UnityRandom.insideUnitSphere;
             var max = bounds.max;
             var min = bounds.min;
             return new Vector3
@@ -46,6 +48,35 @@ namespace Unity.MagicLeap.Samples.Rendering.Tests
                 y = Mathf.Lerp(min.y, max.y, r.y),
                 z = Mathf.Lerp(min.z, max.z, r.z)
             };
+        }
+    }
+
+    [AttributeUsage(System.AttributeTargets.Method, AllowMultiple = true)]
+    public class RequireMagicLeapDevice : NUnitAttribute, IApplyToTest
+    {
+        private static string envVariable = "ML_DEVICE_CONNECTED";
+
+        private static string m_SkippedReason =
+            String.Format("{0} environment variable not set. Assuming ML device not connected. Skipping test.",
+                envVariable);
+
+        public void ApplyToTest(Test test)
+        {
+            if (test.RunState == RunState.NotRunnable || test.RunState == RunState.Ignored || IsMagicLeapDeviceConnected())
+            {
+                return;
+            }
+            test.RunState = RunState.Skipped;
+            test.Properties.Add("_SKIPREASON", m_SkippedReason);
+        }
+
+        public static bool IsMagicLeapDeviceConnected()
+        {
+#if PLATFORM_LUMIN && !UNITY_EDITOR
+            return true;
+#else
+            return !String.IsNullOrEmpty(Environment.GetEnvironmentVariable(envVariable));
+#endif // PLATFORM_LUMIN && !UNITY_EDITOR
         }
     }
 }

@@ -1,5 +1,11 @@
 # Changelog
 
+## [4.0.3-preview.2] - 2019-08-20
+- Source tests from the XR SDK Tests repo via a submodule
+- Add some missing meta files back to the test directories
+- Update package dependencies to verified version
+- Fix an issue where the ML Remote check was wrong on OSX
+
 ## [4.0.3-preview.1] - 2019-08-13
 - Update the Manifest editor to work with new trunk changes
 - Fix Issue 1174014: Play in Editor in PC mode with Magic Leap loader and AR gestures will crash Unity Editor

@@ -9,7 +9,13 @@ namespace UnityEditor.XR.MagicLeap
     internal static class SDKUtility
     {
         const string kManifestPath = ".metadata/sdk.manifest";
-        const string kRemoteLauncher = "VirtualDevice/bin/UIFrontend/MLRemote";
+#if UNITY_EDITOR_WIN
+        const string kRemoteLauncher = "VirtualDevice/bin/UIFrontend/MLRemote.exe";
+#elif UNITY_EDITOR_OSX
+        const string kRemoteLauncher = "VirtualDevice/bin/UIFrontend/Magic Leap Remote.app";
+#else
+        const string kRemoteLauncher = "Unsupported_on_this_platform.exe";
+#endif
 
         static class Native
         {
@@ -17,18 +23,6 @@ namespace UnityEditor.XR.MagicLeap
 
             [DllImport("UnityMagicLeap", EntryPoint = "UnityMagicLeap_PlatformGetAPILevel")]
             public static extern uint GetAPILevel();
-        }
-
-        internal static string hostBinaryExtension
-        {
-            get
-            {
-#if UNITY_EDITOR_WIN
-                return ".exe";
-#else
-                return "";
-#endif
-            }
         }
 
         internal static bool isCompatibleSDK
@@ -53,8 +47,12 @@ namespace UnityEditor.XR.MagicLeap
             {
                 if (!sdkAvailable)
                     return false;
-                var launcher = Path.ChangeExtension(Path.Combine(sdkPath, kRemoteLauncher), hostBinaryExtension);
+                var launcher = Path.Combine(sdkPath, kRemoteLauncher);
+#if UNITY_EDITOR_OSX
+                return Directory.Exists(launcher);
+#else
                 return File.Exists(launcher);
+#endif
             }
         }
         internal static int sdkAPILevel
