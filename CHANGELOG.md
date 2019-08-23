@@ -1,5 +1,8 @@
 # Changelog
 
+## [3.0.0-preview.12] - 2019-08-23
+- Fix an issue on OSX that caused ML Remote to intermittenly fail to initialize
+
 ## [3.0.0-preview.11] - 2019-08-20
 - Fix an issue where the ML Remote check was wrong on OSX
 
