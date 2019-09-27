@@ -1,6 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.Experimental.XR.Interaction;
 #if LIH_2_OR_NEWER
 using UnityEngine.SpatialTracking;
@@ -8,8 +9,15 @@ using UnityEngine.SpatialTracking;
 using UnityEngine.XR;
 using UnityEngine.XR.MagicLeap;
 
+
 namespace UnityEngine.XR.MagicLeap.Samples
 {
+    [Serializable]
+    public class FloatEvent : UnityEvent<float>
+    {
+
+    }
+
     [AddComponentMenu("AR/Magic Leap/Samples/XR Input Controller Provider")]
     public class XRInputControllerProvider : BasePoseProvider
     {
@@ -20,10 +28,53 @@ namespace UnityEngine.XR.MagicLeap.Samples
         [SerializeField]
         private bool m_LogTrackedPosition;
 
+        public UnityEvent bumperPressed;
+        public UnityEvent homePressed;
+        public UnityEvent triggerPressed;
+        public FloatEvent triggerRawValue;
+
         public bool logTrackedPosition
         {
             get { return m_LogTrackedPosition; }
             set { m_LogTrackedPosition = value; }
+        }
+
+        void Update()
+        {
+            var device = default(InputDevice);
+
+            List<InputDevice> devices = new List<InputDevice>();
+            InputDevices.GetDevicesWithCharacteristics(InputDeviceCharacteristics.Controller | InputDeviceCharacteristics.HeldInHand, devices);
+            if (devices.Count == 0 && devices.Count <= controllerIndex)
+            {
+                //MagicLeapLogger.Debug(kLogTag, "Unable to find a valid controller device!");
+                return;
+            }
+            device = devices.ElementAt(controllerIndex);
+
+            if (!device.isValid)
+                return;
+
+            if (bumperPressed != null && device.TryGetFeatureValue(CommonUsages.secondaryButton, out var bumper))
+            {
+                if (bumper)
+                    bumperPressed.Invoke();
+            }
+
+            if (triggerPressed != null && device.TryGetFeatureValue(CommonUsages.triggerButton, out var trigger))
+            {
+                if (trigger)
+                    triggerPressed.Invoke();
+            }
+
+            if (homePressed != null && device.TryGetFeatureValue(CommonUsages.menuButton, out var home))
+            {
+                if (home)
+                    homePressed.Invoke();
+            }
+
+            if (triggerRawValue != null && device.TryGetFeatureValue(CommonUsages.trigger, out var triggerRaw))
+                triggerRawValue.Invoke(triggerRaw);
         }
 
 #if LIH_2_OR_NEWER

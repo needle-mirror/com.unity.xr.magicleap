@@ -626,6 +626,8 @@ namespace UnityEngine.XR.MagicLeap
         {
             if (m_MeshSubsystem == null)
                 return;
+            if (!m_MeshSubsystem.running)
+                return;
 
 #if UNITY_EDITOR
             m_SettingsDirty |= haveSettingsChanged;

@@ -1,5 +1,21 @@
 # Changelog
 
+## [4.0.5] - 2019-09-27
+- Update to 2019.3 Verified Release
+- Update NPM ignore list to accomdate new repo layout
+
+## [4.0.4] - 2019-09-27
+- Update to 2019.3 Verified Release
+
+## [4.0.4-preview.1] - 2019-09-27
+- Fix an issue on OSX that caused ML Remote to intermittenly fail to initialize
+- Improve the Input Provider Samples with some callbacks for handling button presses
+- Add some additional checks around meshing shutdown
+- Update dependencies on AR Subsystems, Interaction Subsystems, and XR Management
+
+## [4.0.3] - 2019-08-21
+- Update to 2019.3 Verified Release
+
 ## [4.0.3-preview.2] - 2019-08-20
 - Source tests from the XR SDK Tests repo via a submodule
 - Add some missing meta files back to the test directories

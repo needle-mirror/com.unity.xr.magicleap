@@ -138,9 +138,11 @@ namespace UnityEngine.XR.MagicLeap
 
         public override bool Deinitialize()
         {
-            DestroySubsystem<XRMeshSubsystem>();
+            if (CanCreateMeshSubsystem())
+                DestroySubsystem<XRMeshSubsystem>();
             DestroySubsystem<XRDisplaySubsystem>();
             DestroySubsystem<XRGestureSubsystem>();
+            DestroySubsystem<XRInputSubsystem>();
             MagicLeapPrivileges.Shutdown();
             return true;
         }
