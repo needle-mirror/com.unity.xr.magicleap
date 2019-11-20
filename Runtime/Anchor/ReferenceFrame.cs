@@ -5,7 +5,7 @@ using UnityEngine.XR.ARSubsystems;
 namespace UnityEngine.XR.MagicLeap
 {
     /// <summary>
-    /// Contains information necessary to report on <c>XRReferencePoint</c>s.
+    /// Contains information necessary to report on <c>XRAnchor</c>s.
     /// </summary>
     internal struct ReferenceFrame
     {
@@ -21,22 +21,22 @@ namespace UnityEngine.XR.MagicLeap
 
             /// <summary>
             /// The closest coordinate frame's UID. Necessary so we can
-            /// update the reference point in the future.
+            /// update the anchor in the future.
             /// </summary>
             public MLCoordinateFrameUID cfuid;
 
             /// <summary>
-            /// The tracking state of the reference point. Necessary so we can
+            /// The tracking state of the anchor. Necessary so we can
             /// report an update if the tracking state changes.
             /// </summary>
             public TrackingState trackingState;
 
             /// <summary>
-            /// The initial pose of the reference point. Necessary so we can compute
+            /// The initial pose of the anchor. Necessary so we can compute
             /// the transform between <see cref="closetCoordinateFrame"/> and the
-            /// reference point.
+            /// anchor.
             /// </summary>
-            public Pose initialReferencePointPose;
+            public Pose initialAnchorPose;
         }
 
         public ReferenceFrame(Cinfo cinfo)
@@ -46,23 +46,23 @@ namespace UnityEngine.XR.MagicLeap
             cfuid = cinfo.cfuid;
             trackingState = cinfo.trackingState;
 
-            // Compute the delta transform between the closet coordinate frame and the reference point
-            m_ReferencePointFromCoordinateFrame = Pose.identity;
-            ComputeDelta(cinfo.initialReferencePointPose);
+            // Compute the delta transform between the closet coordinate frame and the anchor
+            m_AnchorFromCoordinateFrame = Pose.identity;
+            ComputeDelta(cinfo.initialAnchorPose);
         }
 
         /// <summary>
-        /// A pose which describes the delta beteen the reference point and the closest MLCoordinateFrame.
+        /// A pose which describes the delta beteen the anchor and the closest MLCoordinateFrame.
         /// </summary>
-        Pose m_ReferencePointFromCoordinateFrame;
+        Pose m_AnchorFromCoordinateFrame;
 
         /// <summary>
-        /// The reference point's trackable id.
+        /// The anchor's trackable id.
         /// </summary>
         public TrackableId trackableId { get; private set; }
 
         /// <summary>
-        /// The pose of the coordinate frame used as the origin when calculating the <see cref="referencePointPose"/>.
+        /// The pose of the coordinate frame used as the origin when calculating the <see cref="anchorPose"/>.
         /// </summary>
         public Pose coordinateFrame { get; set; }
 
@@ -72,32 +72,32 @@ namespace UnityEngine.XR.MagicLeap
         public MLCoordinateFrameUID cfuid { get; private set; }
 
         /// <summary>
-        /// The tracking state associated with the reference point
+        /// The tracking state associated with the anchor
         /// </summary>
         /// <value></value>
         public TrackingState trackingState { get; set; }
 
         /// <summary>
-        /// Compute the pose of the reference point.
+        /// Compute the pose of the anchor.
         /// </summary>
-        public Pose referencePointPose
+        public Pose anchorPose
         {
             get
             {
-                return m_ReferencePointFromCoordinateFrame.GetTransformedBy(coordinateFrame);
+                return m_AnchorFromCoordinateFrame.GetTransformedBy(coordinateFrame);
             }
         }
 
         /// <summary>
         /// Get the reference frame as a refernce point
         /// </summary>
-        public XRReferencePoint referencePoint
+        public XRAnchor anchor
         {
             get
             {
-                return new XRReferencePoint(
+                return new XRAnchor(
                     trackableId,
-                    referencePointPose,
+                    anchorPose,
                     trackingState,
                     IntPtr.Zero);
             }
@@ -105,15 +105,15 @@ namespace UnityEngine.XR.MagicLeap
 
         /// <summary>
         /// Sets a new coordinate frame. This is different from simply setting
-        /// the <see cref="coordinateFrame"/>. This method causes the reference point
+        /// the <see cref="coordinateFrame"/>. This method causes the anchor
         /// to be computed relative to a different coordinate frame entirely.
         /// </summary>
         /// <param name="cfuid">The UID of the new coordinate frame</param>
         /// <param name="coordinateFrame">The pose of the new coordinate frame</param>
         public void SetCoordinateFrame(MLCoordinateFrameUID cfuid, Pose coordinateFrame)
         {
-            // Compute the current reference point pose
-            var pose = referencePointPose;
+            // Compute the current anchor pose
+            var pose = anchorPose;
 
             // Set new coordinate frame
             this.cfuid = cfuid;
@@ -138,7 +138,7 @@ namespace UnityEngine.XR.MagicLeap
         void ComputeDelta(Pose pose)
         {
             var invRotation = Quaternion.Inverse(coordinateFrame.rotation);
-            m_ReferencePointFromCoordinateFrame = new Pose(
+            m_AnchorFromCoordinateFrame = new Pose(
                 invRotation * (pose.position - coordinateFrame.position),
                 invRotation * pose.rotation);
         }

@@ -11,16 +11,13 @@ namespace UnityEngine.XR.MagicLeap
     [Preserve]
     public sealed class MagicLeapSessionSubsystem : XRSessionSubsystem
     {
-        protected override IProvider CreateProvider()
-        {
-            return new Provider();
-        }
+        protected override Provider CreateProvider() => new MagicLeapProvider();
 
-        class Provider : IProvider
+        class MagicLeapProvider : Provider
         {
             PerceptionHandle m_PerceptionHandle;
 
-            public Provider()
+            public MagicLeapProvider()
             {
                 m_PerceptionHandle = PerceptionHandle.Acquire();
             }

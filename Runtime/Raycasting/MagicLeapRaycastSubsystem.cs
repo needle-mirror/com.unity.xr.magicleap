@@ -17,7 +17,7 @@ namespace UnityEngine.XR.MagicLeap
     [UsesLuminPrivilege("WorldReconstruction")]
     public sealed class MagicLeapRaycastSubsystem : XRRaycastSubsystem
     {
-        Provider m_Provider;
+        MagicLeapProvider m_Provider;
 
         /// <summary>
         /// Asynchronously casts a ray. Use the returned <see cref="AsyncRaycastResult"/> to check for completion and
@@ -30,13 +30,13 @@ namespace UnityEngine.XR.MagicLeap
             return m_Provider.AsyncRaycast(query);
         }
 
-        protected override IProvider CreateProvider()
+        protected override Provider CreateProvider()
         {
-            m_Provider = new Provider();
+            m_Provider = new MagicLeapProvider();
             return m_Provider;
         }
 
-        class Provider : IProvider
+        class MagicLeapProvider : Provider
         {
             ulong m_TrackerHandle = Native.InvalidHandle;
 
@@ -52,7 +52,7 @@ namespace UnityEngine.XR.MagicLeap
                 return new AsyncRaycastResult(m_TrackerHandle, query);
             }
 
-            public Provider()
+            public MagicLeapProvider()
             {
                 m_PerceptionHandle = PerceptionHandle.Acquire();
             }

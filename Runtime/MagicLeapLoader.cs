@@ -15,12 +15,52 @@ using UnityEditor.XR.Management;
 using UnityEngine.Rendering;
 #endif //UNITY_EDITOR
 
+#if UNITY_INPUT_SYSTEM
+using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.Layouts;
+using UnityEngine.InputSystem.XR;
+#endif //UNITY_INPUT_SYSTEM
+
 #if UNITY_2020_1_OR_NEWER
 using XRTextureLayout = UnityEngine.XR.XRDisplaySubsystem.TextureLayout;
 #endif // UNITY_2020_1_OR_NEWER
 
 namespace UnityEngine.XR.MagicLeap
 {
+#if UNITY_INPUT_SYSTEM
+#if UNITY_EDITOR
+    [InitializeOnLoad]
+#endif //UNITY_EDITOR
+    static class InputLayoutLoader
+    {
+#if UNITY_EDITOR
+        static InputLayoutLoader()
+        {
+            RegisterInputLayouts();
+        }
+#endif //UNITY_EDITOR
+
+        public static void RegisterInputLayouts()
+        {
+            UnityEngine.InputSystem.InputSystem.RegisterLayout<MagicLeapLightwear>(
+                matches: new InputDeviceMatcher()
+                    .WithInterface(XRUtilities.InterfaceMatchAnyVersion)
+                    .WithProduct("MagicLeap Lightwear")
+            );
+            UnityEngine.InputSystem.InputSystem.RegisterLayout<MagicLeapController>(
+                matches: new InputDeviceMatcher()
+                    .WithInterface(XRUtilities.InterfaceMatchAnyVersion)
+                    .WithProduct("MagicLeap Controller")
+            );
+            UnityEngine.InputSystem.InputSystem.RegisterLayout<MagicLeapHandDevice>(
+                matches: new InputDeviceMatcher()
+                    .WithInterface(XRUtilities.InterfaceMatchAnyVersion)
+                    .WithProduct("^(MagicLeapHand - )")
+            );
+        }
+    }
+#endif //UNITY_INPUT_SYSTEM
+
     public sealed class MagicLeapLoader : XRLoaderHelper
     {
         static class Graphics
@@ -82,6 +122,10 @@ namespace UnityEngine.XR.MagicLeap
             if (!MagicLeapRemoteManager.Initialize())
                 return false;
 #endif // UNITY_EDITOR
+
+#if UNITY_INPUT_SYSTEM
+            InputLayoutLoader.RegisterInputLayouts();
+#endif
             MagicLeapPrivileges.Initialize();
 
             ApplySettings();

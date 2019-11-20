@@ -38,11 +38,11 @@ namespace UnityEngine.XR.MagicLeap
             return m_Provider.GetAllBoundariesForPlane(trackableId);
         }
 
-        Provider m_Provider;
+        MagicLeapProvider m_Provider;
 
-        protected override IProvider CreateProvider()
+        protected override Provider CreateProvider()
         {
-            m_Provider = new Provider();
+            m_Provider = new MagicLeapProvider();
             return m_Provider;
         }
 
@@ -52,7 +52,7 @@ namespace UnityEngine.XR.MagicLeap
             return new TrackableId(planeId, planeTrackableIdSalt);
         }
 
-        class Provider : IProvider
+        class MagicLeapProvider : Provider
         {
             ulong m_PlanesTracker = Native.k_InvalidHandle;
 
@@ -76,7 +76,7 @@ namespace UnityEngine.XR.MagicLeap
             // switch to using the NativeHashMap (or NativeHashSet if it exists).
             static HashSet<TrackableId> s_CurrentSet = new HashSet<TrackableId>();
 
-            public Provider()
+            public MagicLeapProvider()
             {
                 m_PerceptionHandle = PerceptionHandle.Acquire();
             }
@@ -301,7 +301,7 @@ namespace UnityEngine.XR.MagicLeap
 
                 var query = new MLPlanesQuery
                 {
-                    flags = m_PlaneDetectionMode | MLPlanesQueryFlags.Polygons,
+                    flags = m_PlaneDetectionMode | MLPlanesQueryFlags.Polygons | MLPlanesQueryFlags.Semantic_All,
                     bounds_center = Vector3.zero,
                     bounds_rotation = Quaternion.identity,
                     bounds_extents = Vector3.zero,
@@ -332,6 +332,7 @@ namespace UnityEngine.XR.MagicLeap
                 supportsVerticalPlaneDetection = true,
                 supportsArbitraryPlaneDetection = true,
                 supportsBoundaryVertices = true,
+                supportsClassification = true
             });
 #endif
         }

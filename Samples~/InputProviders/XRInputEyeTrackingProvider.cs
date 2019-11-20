@@ -6,7 +6,9 @@ using UnityEngine.Experimental.XR.Interaction;
 using UnityEngine.SpatialTracking;
 #endif
 using UnityEngine.XR;
+#if UNITY_LUMIN
 using UnityEngine.XR.MagicLeap;
+#endif
 
 namespace UnityEngine.XR.MagicLeap.Samples
 {
@@ -21,6 +23,7 @@ namespace UnityEngine.XR.MagicLeap.Samples
         }
 
         public TrackingInformation trackingInformation;
+#if UNITY_LUMIN
 #if LIH_2_OR_NEWER
         public override PoseDataFlags GetPoseFromProvider(out Pose output)
         {
@@ -85,7 +88,7 @@ namespace UnityEngine.XR.MagicLeap.Samples
 
             return result;
         }
-#else
+#else // LIH_2_OR_NEWER
         public override bool TryGetPoseFromProvider(out Pose output)
         {
             output = default(Pose);
@@ -165,5 +168,20 @@ namespace UnityEngine.XR.MagicLeap.Samples
                 }
             }
         }
+#else// UNITY_LUMIN
+#if LIH_2_OR_NEWER
+        public override PoseDataFlags GetPoseFromProvider(out Pose output)
+        {
+            output = new Pose();
+            return (PoseDataFlags)0;
+        }
+#else
+        public override bool TryGetPoseFromProvider(out Pose output)
+        {
+            output = new Pose();
+            return false;
+        }
+#endif
+#endif// UNITY_LUMIN
     }
 }

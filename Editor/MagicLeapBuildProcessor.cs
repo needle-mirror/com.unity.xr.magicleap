@@ -18,7 +18,7 @@ namespace UnityEditor.XR.MagicLeap
                 return;
 
             var oldSettings = from s in preloadedAssets
-                where s.GetType() == typeof(MagicLeapSettings)
+                where (s != null) && (s.GetType() == typeof(MagicLeapSettings))
                 select s;
 
             if (oldSettings.Any())

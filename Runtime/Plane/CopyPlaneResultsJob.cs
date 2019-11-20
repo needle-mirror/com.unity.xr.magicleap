@@ -44,6 +44,26 @@ namespace UnityEngine.XR.MagicLeap.PlaneJobs
             }
         }
 
+        PlaneClassification ToUnityClassification(MLPlanesQueryFlags flags)
+        {
+            if ((flags & MLPlanesQueryFlags.Semantic_Ceiling) != 0)
+            {
+                return PlaneClassification.Ceiling;
+            }
+            else if ((flags & MLPlanesQueryFlags.Semantic_Floor) != 0)
+            {
+                return PlaneClassification.Floor;
+            }
+            else if ((flags & MLPlanesQueryFlags.Semantic_Wall) != 0)
+            {
+                return PlaneClassification.Wall;
+            }
+            else
+            {
+                return PlaneClassification.None;
+            }
+        }
+
         public void Execute(int index)
         {
             var plane = planesIn[index];
@@ -61,7 +81,8 @@ namespace UnityEngine.XR.MagicLeap.PlaneJobs
                 new Vector2(plane.width, plane.height), // size
                 ToUnityAlignment(plane.flags, rotation), // alignment
                 TrackingState.Tracking, // tracking state
-                IntPtr.Zero // native pointer
+                IntPtr.Zero, // native pointer
+                ToUnityClassification(plane.flags) // classification
             );
         }
     }

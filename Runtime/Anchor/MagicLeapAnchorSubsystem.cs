@@ -14,14 +14,14 @@ namespace UnityEngine.XR.MagicLeap
     using MLLog = UnityEngine.XR.MagicLeap.MagicLeapLogger;
 
     /// <summary>
-    /// The Magic Leap implementation of the <c>XRReferencePointSubsystem</c>. Do not create this directly.
-    /// Use <c>XRReferencePointSubsystemDescriptor.Create()</c> instead.
+    /// The Magic Leap implementation of the <c>XRAnchorSubsystem</c>. Do not create this directly.
+    /// Use <c>XRAnchorSubsystemDescriptor.Create()</c> instead.
     /// </summary>
     [Preserve]
     [UsesLuminPrivilege("PwFoundObjRead")]
-    public sealed class MagicLeapReferencePointSubsystem : XRReferencePointSubsystem
+    public sealed class MagicLeapAnchorSubsystem : XRAnchorSubsystem
     {
-        const string kLogTag = "Unity-ReferencePoints";
+        const string kLogTag = "Unity-Anchors";
 
         static void DebugLog(string msg)
         {
@@ -73,12 +73,9 @@ namespace UnityEngine.XR.MagicLeap
             return new Quaternion(rotation.x, rotation.y, -rotation.z, -rotation.w);
         }
 
-        protected override IProvider CreateProvider()
-        {
-            return new Provider();
-        }
+        protected override Provider CreateProvider() => new MagicLeapProvider();
 
-        class Provider : IProvider
+        class MagicLeapProvider : Provider
         {
             ulong m_TrackerHandle = Native.InvalidHandle;
 
@@ -90,7 +87,7 @@ namespace UnityEngine.XR.MagicLeap
             const uint k_MLPivilegeID_PwFoundObjRead = 201;
 
             /// <summary>
-            /// The squared amount by which a coordinate frame has to move for its reference points to be reported as "updated"
+            /// The squared amount by which a coordinate frame has to move for its anchor to be reported as "updated"
             /// </summary>
             const float k_CoordinateFramePositionEpsilonSquared = .0001f;
 
@@ -106,7 +103,7 @@ namespace UnityEngine.XR.MagicLeap
                 }
             }
 
-            public Provider()
+            public MagicLeapProvider()
             {
                 m_PerceptionHandle = PerceptionHandle.Acquire();
                 RequestPrivilegesIfNecessary();
@@ -116,7 +113,7 @@ namespace UnityEngine.XR.MagicLeap
             {
                 if (!RequestPrivilegesIfNecessary())
                 {
-                    LogWarning($"Could not start the reference point subsystem because privileges were denied.");
+                    LogWarning($"Could not start the anchor subsystem because privileges were denied.");
                     return;
                 }
 
@@ -124,7 +121,7 @@ namespace UnityEngine.XR.MagicLeap
                 if (result != MLApiResult.Ok)
                 {
                     m_TrackerHandle = Native.InvalidHandle;
-                    LogWarning($"Could not create a Magic Leap Persistent Coordinate Frame Tracker because '{result}'. Reference points are unavailable.");
+                    LogWarning($"Could not create a Magic Leap Persistent Coordinate Frame Tracker because '{result}'. Anchors are unavailable.");
                 }
             }
 
@@ -149,14 +146,14 @@ namespace UnityEngine.XR.MagicLeap
             }
 
             /// <summary>
-            /// Checks to see if there is a better PCF for a reference point and updates the
+            /// Checks to see if there is a better PCF for a anchor and updates the
             /// <paramref name="referenceFrame"/> if necessary.
             /// </summary>
             /// <returns>true if the reference frame was updated</returns>
             bool UpdateReferenceFrame(ref ReferenceFrame referenceFrame)
             {
                 // See if there is a better coordinate frame we could be using
-                var mlTarget = FlipHandedness(referenceFrame.referencePointPose.position);
+                var mlTarget = FlipHandedness(referenceFrame.anchorPose.position);
                 if (Native.GetClosest(m_TrackerHandle, ref mlTarget, out MLCoordinateFrameUID cfuid) != MLApiResult.Ok)
                 {
                     // No coordinate frame could be found, so set tracking state to None
@@ -203,11 +200,11 @@ namespace UnityEngine.XR.MagicLeap
             }
 
             /// <summary>
-            /// Populates <paramref name="added"/> with all the reference points
-            /// which have been added since the last call to <see cref="GetChanges(XRReferencePoint, Allocator)"/>.
+            /// Populates <paramref name="added"/> with all the anchors
+            /// which have been added since the last call to <see cref="GetChanges(XRAnchor, Allocator)"/>.
             /// </summary>
             /// <param name="added">An already created array to populate. Its length must match <see cref="m_PendingAdds"/>.</param>
-            void GetAdded(NativeArray<XRReferencePoint> added)
+            void GetAdded(NativeArray<XRAnchor> added)
             {
                 if (!added.IsCreated)
                     throw new ArgumentException("Array has not been created.", nameof(added));
@@ -221,7 +218,7 @@ namespace UnityEngine.XR.MagicLeap
                     UpdateReferenceFrame(ref referenceFrame);
 
                     // Store it in the list of changes for this frame.
-                    added[i] = referenceFrame.referencePoint;
+                    added[i] = referenceFrame.anchor;
 
                     // Add it to persistent storage for subsequent frames.
                     m_ReferenceFrames.Add(referenceFrame);
@@ -231,20 +228,20 @@ namespace UnityEngine.XR.MagicLeap
             }
 
             /// <summary>
-            /// Returns an array containing all the updated reference points since the last
-            /// call to <see cref="GetChanges(XRReferencePoint, Allocator)"/>.
+            /// Returns an array containing all the updated anchors since the last
+            /// call to <see cref="GetChanges(XRAnchor, Allocator)"/>.
             /// This method considers all <see cref="m_ReferenceFrames"/>, so it should
-            /// be called before <see cref="GetAdded(NativeArray<XRReferencePoint>)"/> since
+            /// be called before <see cref="GetAdded(NativeArray<XRAnchor>)"/> since
             /// that method will add elements to <see cref="m_ReferenceFrames"/>.
             /// </summary>
             /// <param name="allocator">The allocator to use for the returned array.</param>
-            /// <param name="length">The number of updated reference points.</param>
-            /// <returns>An array of updated reference points. Note the array's length
-            /// will always be the total number of reference points. Use <paramref name="length"/>
-            /// for the true number of updated reference points.</returns>
-            NativeArray<XRReferencePoint> GetUpdated(Allocator allocator, out int length)
+            /// <param name="length">The number of updated anchors.</param>
+            /// <returns>An array of updated anchors. Note the array's length
+            /// will always be the total number of anchors. Use <paramref name="length"/>
+            /// for the true number of updated anchors.</returns>
+            NativeArray<XRAnchor> GetUpdated(Allocator allocator, out int length)
             {
-                var updated = new NativeArray<XRReferencePoint>(m_ReferenceFrames.Count, allocator);
+                var updated = new NativeArray<XRAnchor>(m_ReferenceFrames.Count, allocator);
                 length = 0;
 
                 for (int i = 0; i < m_ReferenceFrames.Count; ++i)
@@ -254,7 +251,7 @@ namespace UnityEngine.XR.MagicLeap
                     {
                         // Update the version in our persistent storage container
                         m_ReferenceFrames[i] = referenceFrame;
-                        updated[length++] = referenceFrame.referencePoint;
+                        updated[length++] = referenceFrame.anchor;
                     }
                 }
 
@@ -262,8 +259,8 @@ namespace UnityEngine.XR.MagicLeap
             }
 
             /// <summary>
-            /// Populates <paramref name="removed"/> with the ids of the reference points
-            /// removed since the last call to <see cref="GetChanges(XRReferencePoint, Allocator)"/>.
+            /// Populates <paramref name="removed"/> with the ids of the anchors
+            /// removed since the last call to <see cref="GetChanges(XRAnchor, Allocator)"/>.
             /// </summary>
             /// <param name="removed">An already created array to populate. Its length must match <see cref="m_PendingRemoves"/>.</param>
             void GetRemoved(NativeArray<TrackableId> removed)
@@ -282,31 +279,31 @@ namespace UnityEngine.XR.MagicLeap
                 m_PendingRemoves.Clear();
             }
 
-            public override unsafe TrackableChanges<XRReferencePoint> GetChanges(
-                XRReferencePoint defaultReferencePoint,
+            public override unsafe TrackableChanges<XRAnchor> GetChanges(
+                XRAnchor defaultAnchor,
                 Allocator allocator)
             {
                 using (var updated = GetUpdated(Allocator.Temp, out int updatedCount))
                 {
-                    var changes = new TrackableChanges<XRReferencePoint>(
+                    var changes = new TrackableChanges<XRAnchor>(
                         m_PendingAdds.Count,
                         updatedCount,
                         m_PendingRemoves.Count,
                         allocator);
 
                     GetAdded(changes.added);
-                    NativeArray<XRReferencePoint>.Copy(updated, changes.updated, updatedCount);
+                    NativeArray<XRAnchor>.Copy(updated, changes.updated, updatedCount);
                     GetRemoved(changes.removed);
 
                     return changes;
                 }
             }
 
-            public override unsafe bool TryAddReferencePoint(Pose pose, out XRReferencePoint referencePoint)
+            public override unsafe bool TryAddAnchor(Pose pose, out XRAnchor anchor)
             {
                 if (m_TrackerHandle == Native.InvalidHandle)
                 {
-                    referencePoint = default;
+                    anchor = default;
                     return false;
                 }
 
@@ -317,16 +314,16 @@ namespace UnityEngine.XR.MagicLeap
                 var getClosestResult = Native.GetClosest(m_TrackerHandle, ref mlTarget, out MLCoordinateFrameUID cfuid);
                 if (getClosestResult != MLApiResult.Ok)
                 {
-                    LogWarning($"Could not create reference point because MLPersistentCoordinateFrameGetClosest returned {getClosestResult}.");
-                    referencePoint = default;
+                    LogWarning($"Could not create anchor because MLPersistentCoordinateFrameGetClosest returned {getClosestResult}.");
+                    anchor = default;
                     return false;
                 }
 
                 // Get the pose of the PCF
                 if (!Native.TryGetPose(cfuid, out Pose closetCoordinateFrame))
                 {
-                    LogWarning($"Could not create reference point because no pose could be determined for coordinate frame {cfuid}.");
-                    referencePoint = default;
+                    LogWarning($"Could not create anchor because no pose could be determined for coordinate frame {cfuid}.");
+                    anchor = default;
                     return false;
                 }
 
@@ -335,11 +332,11 @@ namespace UnityEngine.XR.MagicLeap
                     closetCoordinateFrame = closetCoordinateFrame,
                     cfuid = cfuid,
                     trackingState = TrackingState.Tracking,
-                    initialReferencePointPose = pose
+                    initialAnchorPose = pose
                 });
 
                 m_PendingAdds.Add(referenceFrame);
-                referencePoint = referenceFrame.referencePoint;
+                anchor = referenceFrame.anchor;
 
                 return true;
             }
@@ -355,7 +352,7 @@ namespace UnityEngine.XR.MagicLeap
             /// <returns><c>true</c> if found, <c>false</c> otherwise.</returns>
             bool Remove(TrackableId trackableId, List<ReferenceFrame> referenceFrames)
             {
-                // Removal is uncommon and we don't expect that many reference points,
+                // Removal is uncommon and we don't expect that many anchors,
                 // so a linear search should do.
                 for (int i = 0; i < referenceFrames.Count; ++i)
                 {
@@ -370,7 +367,7 @@ namespace UnityEngine.XR.MagicLeap
                 return false;
             }
 
-            public override bool TryRemoveReferencePoint(TrackableId trackableId)
+            public override bool TryRemoveAnchor(TrackableId trackableId)
             {
                 if (Remove(trackableId, m_PendingAdds))
                 {
@@ -387,7 +384,7 @@ namespace UnityEngine.XR.MagicLeap
                 }
                 else
                 {
-                    // We don't know about this reference point
+                    // We don't know about this anchor
                     return false;
                 }
             }
@@ -401,10 +398,10 @@ namespace UnityEngine.XR.MagicLeap
         static void RegisterDescriptor()
         {
 #if PLATFORM_LUMIN
-            XRReferencePointSubsystemDescriptor.Create(new XRReferencePointSubsystemDescriptor.Cinfo
+            XRAnchorSubsystemDescriptor.Create(new XRAnchorSubsystemDescriptor.Cinfo
             {
-                id = "MagicLeap-ReferencePoint",
-                subsystemImplementationType = typeof(MagicLeapReferencePointSubsystem),
+                id = "MagicLeap-Anchor",
+                subsystemImplementationType = typeof(MagicLeapAnchorSubsystem),
                 supportsTrackableAttachments = false
             });
 #endif

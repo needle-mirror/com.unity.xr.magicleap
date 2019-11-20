@@ -1,23 +1,20 @@
 # Changelog
 
-## [4.0.6-preview.1] - 2019-11-22
+## [5.0.0] - 2019-11-20
+- Renamed ReferencePointSubsystem to AnchorSubsystem
+- Added support for plane classification
+- Bump to 4.1.0 and update package dependencies
+- Add custom MagicLeap layouts for the new input system
+- Update repo to work as built-in test project
+- Update NPM ignore list
 - Fix some some bugs around the Display subsystem reinitializing
-- Re-add a warning message when using ML Remote with an invalid graphics API
-- Bump XR Management to 3.0.4
-- Fix some issues with the MagicLeap Manifest Editor UI
+- Re-add a warning message on ML Remote when targeting an invalid graphics API
+- Rework the ML manifest editor to be stabler and easier to use
 
-## [4.0.5] - 2019-09-27
-- Update to 2019.3 Verified Release
-- Update NPM ignore list to accomdate new repo layout
-
-## [4.0.4] - 2019-09-27
-- Update to 2019.3 Verified Release
-
-## [4.0.4-preview.1] - 2019-09-27
+## [4.0.4-preview.1] - 2019-09-03
 - Fix an issue on OSX that caused ML Remote to intermittenly fail to initialize
 - Improve the Input Provider Samples with some callbacks for handling button presses
 - Add some additional checks around meshing shutdown
-- Update dependencies on AR Subsystems, Interaction Subsystems, and XR Management
 
 ## [4.0.3] - 2019-08-21
 - Update to 2019.3 Verified Release
