@@ -21,7 +21,7 @@ namespace UnityEditor.XR.MagicLeap
         private int m_MinimumAPILevel;
 
         [SerializeField]
-        private Privilege[] m_Privileges;
+        private PrivilegeGroup[] m_PrivilegeGroups;
 
         public int minimumAPILevel
         {
@@ -40,18 +40,20 @@ namespace UnityEditor.XR.MagicLeap
         {
             get
             {
-                return m_Privileges.Where(p => p.enabled).Select(p => p.name);
+                return privileges.Where(p => p.Enabled).Select(p => p.Name);
             }
         }
+
+        IEnumerable<Privilege> privileges => m_PrivilegeGroups.SelectMany(pg => pg.Privileges);
 
         public bool TryGetPrivilegeRequested(string name, out bool isRequested)
         {
             isRequested = false;
-            foreach (var priv in m_Privileges)
+            foreach (var priv in privileges)
             {
-                if (priv.name == name)
+                if (priv.Name == name)
                 {
-                    isRequested = priv.enabled;
+                    isRequested = priv.Enabled;
                     return true;
                 }
             }
@@ -75,11 +77,34 @@ namespace UnityEditor.XR.MagicLeap
             {
                 settings = ScriptableObject.CreateInstance<MagicLeapManifestSettings>();
                 settings.m_MinimumAPILevel = 4;
-                settings.m_Privileges = new Privilege[1] { new Privilege { name = "LowLatencyLightwear", enabled = true } };
+                settings.RebuildPrivilegeGroups(PrivilegeParser.ParsePrivilegesFromHeader(Path.Combine(SDKUtility.sdkPath, PrivilegeParser.kPrivilegeHeaderPath)));
+
+                //settings.m_Privileges = new Privilege[1] { new Privilege { Name = "LowLatencyLightwear", Enabled = true } };
                 AssetDatabase.CreateAsset(settings, path);
                 AssetDatabase.SaveAssets();
             }
             return settings;
+        }
+
+        internal void RebuildPrivilegeGroups(IEnumerable<PrivilegeDescriptor> privilegeDescriptors)
+        {
+            var groups = new Dictionary<string, List<Privilege>>();
+            foreach (var pd in privilegeDescriptors)
+            {
+                if (pd.category == Privilege.Category.Invalid) continue; // ignore invalid privileges..
+                if (pd.category == Privilege.Category.Trusted) continue; // ignore trusted privileges..
+                var name = pd.category.ToString();
+                if (!groups.ContainsKey(name))
+                    groups[name] = new List<Privilege>();
+                groups[name].Add(new Privilege { ApiLevel = pd.apiLevel.HasValue ? (uint)pd.apiLevel.Value : 0, Name = pd.name, Enabled = false });
+            }
+
+            var pg_list = new List<PrivilegeGroup>();
+            foreach (var pg in groups)
+            {
+                pg_list.Add(new PrivilegeGroup { Name = pg.Key, Privileges = pg.Value.ToArray() });
+            }
+            m_PrivilegeGroups = pg_list.ToArray();
         }
 
         internal SerializedObject ToSerializedObject()
@@ -91,7 +116,6 @@ namespace UnityEditor.XR.MagicLeap
     // Register a SettingsProvider using UIElements for the drawing framework:
     static class MagicLeapManifestSettingsRegister
     {
-        const string AssetRoot = "Packages/com.unity.xr.magicleap/Editor/Manifest";
         [SettingsProvider]
         public static SettingsProvider CreateSettingsProvider()
         {
@@ -100,13 +124,13 @@ namespace UnityEditor.XR.MagicLeap
             var provider = new SettingsProvider("MagicLeap/", SettingsScope.Project)
             {
                 label = "Manifest Settings",
-                // activateHandler is called when the user clicks on the Settings item in the Settings window.
-                activateHandler = (searchContext, rootElement) =>
+                guiHandler = (searchContext) =>
                 {
-                    rootElement.Add(new ManifestEditor { settingsAsset = MagicLeapManifestSettings.GetOrCreateSettings() });
+                    var settings = MagicLeapManifestSettings.GetOrCreateSettings();
+                    ManifestEditorGUI.RenderManifest(settings);
                 },
                 // Populate the search keywords to enable smart search filtering and label highlighting:
-                keywords = new HashSet<string>(new[] { "Number", "Some String" })
+                keywords = new HashSet<string>(new[] { "MagicLeap", "Manifest" })
             };
 
             return provider;

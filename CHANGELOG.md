@@ -1,5 +1,11 @@
 # Changelog
 
+## [4.0.6-preview.1] - 2019-11-22
+- Fix some some bugs around the Display subsystem reinitializing
+- Re-add a warning message when using ML Remote with an invalid graphics API
+- Bump XR Management to 3.0.4
+- Fix some issues with the MagicLeap Manifest Editor UI
+
 ## [4.0.5] - 2019-09-27
 - Update to 2019.3 Verified Release
 - Update NPM ignore list to accomdate new repo layout
@@ -26,7 +32,7 @@
 - Update the Manifest editor to work with new trunk changes
 - Fix Issue 1174014: Play in Editor in PC mode with Magic Leap loader and AR gestures will crash Unity Editor
 - Add an explicit binary check when looking to launch ML Remote
-- Allow for loading of gesture subsystem via XR Management 
+- Allow for loading of gesture subsystem via XR Management
 
 ## [4.0.2] - 2019-08-01
 - Update to 2019.3 Verified Release

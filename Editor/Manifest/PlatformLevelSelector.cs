@@ -9,32 +9,14 @@ using UnityEngine.UIElements;
 
 namespace UnityEditor.XR.MagicLeap
 {
-    public class PlatformLevelSelector : PopupField<int>
+    internal static class PlatformLevelSelector
     {
-        public new class UxmlFactory : UxmlFactory<PlatformLevelSelector, UxmlTraits> {}
-
-        public new class UxmlTraits : PopupField<int>.UxmlTraits
+        public static int SelectorGUI(int value)
         {
-            UxmlIntAttributeDescription m_Value = new UxmlIntAttributeDescription { name = "value" };
-
-            public override void Init(VisualElement ve, IUxmlAttributes bag, CreationContext cc)
-            {
-                base.Init(ve, bag, cc);
-
-                var lf = (PlatformLevelSelector)ve;
-                int val = 0;
-                if (!m_Value.TryGetValueFromBag(bag, cc, ref val))
-                    val = GetChoices().Last();
-                lf.SetValueWithoutNotify(val);
-            }
-        }
-
-        public PlatformLevelSelector() 
-            : this(null) { }
-
-        public PlatformLevelSelector(string label)
-            : base(label, GetChoices().ToList(), 0)
-        {
+            return EditorGUILayout.IntPopup("Minimum API Level",
+                EnsureValidValue(value),
+                GetChoices().Select(c => $"API Level {c}").ToArray(),
+                GetChoices().ToArray());
         }
 
         public static IEnumerable<int> GetChoices()

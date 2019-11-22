@@ -12,7 +12,12 @@ using UnityEngine.XR.Management;
 using UnityEditor;
 using UnityEditor.XR.MagicLeap.Remote;
 using UnityEditor.XR.Management;
-#endif
+using UnityEngine.Rendering;
+#endif //UNITY_EDITOR
+
+#if UNITY_2020_1_OR_NEWER
+using XRTextureLayout = UnityEngine.XR.XRDisplaySubsystem.TextureLayout;
+#endif // UNITY_2020_1_OR_NEWER
 
 namespace UnityEngine.XR.MagicLeap
 {
@@ -64,6 +69,16 @@ namespace UnityEngine.XR.MagicLeap
         public override bool Initialize()
         {
 #if UNITY_EDITOR
+            if (SystemInfo.graphicsDeviceType != GraphicsDeviceType.OpenGLCore)
+            {
+                Debug.LogWarning(
+                    "To use Magic Leap Zero Iteration mode, the editor must be running under OpenGL.\n" +
+                    " 1) Go to Edit -> Project Settings -> Player, and select the first tab there (Standalone Settings)...\n" +
+                    " 2) Open the 'Other Settings' section, and uncheck 'Auto Graphics API for Windows' An API list will appear.\n" +
+                    " 3) Use the + button to add 'OpenGLCore' to the API list.\n" +
+                    " 4) Drag it to the top of the list. The editor will now switch to using OpenGL.\n");
+            }
+
             if (!MagicLeapRemoteManager.Initialize())
                 return false;
 #endif // UNITY_EDITOR
@@ -105,10 +120,17 @@ namespace UnityEngine.XR.MagicLeap
             if (!isLegacyDeviceActive)
             {
                 var settings = MagicLeapSettings.currentSettings;
-                if (settings != null)
-                {
-                    displaySubsystem.singlePassRenderingDisabled = settings.forceMultipass;
-                }
+#if UNITY_2020_1_OR_NEWER
+                if (settings != null && settings.forceMultipass)
+                    displaySubsystem.textureLayout = XRTextureLayout.SeparateTexture2Ds;
+                else
+                    displaySubsystem.textureLayout = XRTextureLayout.Texture2DArray;
+#else
+                if (settings != null && settings.forceMultipass)
+                    displaySubsystem.singlePassRenderingDisabled = true;
+                else
+                    displaySubsystem.singlePassRenderingDisabled = false;
+#endif // UNITY_2020_1_OR_NEWER
                 StartSubsystem<XRDisplaySubsystem>();
                 m_DisplaySubsystemRunning = true;
             }
