@@ -1,5 +1,8 @@
 # Changelog
 
+## [4.0.6-preview.2] - 2019-12-13
+- Correctly report whether or not we should render the gameview
+
 ## [4.0.6-preview.1] - 2019-11-22
 - Fix some some bugs around the Display subsystem reinitializing
 - Re-add a warning message when using ML Remote with an invalid graphics API
