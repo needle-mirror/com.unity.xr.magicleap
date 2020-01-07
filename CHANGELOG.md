@@ -1,5 +1,13 @@
 # Changelog
 
+## [4.0.6-preview.4] - 2020-01-07
+- Fix an issue causing CI not to trigger automatically
+- Properly handle a couple edge cases where the Lumin SDK is missing
+
+## [4.0.6-preview.3] - 2020-01-07
+- Bump XR Management dependency to 3.0.5
+- Remove old test assets that were conflicting with the Windows MR XR Plugin
+
 ## [4.0.6-preview.2] - 2019-12-13
 - Correctly report whether or not we should render the gameview
 

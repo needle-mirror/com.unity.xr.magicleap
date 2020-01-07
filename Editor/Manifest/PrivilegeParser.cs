@@ -45,7 +45,7 @@ namespace UnityEditor.XR.MagicLeap
 
         public static int ParsePlatformLevelFromHeader(string header_path)
         {
-            if (header_path == null && !File.Exists(header_path))
+            if (header_path == null || !File.Exists(header_path))
                 throw new ArgumentException(string.Format("File '{0}' not found", header_path));
             using (var reader = new StreamReader(header_path))
             {
@@ -58,7 +58,7 @@ namespace UnityEditor.XR.MagicLeap
 
         public static IEnumerable<PrivilegeDescriptor> ParsePrivilegesFromHeader(string header_path)
         {
-            if (header_path == null && !File.Exists(header_path))
+            if (header_path == null || !File.Exists(header_path))
                 throw new ArgumentException(string.Format("File '{0}' not found", header_path));
             using (var reader = new StreamReader(header_path))
             {

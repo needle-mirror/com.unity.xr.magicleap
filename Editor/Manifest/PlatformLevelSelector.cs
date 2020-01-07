@@ -3,9 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEditor;
-using UnityEditor.UIElements;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 namespace UnityEditor.XR.MagicLeap
 {
@@ -13,10 +11,17 @@ namespace UnityEditor.XR.MagicLeap
     {
         public static int SelectorGUI(int value)
         {
-            return EditorGUILayout.IntPopup("Minimum API Level",
-                EnsureValidValue(value),
-                GetChoices().Select(c => $"API Level {c}").ToArray(),
-                GetChoices().ToArray());
+            if (SDKUtility.sdkAvailable)
+                return EditorGUILayout.IntPopup("Minimum API Level",
+                    EnsureValidValue(value),
+                    GetChoices().Select(c => $"API Level {c}").ToArray(),
+                    GetChoices().ToArray());
+            else
+                using (new EditorGUI.DisabledScope(true))
+                    return EditorGUILayout.IntPopup("Minimum API Level",
+                        value,
+                        new string[] { $"API Level {value}" },
+                        new int[] { value });
         }
 
         public static IEnumerable<int> GetChoices()
