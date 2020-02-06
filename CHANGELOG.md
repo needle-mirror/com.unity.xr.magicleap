@@ -1,5 +1,10 @@
 # Changelog
 
+## [4.0.6-preview.5] - 2020-02-06
+- Fix an issue with a malformed meta file causing an instability on CI
+- Update LICENSE.md to year 2020
+- Fixed Hand Tracking so that the underlying tracker doesn't need to be recreated on configuration changes
+
 ## [4.0.6-preview.4] - 2020-01-07
 - Fix an issue causing CI not to trigger automatically
 - Properly handle a couple edge cases where the Lumin SDK is missing
