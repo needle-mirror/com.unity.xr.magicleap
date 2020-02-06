@@ -9,6 +9,11 @@ namespace UnityEditor.XR.MagicLeap
 {
     internal static class ManifestEditorGUI
     {
+        internal static class Messages
+        {
+            internal const string kCannotLocateSDK = "Cannot find the Lumin SDK. Please specify the path to the Lumin SDK in the editor preferences";
+            internal const string kShouldSynchronize = "Click the 'Synchronize' button below to update the privileges list against the Lumin SDK specified in the editor preferences. If you've recently upgraded the Lumin SDK, you'll need to do this to get access to newer privileges";
+        }
         class RenderState
         {
             private Lazy<Dictionary<string, bool>> _GroupFoldoutExpanded = new Lazy<Dictionary<string, bool>>(() => new Dictionary<string, bool>());
@@ -23,7 +28,7 @@ namespace UnityEditor.XR.MagicLeap
             var state = (RenderState)GUIUtility.GetStateObject(typeof(RenderState), id);
             var missingSdk = !SDKUtility.sdkAvailable;
             if (missingSdk)
-                EditorGUILayout.HelpBox("Cannot find the Lumin SDK. Please specify the path to the Lumin SDK in the editor preferences", MessageType.Error, true);
+                EditorGUILayout.HelpBox(Messages.kCannotLocateSDK, MessageType.Error, true);
             using (new EditorGUI.DisabledScope(missingSdk))
             {
                 var apiLevel = serializedObject.FindProperty("m_MinimumAPILevel");
@@ -57,7 +62,7 @@ namespace UnityEditor.XR.MagicLeap
                 }
                 serializedObject.ApplyModifiedProperties();
                 GUILayout.FlexibleSpace();
-                EditorGUILayout.HelpBox("Click the 'Synchronize' button below to update the privileges list against the Lumin SDK specified in the editor preferences. If you've recently upgraded the Lumin SDK, you'll need to do this to get access to newer privileges", MessageType.Info, true);
+                EditorGUILayout.HelpBox(Messages.kShouldSynchronize, MessageType.Info, true);
                 var sdkUpdateRequested = GUILayout.Button("Synchronize");
                 if (sdkUpdateRequested)
                 {

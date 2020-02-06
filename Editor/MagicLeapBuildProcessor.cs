@@ -44,6 +44,8 @@ namespace UnityEditor.XR.MagicLeap
             if (settings == null)
                 return;
 
+            MagicLeapImageDatabaseBuildProcessor.BuildImageTrackingAssets();
+
             UnityEngine.Object[] preloadedAssets = PlayerSettings.GetPreloadedAssets();
 
             if (!preloadedAssets.Contains(settings))

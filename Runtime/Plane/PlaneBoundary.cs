@@ -135,6 +135,10 @@ namespace UnityEngine.XR.MagicLeap
                 m_Boundary.holes,
                 holeCount,
                 Allocator.None);
+#if ENABLE_UNITY_COLLECTIONS_CHECK
+            var safetyHandle = AtomicSafetyHandle.Create();
+            NativeArrayUnsafeUtility.SetAtomicSafetyHandle(ref holes, safetyHandle);
+#endif
 
             TransformMLPolygon(holes[index], m_Pose, allocator, ref polygonOut);
         }
@@ -203,6 +207,11 @@ namespace UnityEngine.XR.MagicLeap
                 mlPolygon.vertices,
                 (int)mlPolygon.vertices_count,
                 Allocator.None);
+
+#if ENABLE_UNITY_COLLECTIONS_CHECK
+            var safetyHandle = AtomicSafetyHandle.Create();
+            NativeArrayUnsafeUtility.SetAtomicSafetyHandle(ref mlVertices, safetyHandle);
+#endif
 
             CreateOrResizeNativeArrayIfNecessary(mlVertices.Length, allocator, ref polygonOut);
 

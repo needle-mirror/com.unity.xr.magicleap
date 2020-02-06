@@ -148,6 +148,11 @@ namespace UnityEngine.XR.MagicLeap
                     (int)m_BoundariesList.plane_boundaries_count,
                     Allocator.None);
 
+#if ENABLE_UNITY_COLLECTIONS_CHECK
+                var safetyHandle = AtomicSafetyHandle.Create();
+                NativeArrayUnsafeUtility.SetAtomicSafetyHandle(ref planeBoundaries, safetyHandle);
+#endif
+
                 // Find the plane boundaries with the given trackable id
                 foreach (var planeBoundaries in planeBoundariesArray)
                 {

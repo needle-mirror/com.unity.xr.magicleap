@@ -4,9 +4,7 @@ using System.IO;
 using System.Linq;
 
 using UnityEditor;
-using UnityEditor.UIElements;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 namespace UnityEditor.XR.MagicLeap
 {
@@ -77,7 +75,10 @@ namespace UnityEditor.XR.MagicLeap
             {
                 settings = ScriptableObject.CreateInstance<MagicLeapManifestSettings>();
                 settings.m_MinimumAPILevel = 4;
-                settings.RebuildPrivilegeGroups(PrivilegeParser.ParsePrivilegesFromHeader(Path.Combine(SDKUtility.sdkPath, PrivilegeParser.kPrivilegeHeaderPath)));
+                if (SDKUtility.sdkAvailable)
+                    settings.RebuildPrivilegeGroups(PrivilegeParser.ParsePrivilegesFromHeader(Path.Combine(SDKUtility.sdkPath, PrivilegeParser.kPrivilegeHeaderPath)));
+                else
+                    Debug.LogWarning(ManifestEditorGUI.Messages.kCannotLocateSDK);
 
                 //settings.m_Privileges = new Privilege[1] { new Privilege { Name = "LowLatencyLightwear", Enabled = true } };
                 AssetDatabase.CreateAsset(settings, path);

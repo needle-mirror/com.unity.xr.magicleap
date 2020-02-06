@@ -202,6 +202,11 @@ namespace UnityEngine.XR.MagicLeap
                 (int)planeBoundaries.boundaries_count,
                 Allocator.None);
 
+#if ENABLE_UNITY_COLLECTIONS_CHECK
+            var safetyHandle = AtomicSafetyHandle.Create();
+            NativeArrayUnsafeUtility.SetAtomicSafetyHandle(ref m_Boundaries, safetyHandle);
+#endif
+
             m_Pose = planePose;
         }
 

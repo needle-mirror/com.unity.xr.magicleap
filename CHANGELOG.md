@@ -1,5 +1,17 @@
 # Changelog
 
+## [5.0.1-preview.1] - 2020-02-06
+- Add Image Tracking support for AR Foundation
+- Fix an issue preventing the gameview from showing when using ML Remote
+- Remove old test assets that were conflicting with the Windows MR XR Plugin (Fixes FB #1200806)
+- Properly handle a couple edge cases where the Lumin SDK is missing (Fixes FB #1201092)
+- Fix a case where artifact dependencies were not properly available
+- Fix Hand Tracking to no longer require a tracker restart on configuration changes
+- Fix an issue with a meta file causing an issue with CI
+
+### Fixes
+- Fixed issue where using `NativeArrayUnsafeUtility.ConvertExistingDataToNativeArray` resulted in an error while running in the Editor.
+
 ## [5.0.0] - 2019-11-20
 - Renamed ReferencePointSubsystem to AnchorSubsystem
 - Added support for plane classification
