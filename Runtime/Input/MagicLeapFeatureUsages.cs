@@ -37,5 +37,8 @@ namespace UnityEngine.XR.MagicLeap
 
         public static InputFeatureUsage<byte[]> KeyPoseConfidence = new InputFeatureUsage<byte[]>("MLHandKeyPoseConfidence");
         public static InputFeatureUsage<byte[]> KeyPoseConfidenceFiltered = new InputFeatureUsage<byte[]>("KeyPoseConfidenceFiltered");
+        public static InputFeatureUsage<byte[]> KeyPointsMask = new InputFeatureUsage<byte[]>("KeyPointsMask");
+
+        public static InputFeatureUsage<bool> IsHoldingControl = new InputFeatureUsage<bool>("IsHoldingControl");
     }
 }

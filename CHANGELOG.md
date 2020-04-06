@@ -1,5 +1,15 @@
 # Changelog
 
+## [5.1.1] - 2020-04-06
+- Upgrade XR Management dependency to `3.2.4`
+
+## [5.1.0] - 2020-03-16
+- Upgrade XR Management dependency to 3.2.0 series
+- Removed Legacy Input Helpers dependency as it is included implicitly through the XR Management 3.2.0 dependency
+- APIs added for `QuerySupportedTrackingOriginModes`, `QueryTrackingOriginMode`, and `SetTrackingOriginMode`.
+- Upgrade Lumin SDK to 0.23.0
+- Fixed issue where `grip` and `gripButton` input usages did not surface proper data from the controller
+
 ## [5.0.1-preview.1] - 2020-02-06
 - Add Image Tracking support for AR Foundation
 - Fix an issue preventing the gameview from showing when using ML Remote

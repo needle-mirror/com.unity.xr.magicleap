@@ -59,85 +59,6 @@ namespace UnityEditor.XR.MagicLeap
         }
     }
 
-#if UNITY_EDITOR_OSX
-    class MacOSDependencyChecker
-    {
-        const string kRegexPattern = @"\t(.+) \(compatibility version \d{1,4}\.\d{1,4}\.\d{1,4}, current version \d{1,4}\.\d{1,4}\.\d{1,4}\)";
-
-        public class DependencyMap
-        {
-            public string file = null;
-            public List<string> dependencies = new List<string>();
-        }
-
-        internal static IEnumerable<string> LaunchOtool(string filepath)
-        {
-            var psi = new ProcessStartInfo {
-                FileName = "/usr/bin/otool",
-                Arguments = string.Format("-L {0}", filepath),
-                WindowStyle = ProcessWindowStyle.Hidden,
-                CreateNoWindow = true,
-                RedirectStandardError = true,
-                RedirectStandardOutput = true,
-                UseShellExecute = false
-            };
-            using (Process p = Process.Start(psi))
-            {
-                var output = p.StandardOutput.ReadToEnd();
-                var error = p.StandardError.ReadToEnd();
-                p.WaitForExit();
-                return output.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
-            }
-        }
-
-        internal static DependencyMap GetDependencies(string file)
-        {
-            var regex = new Regex(kRegexPattern);
-            var dm = new DependencyMap { file = file };
-            var output = LaunchOtool(file);
-            foreach (var line in output)
-            {
-                var m = regex.Match(line);
-                if (m.Success)
-                {
-                    var dep_path = m.Groups[1].Value;
-                    dm.dependencies.Add(dep_path.Replace("@loader_path", Path.GetDirectoryName(file)));
-                }
-            }
-            return dm;
-        }
-
-        internal static void Migrate(string src, string dest)
-        {
-            var dir = Path.GetDirectoryName(dest);
-            using (new WorkingDirectoryShift(dir))
-            {
-                var psi = new ProcessStartInfo {
-                    FileName = "lipo",
-                    Arguments = string.Format("-create {0} -output {1}", src, Path.GetFileName(dest)),
-                    WindowStyle = ProcessWindowStyle.Hidden,
-                    CreateNoWindow = true
-                };
-                //UnityDebug.LogFormat("{0} {1}", psi.FileName, psi.Arguments);
-                using (Process p = Process.Start(psi))
-                    p.WaitForExit();
-
-                psi = new ProcessStartInfo {
-                    FileName = "install_name_tool",
-                    Arguments = string.Format("-id {0} {0}", Path.GetFileName(dest)),
-                    WindowStyle = ProcessWindowStyle.Hidden,
-                    CreateNoWindow = true
-                };
-                //UnityDebug.LogFormat("{0} {1}", psi.FileName, psi.Arguments);
-                using (Process p = Process.Start(psi))
-                    p.WaitForExit();
-
-            }
-
-        }
-    }
-#endif
-
     public static class MagicLeapRemoteImportSupport
     {
         const string kDestinationProjectFolder = "Assets/Plugins/Lumin/Editor/x64";
@@ -384,6 +305,18 @@ ZI_SHIM_PATH_linux64=$(MLREMOTE_BASE)/lib/linux64;$(STUB_PATH)
             }
             return null;
         }
+
+        internal static bool TryFindDependencyOnSearchPath(string file_name, out string dep_path)
+        {
+            foreach (var path in shimSearchPaths)
+            {
+                dep_path = Path.Combine(path, file_name);
+                if (File.Exists(dep_path) || Directory.Exists(dep_path)) // need to check directories too, because osx has bundle-type things...
+                    return true;
+            }
+            dep_path = null;
+            return false;
+        }
 #endif
 
         internal static void ImportSupportLibrares(string destFolder)
@@ -391,38 +324,41 @@ ZI_SHIM_PATH_linux64=$(MLREMOTE_BASE)/lib/linux64;$(STUB_PATH)
             Directory.CreateDirectory(destFolder);
             foreach (var lib in LocateMLRemoteLibraries())
             {
-                //UnityDebug.Log(lib);
 #if UNITY_EDITOR_OSX
+
                 var target = GetOSXTargetPath(destFolder, lib);
                 if (target == null) continue;
                 CheckIfFileCanBeCopiedAndThrow(lib, target);
-                MacOSDependencyChecker.Migrate(lib, target);
-                var dm = MacOSDependencyChecker.GetDependencies(target);
-                var missing = new List<string>();
-                using (new WorkingDirectoryShift(Path.GetDirectoryName(target)))
-                {
-                    foreach (var dep in dm.dependencies)
+                if (SDKUtility.sdkVersion <= new Version("0.23.0"))
+                    MacOSDependencyChecker.MigrateWithDependencies(lib, target);
+                else
+                    MacOSDependencyChecker.Migrate(lib, target);
+                    var dm = MacOSDependencyChecker.GetDependencies(target);
+                    var missing = new List<string>();
+                    using (new WorkingDirectoryShift(Path.GetDirectoryName(target)))
                     {
-                        if (File.Exists(dep))
-                            continue;
-                        else
-                            missing.Add(dep);
+                        foreach (var dep in dm.dependencies)
+                        {
+                            if (File.Exists(dep))
+                                continue;
+                            else
+                                missing.Add(dep);
+                        }
                     }
-                }
-                foreach (var item in missing)
-                {
-                    var dep_path = Path.GetFullPath(item);
-                    if (!File.Exists(dep_path))
+                    foreach (var item in missing)
                     {
-                        //UnityDebug.LogFormat("missing dep: {0} for {1}", dep_path, dm.file);
-                        Directory.CreateDirectory(Path.GetDirectoryName(dep_path));
-                        var src = Path.Combine(macOSDependencyPath, Path.GetFileName(item));
-                        //UnityDebug.LogFormat("searching for {0}: {1}", Path.GetFileName(item), src);
-                        if (File.Exists(src))
-                            File.Copy(src, dep_path);
+                        var dep_path = Path.GetFullPath(item);
+                        if (!File.Exists(dep_path))
+                        {
+                            var dep_file = Path.GetFileName(item);
+                            if (TryFindDependencyOnSearchPath(dep_file, out var src))
+                            {
+                                Directory.CreateDirectory(Path.GetDirectoryName(dep_path));
+                                if (File.Exists(src))
+                                    File.Copy(src, dep_path);
+                            }
+                        }
                     }
-
-                }
 #else
                 var basename = Path.GetFileName(lib);
                 var target = Path.Combine(destFolder, basename);
