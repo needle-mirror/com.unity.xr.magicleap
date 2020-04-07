@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿#if USE_LEGACY_INPUT_HELPERS
+
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Experimental.XR.Interaction;
@@ -89,3 +91,5 @@ namespace UnityEngine.XR.MagicLeap.Samples
 #endif// UNITY_LUMIN
     }
 }
+
+#endif

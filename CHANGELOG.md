@@ -1,5 +1,11 @@
 # Changelog
 
+## [5.1.2] - 2020-04-07
+- Conditionally compile out XR Management related classes that depend on XR Management `3.2.x`
+- Revert dependency on XR Management `3.0.6`
+- Add conditional code to support XR Management `3.2.X` workflows
+- Conditionally compile samples to support lack of Legacy Input Helpers dependency.
+
 ## [5.1.1] - 2020-04-06
 - Upgrade XR Management dependency to `3.2.4`
 

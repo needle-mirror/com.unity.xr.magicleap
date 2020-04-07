@@ -1,8 +1,8 @@
 {
     "name": "Unity.MagicLeap.Samples.InputProviders",
     "references": [
-        "GUID:ba171b3dd2a51234ab864770f99741a5",
-        "GUID:28d8685fae23c21419ef42894cb9b075"
+        "UnityEngine.SpatialTracking",
+        "UnityEngine.XR.MagicLeap"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
@@ -12,6 +12,11 @@
     "autoReferenced": true,
     "defineConstraints": [],
     "versionDefines": [
+        {
+            "name": "com.unity.xr.legacyinputhelpers",
+            "expression": "",
+            "define": "USE_LEGACY_INPUT_HELPERS"
+        },
         {
             "name": "com.unity.xr.legacyinputhelpers",
             "expression": "2.0",

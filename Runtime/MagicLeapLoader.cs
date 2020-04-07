@@ -61,10 +61,10 @@ namespace UnityEngine.XR.MagicLeap
     }
 #endif //UNITY_INPUT_SYSTEM
 
-#if UNITY_EDITOR
+#if UNITY_EDITOR && XR_MANAGEMENT_3_2_0_OR_NEWER
     [XRSupportedBuildTarget(BuildTargetGroup.Lumin)]
     [XRSupportedBuildTarget(BuildTargetGroup.Standalone, new BuildTarget[]{BuildTarget.StandaloneOSX, BuildTarget.StandaloneWindows, BuildTarget.StandaloneWindows64})]
-#endif // UNITY_EDITOR
+#endif // UNITY_EDITOR && XR_MANAGEMENT_3_2_0_OR_NEWER
     public sealed class MagicLeapLoader : XRLoaderHelper
     {
         static class Graphics
