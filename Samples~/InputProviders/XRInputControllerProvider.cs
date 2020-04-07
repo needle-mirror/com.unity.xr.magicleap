@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if USE_LEGACY_INPUT_HELPERS
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine.Events;
@@ -138,3 +139,5 @@ namespace UnityEngine.XR.MagicLeap.Samples
 #endif // LIH_2_OR_NEWER
     }
 }
+
+#endif // USE_LEGACY_INPUT_HELPERS

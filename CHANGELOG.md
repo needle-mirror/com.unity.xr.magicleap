@@ -1,5 +1,27 @@
 # Changelog
 
+## [4.1.3] - 2020-04-07
+- Conditionally compile out XR Management related classes that depend on XR Management `3.2.x`
+- Revert dependency on XR Management `3.0.6`
+- Add conditional code to support XR Management `3.2.X` workflows
+- Conditionally compile samples to support lack of Legacy Input Helpers dependency.
+
+## [4.1.2] - 2020-04-06
+- Upgrade XR Management dependency to version `3.2.4`
+
+## [4.1.1] - 2020-03-17
+- Upgrade AR Subsystems dependency to version `2.1.2`
+
+## [4.1.0] - 2020-03-13
+- Update to non-preview release
+- Upgrade XR Management dependency to non-preview version 3.2.0
+
+## [4.1.0-preview.1] - 2020-02-26
+- Upgrade XR Management dependency to the 3.2.0 series
+
+## [4.0.6] - 2020-02-20
+- Update to 2019.3 Verified Release
+
 ## [4.0.6-preview.5] - 2020-02-06
 - Fix an issue with a malformed meta file causing an instability on CI
 - Update LICENSE.md to year 2020
