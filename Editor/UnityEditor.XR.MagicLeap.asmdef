@@ -4,6 +4,7 @@
         "UnityEngine.XR.MagicLeap",
         "Unity.XR.ARSubsystems",
         "Unity.XR.ARSubsystems.Editor",
+        "Unity.XR.Management",
         "Unity.XR.Management.Editor"
     ],
     "optionalUnityReferences": [],

@@ -90,7 +90,7 @@ namespace UnityEngine.XR.MagicLeap.Rendering
         {
             get
             {
-                return true;
+                return false;
             }
         }
 
@@ -166,9 +166,13 @@ namespace UnityEngine.XR.MagicLeap.Rendering
                     break;
                 case StabilizationMode.FurthestObject:
                     _Handle.Complete();
-                    RenderingSettings.stabilizationDistance = distances.Max();
-                    distances.Value.Dispose();
-                    distances = null;
+                    if (distances.HasValue)
+                    {
+                        if (distances.Value.Length > 0)
+                            RenderingSettings.stabilizationDistance = distances.Max();
+                        distances.Value.Dispose();
+                        distances = null;
+                    }
                     break;
             }
         }
@@ -178,10 +182,11 @@ namespace UnityEngine.XR.MagicLeap.Rendering
             if (!m_Camera) return;
             var farClip = m_Camera.farClipPlane;
             var max = RenderingSettings.maxFarClipDistance;
-            if (enforceFarClip && farClip > max)
+            if (farClip > max)
             {
                 MLWarnings.WarnedAboutFarClippingPlane.Trigger(farClip, max);
-                m_Camera.farClipPlane = max;
+                if (enforceFarClip)
+                    m_Camera.farClipPlane = max;
             }
         }
 
@@ -190,10 +195,11 @@ namespace UnityEngine.XR.MagicLeap.Rendering
             if (!m_Camera) return;
             var nearClip = m_Camera.nearClipPlane;
             var min = RenderingSettings.minNearClipDistance;
-            if (enforceNearClip && nearClip < min)
+            if (nearClip < min)
             {
                 MLWarnings.WarnedAboutNearClippingPlane.Trigger(nearClip, min);
-                m_Camera.nearClipPlane = min;
+                if (enforceNearClip)
+                    m_Camera.nearClipPlane = min;
             }
         }
 

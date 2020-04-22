@@ -19,6 +19,9 @@ namespace UnityEditor.XR.MagicLeap
         private int m_MinimumAPILevel;
 
         [SerializeField]
+        private bool m_AllowBackgroundMusicService;
+
+        [SerializeField]
         private PrivilegeGroup[] m_PrivilegeGroups;
 
         public int minimumAPILevel
@@ -31,6 +34,19 @@ namespace UnityEditor.XR.MagicLeap
             {
                 Undo.RecordObject(this, "Changed Minimum API Level");
                 m_MinimumAPILevel = value;
+            }
+        }
+
+        public bool allowBackgroundMusicService
+        {
+            get
+            {
+                return m_AllowBackgroundMusicService;
+            }
+            set
+            {
+                Undo.RecordObject(this, "Changed Allow Background Music Service");
+                m_AllowBackgroundMusicService = value;
             }
         }
 
@@ -63,6 +79,7 @@ namespace UnityEditor.XR.MagicLeap
             get { return File.Exists(kCustomManifestPath); }
         }
 
+
         public static MagicLeapManifestSettings GetOrCreateSettings(string path = kDefaultSettingsPath)
         {
             if (string.IsNullOrEmpty(path))
@@ -75,8 +92,11 @@ namespace UnityEditor.XR.MagicLeap
             {
                 settings = ScriptableObject.CreateInstance<MagicLeapManifestSettings>();
                 settings.m_MinimumAPILevel = 4;
+                settings.m_AllowBackgroundMusicService = false;
                 if (SDKUtility.sdkAvailable)
+                {
                     settings.RebuildPrivilegeGroups(PrivilegeParser.ParsePrivilegesFromHeader(Path.Combine(SDKUtility.sdkPath, PrivilegeParser.kPrivilegeHeaderPath)));
+                }
                 else
                     Debug.LogWarning(ManifestEditorGUI.Messages.kCannotLocateSDK);
 
