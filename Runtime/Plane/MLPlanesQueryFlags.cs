@@ -1,4 +1,5 @@
 using System;
+using UnityEngine.XR.ARSubsystems;
 
 namespace UnityEngine.XR.MagicLeap
 {
@@ -60,5 +61,28 @@ namespace UnityEngine.XR.MagicLeap
                 No need to call MLPlanesReleaseBoundariesList.
         */
         Polygons    = 1 << 9,
+    }
+
+    static class MLPlanesQueryFlagsAndPlaneDetectionModeExtensions
+    {
+        public static PlaneDetectionMode ToPlaneDetectionMode(this MLPlanesQueryFlags mlPlanesQueryFlags)
+        {
+            var outDetectionMode = PlaneDetectionMode.None;
+            if ((mlPlanesQueryFlags & MLPlanesQueryFlags.Horizontal) != 0)
+                outDetectionMode |= PlaneDetectionMode.Horizontal;
+            if ((mlPlanesQueryFlags & MLPlanesQueryFlags.Vertical) != 0)
+                outDetectionMode |= PlaneDetectionMode.Vertical;
+            return outDetectionMode;
+        }
+
+        public static MLPlanesQueryFlags ToMLPlaneQueryFlags(this PlaneDetectionMode planeDetectionMode)
+        {
+            var outFlags = MLPlanesQueryFlags.None;
+            if ((planeDetectionMode & PlaneDetectionMode.Horizontal) != 0)
+                outFlags |= MLPlanesQueryFlags.Horizontal;
+            if ((planeDetectionMode & PlaneDetectionMode.Vertical) != 0)
+                outFlags |= MLPlanesQueryFlags.Vertical;
+            return outFlags;
+        }
     }
 }

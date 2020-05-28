@@ -209,7 +209,7 @@ namespace UnityEngine.XR.MagicLeap
                         colorImageIn = inputImage,
                         grayscaleImageOut = grayscaleImage
                     }.Schedule(height, 1, inputDeps);
-                
+
                 case TextureFormat.BGRA32:
                     return new ConvertBGRA32ToGrayscaleJob
                     {

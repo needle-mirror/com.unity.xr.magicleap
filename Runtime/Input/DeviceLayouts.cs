@@ -53,7 +53,7 @@ namespace UnityEngine.XR.MagicLeap
     }
 
     [Preserve]
-    [InputControlLayout]
+    [InputControlLayout(displayName = "MagicLeap Headset")]
     public class MagicLeapLightwear : XRHMD
     {
         public bool ControllerEnabled
@@ -90,24 +90,6 @@ namespace UnityEngine.XR.MagicLeap
 
         [Preserve]
         [InputControl]
-        public IntegerControl trackingState { get; private set; }
-        [Preserve]
-        [InputControl]
-        public ButtonControl isTracked { get; private set; }
-        [Preserve]
-        [InputControl]
-        public Vector3Control devicePosition { get; private set; }
-        [Preserve]
-        [InputControl]
-        public QuaternionControl deviceRotation { get; private set; }
-        [Preserve]
-        [InputControl]
-        public Vector3Control centerEyePosition { get; private set; }
-        [Preserve]
-        [InputControl]
-        public QuaternionControl centerEyeRotation { get; private set; }
-        [Preserve]
-        [InputControl]
         public AxisControl confidence { get; private set; }
         [Preserve]
         [InputControl]
@@ -130,12 +112,6 @@ namespace UnityEngine.XR.MagicLeap
         {
             base.FinishSetup();
 
-            trackingState = GetChildControl<IntegerControl>("trackingState");
-            isTracked = GetChildControl<ButtonControl>("isTracked");
-            devicePosition = GetChildControl<Vector3Control>("devicePosition");
-            deviceRotation = GetChildControl<QuaternionControl>("deviceRotation");
-            centerEyePosition = GetChildControl<Vector3Control>("centerEyePosition");
-            centerEyeRotation = GetChildControl<QuaternionControl>("centerEyeRotation");
             confidence = GetChildControl<AxisControl>("confidence");
             fixationPointConfidence = GetChildControl<AxisControl>("fixationPointConfidence");
             eyeLeftCenterConfidence = GetChildControl<AxisControl>("eyeLeftCenterConfidence");
@@ -148,15 +124,9 @@ namespace UnityEngine.XR.MagicLeap
     }
 
     [Preserve]
-    [InputControlLayout(commonUsages = new[] { "LeftHand", "RightHand" })]
+    [InputControlLayout(commonUsages = new[] { "LeftHand", "RightHand" }, displayName = "MagicLeap Hand")]
     public class MagicLeapHandDevice : XRController
     {
-        [Preserve]
-        [InputControl]
-        public IntegerControl trackingState { get; private set; }
-        [Preserve]
-        [InputControl]
-        public ButtonControl isTracked { get; private set; }
         [Preserve]
         [InputControl]
         public Vector3Control center { get; private set; }
@@ -186,8 +156,6 @@ namespace UnityEngine.XR.MagicLeap
         {
             base.FinishSetup();
 
-            trackingState = GetChildControl<IntegerControl>("trackingState");
-            isTracked = GetChildControl<ButtonControl>("isTracked");
             center = GetChildControl<Vector3Control>("center");
             rotation = GetChildControl<QuaternionControl>("rotation");
 
@@ -200,21 +168,9 @@ namespace UnityEngine.XR.MagicLeap
     }
 
     [Preserve]
+    [InputControlLayout(displayName = "MagicLeap Controller")]
     public class MagicLeapController : XRController
     {
-        [Preserve]
-        [InputControl]
-        public IntegerControl trackingState { get; private set; }
-        [Preserve]
-        [InputControl]
-        public ButtonControl isTracked { get; private set; }
-        [Preserve]
-        [InputControl]
-        public Vector3Control devicePosition { get; private set; }
-        [Preserve]
-        [InputControl]
-        public QuaternionControl deviceRotation { get; private set; }
-
         [Preserve]
         [InputControl]
         public ButtonControl touchpad1Pressed { get; private set; }
@@ -269,23 +225,18 @@ namespace UnityEngine.XR.MagicLeap
         public bool StartLEDPattern(LEDPattern ledPattern, LEDColor ledColor, uint durationMs)
         {
             var command = SendLEDPattern.Create(ledPattern, ledColor, durationMs);
-            return ExecuteCommand(ref command) >= 0; 
+            return ExecuteCommand(ref command) >= 0;
         }
 
         public bool StartLEDEffect(LEDEffect ledEffect, LEDSpeed ledSpeed, LEDPattern ledPattern, LEDColor ledColor, uint durationMs)
         {
             var command = SendLEDEffect.Create(ledEffect, ledSpeed, ledPattern, ledColor, durationMs);
-            return ExecuteCommand(ref command) >= 0; 
+            return ExecuteCommand(ref command) >= 0;
         }
 
         protected override void FinishSetup()
         {
             base.FinishSetup();
-
-            trackingState = GetChildControl<IntegerControl>("trackingState");
-            isTracked = GetChildControl<ButtonControl>("isTracked");
-            devicePosition = GetChildControl<Vector3Control>("devicePosition");
-            deviceRotation = GetChildControl<QuaternionControl>("deviceRotation");
 
             touchpad1Pressed = GetChildControl<ButtonControl>("touchpad1Pressed");
             touchpad1Position = GetChildControl<Vector2Control>("touchpad1Position");

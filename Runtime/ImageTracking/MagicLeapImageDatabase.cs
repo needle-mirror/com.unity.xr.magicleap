@@ -128,7 +128,7 @@ namespace UnityEngine.XR.MagicLeap
         {
             if (m_NativeProviderPtr != MagicLeapImageTrackingSubsystem.nativeProviderPtr)
                 throw new InvalidOperationException($"Attempted to modify dead image library.  The native provider that created this library doesn't exist and the native resource for this library has been released.  Dispose this object.");
-            
+
             var grayscaleImage = new NativeArray<byte>(
                 sizeInPixels.x * sizeInPixels.y,
                 Allocator.Persistent,

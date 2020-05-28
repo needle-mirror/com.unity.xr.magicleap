@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 
 using UnityEngine.XR;
+using UnityEngine.XR.ARSubsystems;
 using UnityEngine.XR.InteractionSubsystems;
 using UnityEngine.XR.MagicLeap.Meshing;
 using UnityEngine.XR.Management;
@@ -92,6 +93,7 @@ namespace UnityEngine.XR.MagicLeap
             WorldReconstruction = 33
         }
         const string kLogTag = "MagicLeapLoader";
+        // Integrated Subsystems
         static List<XRDisplaySubsystemDescriptor> s_DisplaySubsystemDescriptors = new List<XRDisplaySubsystemDescriptor>();
         static List<XRInputSubsystemDescriptor> s_InputSubsystemDescriptors = new List<XRInputSubsystemDescriptor>();
         static List<XRMeshSubsystemDescriptor> s_MeshSubsystemDescriptor = new List<XRMeshSubsystemDescriptor>();
@@ -102,12 +104,24 @@ namespace UnityEngine.XR.MagicLeap
         public XRMeshSubsystem meshSubsystem => GetLoadedSubsystem<XRMeshSubsystem>();
         public XRGestureSubsystem gestureSubsystem => GetLoadedSubsystem<XRGestureSubsystem>();
 
+        // ARSubsystems
+        static List<XRSessionSubsystemDescriptor> s_SessionSubsystemDescriptors = new List<XRSessionSubsystemDescriptor>();
+        static List<XRPlaneSubsystemDescriptor> s_PlaneSubsystemDescriptors = new List<XRPlaneSubsystemDescriptor>();
+        static List<XRAnchorSubsystemDescriptor> s_AnchorSubsystemDescriptors = new List<XRAnchorSubsystemDescriptor>();
+        static List<XRRaycastSubsystemDescriptor> s_RaycastSubsystemDescriptors = new List<XRRaycastSubsystemDescriptor>();
+        static List<XRImageTrackingSubsystemDescriptor> s_ImageTrackingSubsystemDescriptors = new List<XRImageTrackingSubsystemDescriptor>();
+
+        public XRSessionSubsystem sessionSubsystem => GetLoadedSubsystem<XRSessionSubsystem>();
+        public XRPlaneSubsystem planeSubsystem => GetLoadedSubsystem<XRPlaneSubsystem>();
+        public XRAnchorSubsystem anchorSubsystem => GetLoadedSubsystem<XRAnchorSubsystem>();
+        public XRRaycastSubsystem raycastSubsystem => GetLoadedSubsystem<XRRaycastSubsystem>();
+        public XRImageTrackingSubsystem imageTrackingSubsystem => GetLoadedSubsystem<XRImageTrackingSubsystem>();
+
 #if UNITY_EDITOR
         public static MagicLeapLoader assetInstance => (MagicLeapLoader)AssetDatabase.LoadAssetAtPath("Packages/com.unity.xr.magicleap/XR/Loaders/Magic Leap Loader.asset", typeof(MagicLeapLoader));
 #endif // UNITY_EDITOR
 
         private bool m_DisplaySubsystemRunning = false;
-        private bool m_GestureSubsystemRunning = false;
         private int m_MeshSubsystemRefcount = 0;
 
         public override bool Initialize()
@@ -138,8 +152,7 @@ namespace UnityEngine.XR.MagicLeap
             CheckForInputRelatedPermissions();
             CreateSubsystem<XRInputSubsystemDescriptor, XRInputSubsystem>(s_InputSubsystemDescriptors, "MagicLeap-Input");
             CreateSubsystem<XRDisplaySubsystemDescriptor, XRDisplaySubsystem>(s_DisplaySubsystemDescriptors, "MagicLeap-Display");
-            if (MagicLeapSettings.currentSettings != null && MagicLeapSettings.currentSettings.enableGestures)
-                CreateSubsystem<XRGestureSubsystemDescriptor, XRGestureSubsystem>(s_GestureSubsystemDescriptors, "MagicLeap-Gesture");
+            CreateSubsystem<XRGestureSubsystemDescriptor, XRGestureSubsystem>(s_GestureSubsystemDescriptors, "MagicLeap-Gesture");
 
             if (CanCreateMeshSubsystem())
             {
@@ -150,8 +163,19 @@ namespace UnityEngine.XR.MagicLeap
                     MeshingSettings.batchSize = MLSpatialMapper.Defaults.batchSize;
                     MeshingSettings.density = MLSpatialMapper.Defaults.density;
                     MeshingSettings.SetBounds(Vector3.zero, Quaternion.identity, MLSpatialMapper.Defaults.boundsExtents);
+
+                    // Register native callbacks for feature API
+                    meshSubsystem.RegisterNativeSubsystemCallbacks();
                 }
             }
+
+            // Now that subsystem creation is strictly handled by the loaders we must create the following subsystems
+            // that live in ARSubsystems
+            CreateSubsystem<XRSessionSubsystemDescriptor, XRSessionSubsystem>(s_SessionSubsystemDescriptors, "MagicLeap-Session");
+            CreateSubsystem<XRPlaneSubsystemDescriptor, XRPlaneSubsystem>(s_PlaneSubsystemDescriptors, "MagicLeap-Planes");
+            CreateSubsystem<XRAnchorSubsystemDescriptor, XRAnchorSubsystem>(s_AnchorSubsystemDescriptors, "MagicLeap-Anchor");
+            CreateSubsystem<XRRaycastSubsystemDescriptor, XRRaycastSubsystem>(s_RaycastSubsystemDescriptors, "MagicLeap-Raycast");
+            CreateSubsystem<XRImageTrackingSubsystemDescriptor, XRImageTrackingSubsystem>(s_ImageTrackingSubsystemDescriptors, "MagicLeap-ImageTracking");
 
             return true;
         }
@@ -159,11 +183,7 @@ namespace UnityEngine.XR.MagicLeap
         public override bool Start()
         {
             StartSubsystem<XRInputSubsystem>();
-            if (MagicLeapSettings.currentSettings != null && MagicLeapSettings.currentSettings.enableGestures)
-            {
-                StartSubsystem<XRGestureSubsystem>();
-                m_GestureSubsystemRunning = true;
-            }
+            StartSubsystem<XRGestureSubsystem>();
 
             if (!isLegacyDeviceActive)
             {
@@ -192,17 +212,13 @@ namespace UnityEngine.XR.MagicLeap
                 StopSubsystem<XRDisplaySubsystem>();
                 m_DisplaySubsystemRunning = false;
             }
-            if (m_GestureSubsystemRunning)
-            {
-                StopSubsystem<XRGestureSubsystem>();
-                m_GestureSubsystemRunning = false;
-            }
             if (CanCreateMeshSubsystem() && m_MeshSubsystemRefcount > 0)
             {
                 m_MeshSubsystemRefcount = 0;
                 StopSubsystem<XRMeshSubsystem>();
             }
             StopSubsystem<XRInputSubsystem>();
+            StopSubsystem<XRGestureSubsystem>();
             return true;
         }
 
@@ -213,6 +229,11 @@ namespace UnityEngine.XR.MagicLeap
             DestroySubsystem<XRDisplaySubsystem>();
             DestroySubsystem<XRGestureSubsystem>();
             DestroySubsystem<XRInputSubsystem>();
+            DestroySubsystem<XRImageTrackingSubsystem>();
+            DestroySubsystem<XRRaycastSubsystem>();
+            DestroySubsystem<XRAnchorSubsystem>();
+            DestroySubsystem<XRPlaneSubsystem>();
+            DestroySubsystem<XRSessionSubsystem>();
             MagicLeapPrivileges.Shutdown();
             return true;
         }

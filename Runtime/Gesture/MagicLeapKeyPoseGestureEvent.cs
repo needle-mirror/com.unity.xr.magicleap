@@ -52,7 +52,7 @@ namespace UnityEngine.XR.MagicLeap
         public MagicLeapHand hand { get { return m_Hand; } }
 
         /// <summary>
-        /// Gets a default-initialized <see cref="MagicLeapKeyPoseGestureEvent"/>. 
+        /// Gets a default-initialized <see cref="MagicLeapKeyPoseGestureEvent"/>.
         /// </summary>
         /// <returns>A default <see cref="MagicLeapKeyPoseGestureEvent"/>.</returns>
         public static MagicLeapKeyPoseGestureEvent GetDefault()

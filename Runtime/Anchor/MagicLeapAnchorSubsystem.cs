@@ -73,7 +73,9 @@ namespace UnityEngine.XR.MagicLeap
             return new Quaternion(rotation.x, rotation.y, -rotation.z, -rotation.w);
         }
 
+#if !UNITY_2020_2_OR_NEWER
         protected override Provider CreateProvider() => new MagicLeapProvider();
+#endif
 
         class MagicLeapProvider : Provider
         {
@@ -394,14 +396,19 @@ namespace UnityEngine.XR.MagicLeap
             List<TrackableId> m_PendingRemoves = new List<TrackableId>();
         }
 
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         static void RegisterDescriptor()
         {
 #if PLATFORM_LUMIN
             XRAnchorSubsystemDescriptor.Create(new XRAnchorSubsystemDescriptor.Cinfo
             {
                 id = "MagicLeap-Anchor",
+#if UNITY_2020_2_OR_NEWER
+                providerType = typeof(MagicLeapAnchorSubsystem.MagicLeapProvider),
+                subsystemTypeOverride = typeof(MagicLeapAnchorSubsystem),
+#else
                 subsystemImplementationType = typeof(MagicLeapAnchorSubsystem),
+#endif
                 supportsTrackableAttachments = false
             });
 #endif

@@ -17,8 +17,6 @@ namespace UnityEngine.XR.MagicLeap
     [UsesLuminPrivilege("WorldReconstruction")]
     public sealed class MagicLeapRaycastSubsystem : XRRaycastSubsystem
     {
-        MagicLeapProvider m_Provider;
-
         /// <summary>
         /// Asynchronously casts a ray. Use the returned <see cref="AsyncRaycastResult"/> to check for completion and
         /// retrieve the raycast hit results.
@@ -27,14 +25,20 @@ namespace UnityEngine.XR.MagicLeap
         /// <returns>An <see cref="AsyncRaycastResult"/> which can be used to check for completion and retrieve the raycast result.</returns>
         public AsyncRaycastResult AsyncRaycast(RaycastQuery query)
         {
-            return m_Provider.AsyncRaycast(query);
+            return magicLeapProvider.AsyncRaycast(query);
         }
+
+#if UNITY_2020_2_OR_NEWER
+        MagicLeapProvider magicLeapProvider => (MagicLeapProvider)provider;
+#else
+        MagicLeapProvider magicLeapProvider;
 
         protected override Provider CreateProvider()
         {
-            m_Provider = new MagicLeapProvider();
-            return m_Provider;
+            magicLeapProvider = new MagicLeapProvider();
+            return magicLeapProvider;
         }
+#endif
 
         class MagicLeapProvider : Provider
         {
@@ -64,6 +68,7 @@ namespace UnityEngine.XR.MagicLeap
                 {
                     m_TrackerHandle = Native.InvalidHandle;
                 }
+                MagicLeapFeatures.SetFeatureRequested(Feature.Raycast, true);
             }
 
             public override void Stop()
@@ -73,6 +78,7 @@ namespace UnityEngine.XR.MagicLeap
                     Native.Destroy(m_TrackerHandle);
                     m_TrackerHandle = Native.InvalidHandle;
                 }
+                MagicLeapFeatures.SetFeatureRequested(Feature.Raycast, false);
             }
 
             public override void Destroy()
@@ -94,14 +100,19 @@ namespace UnityEngine.XR.MagicLeap
             public static extern MLApiResult Destroy(ulong handle);
         }
 
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         static void RegisterDescriptor()
         {
 #if PLATFORM_LUMIN
             XRRaycastSubsystemDescriptor.RegisterDescriptor(new XRRaycastSubsystemDescriptor.Cinfo
             {
                 id = "MagicLeap-Raycast",
+#if UNITY_2020_2_OR_NEWER
+                providerType = typeof(MagicLeapRaycastSubsystem.MagicLeapProvider),
+                subsystemTypeOverride = typeof(MagicLeapRaycastSubsystem),
+#else
                 subsystemImplementationType = typeof(MagicLeapRaycastSubsystem),
+#endif
                 supportsViewportBasedRaycast = false,
                 supportsWorldBasedRaycast = false,
                 supportedTrackableTypes = TrackableType.None,

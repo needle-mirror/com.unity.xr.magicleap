@@ -1,5 +1,13 @@
 # Changelog
 
+## [6.0.0] - 2020-05-28
+- Update dependency for XR Management to `3.2.10`
+- Fix issue where UnityMagicLeap libraries were included in Standalone Desktop builds when using Magic Leap
+Zero Iteration Plugin Provider from XR Management (The intent of the Standalone Desktop provider is to allow
+rapid iteration from the Unity Editor with Magic Leap's The Lab Zero Iteration module and not for use in standalone
+builds)
+- Updated dependency for ARSubsystems to `4.0.1`.
+
 ## [5.1.2] - 2020-04-07
 - Conditionally compile out XR Management related classes that depend on XR Management `3.2.x`
 - Revert dependency on XR Management `3.0.6`
@@ -17,21 +25,19 @@
 - Fixed issue where `grip` and `gripButton` input usages did not surface proper data from the controller
 
 ## [5.0.1-preview.1] - 2020-02-06
-- Add Image Tracking support for AR Foundation
+- Add Image Tracking Subsystem
 - Fix an issue preventing the gameview from showing when using ML Remote
 - Remove old test assets that were conflicting with the Windows MR XR Plugin (Fixes FB #1200806)
 - Properly handle a couple edge cases where the Lumin SDK is missing (Fixes FB #1201092)
 - Fix a case where artifact dependencies were not properly available
 - Fix Hand Tracking to no longer require a tracker restart on configuration changes
 - Fix an issue with a meta file causing an issue with CI
-
-### Fixes
 - Fixed issue where using `NativeArrayUnsafeUtility.ConvertExistingDataToNativeArray` resulted in an error while running in the Editor.
 
 ## [5.0.0] - 2019-11-20
 - Renamed ReferencePointSubsystem to AnchorSubsystem
 - Added support for plane classification
-- Bump to 4.1.0 and update package dependencies
+- Bump to 5.0.0 and update package dependencies
 - Add custom MagicLeap layouts for the new input system
 - Update repo to work as built-in test project
 - Update NPM ignore list

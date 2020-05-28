@@ -31,7 +31,9 @@ namespace UnityEngine.XR.MagicLeap
 
         internal static string GetDatabaseFilePathFromLibrary(XRReferenceImageLibrary library) => Path.Combine(k_StreamingAssetsPath, $"{library.name}_{library.guid}.imgpak");
 
+#if !UNITY_2020_2_OR_NEWER
         protected override Provider CreateProvider() => new MagicLeapProvider();
+#endif
 
         /// <summary>
         /// Checks to see whether the native provider is valid and whether permission has been granted.
@@ -41,7 +43,7 @@ namespace UnityEngine.XR.MagicLeap
         /// </returns>
         /// <remarks>
         /// There are a number of reasons for false.  Either privileges were denied or the device experienced
-        /// and internal error and was not able to create the native tracking resource.  Should the later be
+        /// and internal error and was not able to create the native tracking resource.  Should the latter be
         /// the case, native error logs will have more information.
         /// </remarks>
         public bool IsValid() => MagicLeapProvider.IsSubsystemStateValid();
@@ -64,7 +66,7 @@ namespace UnityEngine.XR.MagicLeap
         /// Returns whether the subsystem is in control of the stationary settings for images.
         /// </summary>
         /// <returns>
-        /// <c>true</c> if the subsystem is determining the stationary setting for images currently being tracked and <c>false</c> if the user is responsible.
+        /// Returns <c>true</c> if the subsystem is determining the stationary setting for images currently being tracked. Returns <c>false</c> if the user is responsible.
         /// </returns>
         public bool GetAutomaticImageStationarySettingsEnforcementPolicy() => Native.GetAutomaticImageStationarySettingsEnforcementPolicy(nativeProviderPtr);
 
@@ -156,12 +158,7 @@ namespace UnityEngine.XR.MagicLeap
 
             public MagicLeapProvider()
             {
-                // ARFoundation often beats XRManagement to the instantiation so often times the MagicLeapPrivileges
-                // class will not be available to get privileges from.  Because of this the class is acquired here.
-                MagicLeapPrivileges.Initialize();
-
                 m_PerceptionHandle = PerceptionHandle.Acquire();
-
 
                 if (s_NativeProviderPtr == IntPtr.Zero)
                     s_NativeProviderPtr = Native.Construct();
@@ -178,6 +175,11 @@ namespace UnityEngine.XR.MagicLeap
                     LogWarning($"Could not start the image tracking subsystem because privileges were denied.");
                 }
             }
+
+#if UNITY_2020_2_OR_NEWER
+            public override void Start() { }
+            public override void Stop() { }
+#endif
 
             /// <summary>
             /// Destroy the image tracking subsystem.
@@ -209,6 +211,7 @@ namespace UnityEngine.XR.MagicLeap
                         if (value == null)
                         {
                             Native.SetDatabase(s_NativeProviderPtr, IntPtr.Zero);
+                            MagicLeapFeatures.SetFeatureRequested(Feature.ImageTracking, false);
                         }
                         else if (value is MagicLeapImageDatabase database)
                         {
@@ -216,8 +219,8 @@ namespace UnityEngine.XR.MagicLeap
                             {
                                 throw new InvalidOperationException($"Attempted to set an invalid image library.  The native resource for this library has been released making the library invalid.");
                             }
-
                             Native.SetDatabase(s_NativeProviderPtr, database.nativePtr);
+                            MagicLeapFeatures.SetFeatureRequested(Feature.ImageTracking, true);
                         }
                         else
                         {
@@ -258,12 +261,39 @@ namespace UnityEngine.XR.MagicLeap
             }
 
             /// <summary>
-            /// Sets the maximum number of moving targets.
+            /// Stores the requested maximum number of concurrently tracked moving images.
             /// </summary>
-            public override int maxNumberOfMovingImages
+            /// <remarks>
+            /// Magic Leap Image Tracking has the ability to set an enforcement policy on the maximum number of tracked
+            /// moving images.  If the policy has been explicitly set to <c>false</c> by using
+            /// <see cref="MagicLeapImageTrackingSubsystem.SetAutomaticImageStationarySettingsEnforcementPolicy"/> then
+            /// this value will not be honored by the native provider until the policy is set to <c>true</c>.
+            /// </remarks>
+            public override int requestedMaxNumberOfMovingImages
             {
-                set => Native.TrySetAllActiveReferenceImagesToStationary(s_NativeProviderPtr, value);
+                get => m_RequestedNumberOfMovingImages;
+                set
+                {
+                    // The TrySetMaximumNumberOfMovingImages function can not actually fail to set
+                    // the native value but it will return false if the value won't be honored.
+                    // Therefore it is safe to simply call this and cache the value.
+                    Native.TrySetMaximumNumberOfMovingImages(s_NativeProviderPtr, value);
+                    m_RequestedNumberOfMovingImages = value;
+                }
             }
+            int m_RequestedNumberOfMovingImages = 25;
+
+            /// <summary>
+            /// Stores the current maximum number of moving images that can be tracked by the native platform.
+            /// </summary>
+            /// <remarks>
+            /// Magic Leap Image Tracking has the ability to set an enforcement policy on the maximum number of tracked
+            /// moving images.  If the policy has been explicitly set to <c>false</c> by using
+            /// <see cref="MagicLeapImageTrackingSubsystem.SetAutomaticImageStationarySettingsEnforcementPolicy"/> then
+            /// this value will indicate the current number of explicitly declared moving images in the current library
+            /// otherwise it will return the same value as <see cref="requestedMaxNumberOfMovingImages"/>.
+            /// </remarks>
+            public override int currentMaxNumberOfMovingImages => Native.GetMaxNumberOfMovingImages();
 
             /// <summary>
             /// Creates a <c>RuntimeReferenceImageLibrary</c> from the passed in <c>XRReferenceImageLibrary</c> passed in.
@@ -307,7 +337,10 @@ namespace UnityEngine.XR.MagicLeap
             public static extern unsafe void ReleaseChanges(void* changes);
 
             [DllImport("UnityMagicLeap", CallingConvention = CallingConvention.Cdecl, EntryPoint = "UnityMagicLeap_ImageTracking_TrySetMaximumNumberOfMovingImages")]
-            public static extern bool TrySetAllActiveReferenceImagesToStationary(IntPtr nativeProviderPtr, int count);
+            public static extern bool TrySetMaximumNumberOfMovingImages(IntPtr nativeProviderPtr, int count);
+
+            [DllImport("UnityMagicLeap", CallingConvention = CallingConvention.Cdecl, EntryPoint = "UnityMagicLeap_ImageTracking_GetMaximumNumberOfMovingImages")]
+            public static extern int GetMaxNumberOfMovingImages();
 
             [DllImport("UnityMagicLeap", CallingConvention = CallingConvention.Cdecl, EntryPoint = "UnityMagicLeap_ImageTracking_GetAutomaticStationaryImageSettingsEnforcementPolicy")]
             public static extern bool GetAutomaticImageStationarySettingsEnforcementPolicy(IntPtr nativeProviderPtr);
@@ -319,30 +352,22 @@ namespace UnityEngine.XR.MagicLeap
             public static extern bool TrySetReferenceImageStationary(IntPtr nativeProviderPtr, Guid guid, bool isStationary);
         }
 
-#if UNITY_2019_2_OR_NEWER
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-#else
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
-#endif
         static void RegisterDescriptor()
         {
 #if PLATFORM_LUMIN
             XRImageTrackingSubsystemDescriptor.Create(new XRImageTrackingSubsystemDescriptor.Cinfo
             {
                 id = "MagicLeap-ImageTracking",
+#if UNITY_2020_2_OR_NEWER
+                providerType = typeof(MagicLeapImageTrackingSubsystem.MagicLeapProvider),
+                subsystemTypeOverride = typeof(MagicLeapImageTrackingSubsystem),
+#else
                 subsystemImplementationType = typeof(MagicLeapImageTrackingSubsystem),
+#endif
                 supportsMovingImages = true,
                 supportsMutableLibrary = true
             });
-#else
-            // Do something but don't initialize if we are not using PLATFORM_LUMIN
-            var subsystemDescriptorInfo = new XRImageTrackingSubsystemDescriptor.Cinfo
-            {
-                id = "MagicLeap-ImageTracking",
-                subsystemImplementationType = typeof(MagicLeapImageTrackingSubsystem),
-                supportsMovingImages = true,
-                supportsMutableLibrary = true
-            };
 #endif
         }
     }

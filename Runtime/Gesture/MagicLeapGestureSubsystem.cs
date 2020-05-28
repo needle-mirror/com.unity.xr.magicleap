@@ -3,6 +3,7 @@ using System.Linq;
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
 using System.Runtime.InteropServices;
+using UnityEngine;
 using UnityEngine.Scripting;
 using UnityEngine.XR.InteractionSubsystems;
 
@@ -18,13 +19,15 @@ namespace UnityEngine.XR.MagicLeap
         /// A collection of all MagicLeapKeyPoseGestureEvents managed by this subsystem.
         /// This is cleared every frame and refreshed with new gesture events.
         /// </summary>
-        public NativeArray<MagicLeapKeyPoseGestureEvent> keyPoseGestureEvents { get { return m_MagicLeapProvider.keyPoseGestureEvents; } }
+        public NativeArray<MagicLeapKeyPoseGestureEvent> keyPoseGestureEvents { get { return magicLeapProvider.keyPoseGestureEvents; } }
 
         /// <summary>
         /// A collection of all MagicLeapTouchpadGestureEvents managed by this subsystem.
         /// This is cleared every frame and refreshed with new gesture events.
         /// </summary>
-        public NativeArray<MagicLeapTouchpadGestureEvent> touchpadGestureEvents { get { return m_MagicLeapProvider.touchpadGestureEvents; } }
+        public NativeArray<MagicLeapTouchpadGestureEvent> touchpadGestureEvents { get { return magicLeapProvider.touchpadGestureEvents; } }
+
+        MagicLeapGestureProvider magicLeapProvider;
 
         /// <summary>
         /// Creates the provider interface.
@@ -32,33 +35,60 @@ namespace UnityEngine.XR.MagicLeap
         /// <returns>The provider interface for MagicLeap</returns>
         protected override Provider CreateProvider()
         {
-            m_MagicLeapProvider = new MagicLeapGestureProvider(this);
-            return m_MagicLeapProvider;
+            magicLeapProvider = new MagicLeapGestureProvider();
+            return magicLeapProvider;
         }
 
-        internal void EnableControllerGestures(bool value)
+        internal bool ControllerGesturesEnabled
         {
+            get
+            {
 #if PLATFORM_LUMIN
-            NativeApi.SetControllerGesturesEnabled(value);
+                return NativeApi.IsControllerGesturesEnabled();
+#else
+                Debug.LogWarning("Attempting to get MagicLeapGestureSubsystem.ControllerGesturesEnabled while not on the Lumin platform.  This will be ignored.");
+                return false;
 #endif
+            }
+            set
+            {
+#if PLATFORM_LUMIN
+                NativeApi.SetControllerGesturesEnabled(value);
+#else
+                Debug.LogWarning("Attempting to set MagicLeapGestureSubsystem.ControllerGesturesEnabled while not on the Lumin platform.  This will be ignored.");
+#endif
+            }
         }
 
-        internal void EnableHandGestures(bool value)
+        internal bool HandGesturesEnabled
         {
+            get
+            {
 #if PLATFORM_LUMIN
-            NativeApi.SetHandGesturesEnabled(value);
+                return NativeApi.IsHandGesturesEnabled();
+#else
+                Debug.LogWarning("Attempting to get MagicLeapGestureSubsystem.HandGesturesEnabled while not on the Lumin platform.  This will be ignored.");
+                return false;
 #endif
+            }
+            set
+            {
+#if PLATFORM_LUMIN
+                NativeApi.SetHandGesturesEnabled(value);
+#else
+                Debug.LogWarning("Attempting to set MagicLeapGestureSubsystem.HandGesturesEnabled while not on the Lumin platform.  This will be ignored.");
+#endif
+            }
         }
 
         class MagicLeapGestureProvider : Provider
         {
-            MagicLeapGestureSubsystem m_Subsystem;
-
-            public MagicLeapGestureProvider(MagicLeapGestureSubsystem subsystem)
+            public MagicLeapGestureProvider()
             {
 #if PLATFORM_LUMIN
                 NativeApi.Create();
-                m_Subsystem = subsystem;
+#else
+                Debug.LogWarning("Attempting to create a MagicLeapGestureProvider while not on the Lumin platform.  This will be ignored.");
 #endif
             }
 
@@ -111,7 +141,7 @@ namespace UnityEngine.XR.MagicLeap
                 if (NativeApi.IsControllerGesturesEnabled())
                     GetGestureEvents<MagicLeapTouchpadGestureEvent>(ref m_TouchpadGestureEvents, NativeApi.GetTouchpadGestureEventsPtr);
 
-                // Count up valid activate gestures (Have to do this as we cannot dynamically grow NativeArray). 
+                // Count up valid activate gestures (Have to do this as we cannot dynamically grow NativeArray).
                 // This should be possible to fix with NativeList (when out of preview package).
                 int activateGestureEventCount = 0;
                 foreach (var gestureEvent in m_KeyPoseGestureEvents)
@@ -119,7 +149,7 @@ namespace UnityEngine.XR.MagicLeap
                     if (gestureEvent.state == GestureState.Started && gestureEvent.keyPose == MagicLeapKeyPose.Finger)
                         activateGestureEventCount++;
                 }
-                
+
                 if (m_ActivateGestureEvents.IsCreated)
                     m_ActivateGestureEvents.Dispose();
                 m_ActivateGestureEvents = new NativeArray<ActivateGestureEvent>(activateGestureEventCount, Allocator.Persistent);
@@ -128,7 +158,7 @@ namespace UnityEngine.XR.MagicLeap
                 foreach (var gestureEvent in m_KeyPoseGestureEvents)
                 {
                     if (gestureEvent.state == GestureState.Started && gestureEvent.keyPose == MagicLeapKeyPose.Finger)
-                        m_ActivateGestureEvents[iActivateGestureEvent++] = 
+                        m_ActivateGestureEvents[iActivateGestureEvent++] =
                             new ActivateGestureEvent(GetNextGUID(), gestureEvent.state);
                 }
             }
@@ -152,7 +182,7 @@ namespace UnityEngine.XR.MagicLeap
         }
 
 #if UNITY_EDITOR || PLATFORM_LUMIN
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
 #endif
         static void RegisterDescriptor()
         {
@@ -160,7 +190,7 @@ namespace UnityEngine.XR.MagicLeap
                 new XRGestureSubsystemDescriptor.Cinfo
                 {
                     id = "MagicLeap-Gesture",
-                    subsystemImplementationType = typeof(MagicLeapGestureSubsystem)
+                    subsystemImplementationType = typeof(MagicLeapGestureSubsystem),
                 }
             );
         }
@@ -213,12 +243,10 @@ namespace UnityEngine.XR.MagicLeap
             {
                 s_NextGUID.subId1 += 1;
                 if (s_NextGUID.subId1 != 0) return s_NextGUID;
-                s_NextGUID.subId1 += 1;                
+                s_NextGUID.subId1 += 1;
             }
 
             return s_NextGUID;
         }
-
-        MagicLeapGestureProvider m_MagicLeapProvider;
     }
 }

@@ -32,14 +32,16 @@ namespace UnityEditor.XR.MagicLeap
 
         public void OnPreprocessBuild(BuildReport report)
         {
-            //Debug.LogFormat("PreprocessBuild : Manifest");
-            var path = MagicLeapManifestSettings.kBuildManifestPath;
-            if (MagicLeapManifestSettings.customManifestExists)
+            if (report.summary.platform == BuildTarget.Lumin)
             {
-                Debug.LogWarningFormat(kManifestExistsWarning, MagicLeapManifestSettings.kCustomManifestPath);
-                return;
+                var path = MagicLeapManifestSettings.kBuildManifestPath;
+                if (MagicLeapManifestSettings.customManifestExists)
+                {
+                    Debug.LogWarningFormat(kManifestExistsWarning, MagicLeapManifestSettings.kCustomManifestPath);
+                    return;
+                }
+                MergeToCustomManifest(MagicLeap.MagicLeapManifestSettings.GetOrCreateSettings(), path);
             }
-            MergeToCustomManifest(MagicLeap.MagicLeapManifestSettings.GetOrCreateSettings(), path);
         }
 
         private XDocument GetManifestTemplate()
@@ -108,6 +110,27 @@ namespace UnityEditor.XR.MagicLeap
                     {
                         iconElement.SetAttributeValue(kML + "model_folder", "Icon/Model");
                         iconElement.SetAttributeValue(kML + "portal_folder", "Icon/Portal");
+                    }
+
+                    // Remove or Add "<music-attribute ml:name="play" />" element to match ctx.allowBackgroundMusicService setting
+                    XElement playMusicAttribute = componentElement.Elements("music-attribute")
+                        .Where(n => (string)n.Attribute(kML + "name") == "play").FirstOrDefault();
+
+                    if (ctx.allowBackgroundMusicService)
+                    {
+                        // Add the element if it was not found and allowBackgroundMusicService is true.
+                        if (playMusicAttribute == null)
+                        {
+                            componentElement.Add(new XElement("music-attribute", CreateAttribute("name", "play")));
+                        }
+                    }
+                    else
+                    {
+                        // Remove element if it was found and allowBackgroundMusicService is false.
+                        if (playMusicAttribute != null)
+                        {
+                            playMusicAttribute.Remove();
+                        }
                     }
                 }
 

@@ -102,5 +102,5 @@ namespace UnityEditor.XR.MagicLeap
             if (input == "trusted") return Privilege.Category.Trusted;
             return Privilege.Category.Invalid;
         }
-    }   
+    }
 }

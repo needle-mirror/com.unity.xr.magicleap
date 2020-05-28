@@ -35,16 +35,20 @@ namespace UnityEngine.XR.MagicLeap
         /// <seealso cref="PlaneBoundaryCollection"/>
         public PlaneBoundaryCollection GetAllBoundariesForPlane(TrackableId trackableId)
         {
-            return m_Provider.GetAllBoundariesForPlane(trackableId);
+            return magicLeapProvider.GetAllBoundariesForPlane(trackableId);
         }
 
-        MagicLeapProvider m_Provider;
+#if UNITY_2020_2_OR_NEWER
+        MagicLeapProvider magicLeapProvider => (MagicLeapProvider)provider;
+#else
+        MagicLeapProvider magicLeapProvider;
 
         protected override Provider CreateProvider()
         {
-            m_Provider = new MagicLeapProvider();
-            return m_Provider;
+            magicLeapProvider = new MagicLeapProvider();
+            return magicLeapProvider;
         }
+#endif
 
         internal static TrackableId GetTrackableId(ulong planeId)
         {
@@ -66,7 +70,9 @@ namespace UnityEngine.XR.MagicLeap
 
             MLPlaneBoundariesList m_BoundariesList;
 
-            MLPlanesQueryFlags m_PlaneDetectionMode;
+            MLPlanesQueryFlags m_RequestedPlaneDetectionMode;
+
+            MLPlanesQueryFlags m_CurrentPlaneDetectionMode;
 
             PerceptionHandle m_PerceptionHandle;
 
@@ -81,17 +87,13 @@ namespace UnityEngine.XR.MagicLeap
                 m_PerceptionHandle = PerceptionHandle.Acquire();
             }
 
-            public override PlaneDetectionMode planeDetectionMode
+            public override PlaneDetectionMode requestedPlaneDetectionMode
             {
-                set
-                {
-                    m_PlaneDetectionMode = MLPlanesQueryFlags.None;
-                    if ((value & PlaneDetectionMode.Horizontal) != 0)
-                        m_PlaneDetectionMode |= MLPlanesQueryFlags.Horizontal;
-                    if ((value & PlaneDetectionMode.Vertical) != 0)
-                        m_PlaneDetectionMode |= MLPlanesQueryFlags.Vertical;
-                }
+                get => m_RequestedPlaneDetectionMode.ToPlaneDetectionMode();
+                set => m_RequestedPlaneDetectionMode = value.ToMLPlaneQueryFlags();
             }
+
+            public override PlaneDetectionMode currentPlaneDetectionMode => m_CurrentPlaneDetectionMode.ToPlaneDetectionMode();
 
             public override void Start()
             {
@@ -110,6 +112,7 @@ namespace UnityEngine.XR.MagicLeap
                 {
                     Debug.LogError($"Restarting the plane subsystem with an existing boundaries list.");
                 }
+                MagicLeapFeatures.SetFeatureRequested(Feature.PlaneTracking, true);
 
                 m_BoundariesList = MLPlaneBoundariesList.Create();
             }
@@ -127,6 +130,7 @@ namespace UnityEngine.XR.MagicLeap
                     Native.Destroy(m_PlanesTracker);
                     m_PlanesTracker = Native.k_InvalidHandle;
                 }
+                MagicLeapFeatures.SetFeatureRequested(Feature.PlaneTracking, false);
 
                 m_QueryHandle = Native.k_InvalidHandle;
             }
@@ -306,7 +310,7 @@ namespace UnityEngine.XR.MagicLeap
 
                 var query = new MLPlanesQuery
                 {
-                    flags = m_PlaneDetectionMode | MLPlanesQueryFlags.Polygons | MLPlanesQueryFlags.Semantic_All,
+                    flags = m_RequestedPlaneDetectionMode | MLPlanesQueryFlags.Polygons | MLPlanesQueryFlags.Semantic_All,
                     bounds_center = Vector3.zero,
                     bounds_rotation = Quaternion.identity,
                     bounds_extents = Vector3.zero,
@@ -321,18 +325,25 @@ namespace UnityEngine.XR.MagicLeap
                     return Native.k_InvalidHandle;
                 }
 
+                m_CurrentPlaneDetectionMode = m_RequestedPlaneDetectionMode;
+
                 return queryHandle;
             }
         }
 
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         static void RegisterDescriptor()
         {
 #if PLATFORM_LUMIN
             XRPlaneSubsystemDescriptor.Create(new XRPlaneSubsystemDescriptor.Cinfo
             {
                 id = "MagicLeap-Planes",
+#if UNITY_2020_2_OR_NEWER
+                providerType = typeof(MagicLeapPlaneSubsystem.MagicLeapProvider),
+                subsystemTypeOverride = typeof(MagicLeapPlaneSubsystem),
+#else
                 subsystemImplementationType = typeof(MagicLeapPlaneSubsystem),
+#endif
                 supportsHorizontalPlaneDetection = true,
                 supportsVerticalPlaneDetection = true,
                 supportsArbitraryPlaneDetection = true,

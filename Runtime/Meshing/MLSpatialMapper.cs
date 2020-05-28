@@ -4,7 +4,9 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using UnityEngine;
 using UnityEngine.Lumin;
+using UnityEngine.Serialization;
 using UnityEngine.XR;
+using UnityEngine.XR.ARSubsystems;
 using UnityEngine.XR.Management;
 using UnityEngine.XR.MagicLeap.Meshing;
 
@@ -19,6 +21,7 @@ namespace UnityEngine.XR.MagicLeap
 
     [AddComponentMenu("AR/Magic Leap/ML Spatial Mapper")]
     [UsesLuminPrivilege("WorldReconstruction")]
+    [DisallowMultipleComponent]
     public sealed class MLSpatialMapper : MonoBehaviour
     {
         /// <summary>
@@ -99,7 +102,7 @@ namespace UnityEngine.XR.MagicLeap
                 return 0.0f;
             else if (lod == LevelOfDetail.Medium)
                 return 0.5f;
-            else 
+            else
                 return 1.0f;
         }
 
@@ -116,7 +119,7 @@ namespace UnityEngine.XR.MagicLeap
         [Obsolete("Replaced by density")]
         public LevelOfDetail levelOfDetail
         {
-            get 
+            get
             {
                 return DensityToLevelOfDetail(m_Density);
             }
@@ -156,23 +159,47 @@ namespace UnityEngine.XR.MagicLeap
         }
 
         [SerializeField]
-        MeshType m_MeshType = Defaults.meshType;
+        [FormerlySerializedAs("m_MeshType")]
+        MeshType m_RequestedMeshType = Defaults.meshType;
 
         /// <summary>
         /// Whether to generate a triangle mesh or point cloud points.
         /// </summary>
+        [Obsolete("Replaced by requestedMeshType and currentMeshType")]
         public MeshType meshType
         {
-            get { return m_MeshType; }
+            get { return m_RequestedMeshType; }
             set
             {
-                if (m_MeshType != value)
+                if (m_RequestedMeshType != value)
                 {
-                    m_MeshType = value;
+                    m_RequestedMeshType = value;
                     m_SettingsDirty = true;
                 }
             }
         }
+
+        /// <summary>
+        /// Request Magic Leap to generate a triangle mesh or point cloud points.
+        /// </summary>
+        public MeshType requestedMeshType
+        {
+            get { return m_RequestedMeshType; }
+            set
+            {
+                if (m_RequestedMeshType != value)
+                {
+                    m_RequestedMeshType = value;
+                    m_SettingsDirty = true;
+                }
+            }
+        }
+
+        /// <summary>
+        /// The current mesh type being surfaced by the subsystem provider.
+        /// </summary>
+        public MeshType currentMeshType
+            => MagicLeapFeatures.currentFeatures.HasFlag(Feature.Meshing) ? MeshType.Triangles : MeshType.PointCloud;
 
         [SerializeField]
         float m_FillHoleLength = Defaults.fillHoleLength;
@@ -476,9 +503,8 @@ namespace UnityEngine.XR.MagicLeap
                 flags |= MLMeshingFlags.Planarize;
             if (removeMeshSkirt)
                 flags |= MLMeshingFlags.RemoveMeshSkirt;
-            if (meshType == MeshType.PointCloud)
+            if (requestedMeshType == MeshType.PointCloud)
                 flags |= MLMeshingFlags.PointCloud;
-
             var settings = new MLMeshingSettings
             {
                 flags = flags,
@@ -788,7 +814,7 @@ namespace UnityEngine.XR.MagicLeap
                     // Disable the collision mesh if we're in point cloud mode
                     var meshCollider = meshGameObject.GetComponent<MeshCollider>();
                     if (meshCollider != null)
-                        meshCollider.enabled = (meshType != MeshType.PointCloud);
+                        meshCollider.enabled = (currentMeshType != MeshType.PointCloud);
                 }
             }
             else

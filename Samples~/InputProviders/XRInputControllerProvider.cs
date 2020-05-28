@@ -155,7 +155,7 @@ namespace UnityEngine.XR.MagicLeap.Samples
         }
 #endif
 #endif// UNITY_LUMIN
-    } 
+    }
 }
 
 #endif // USE_LEGACY_INPUT_HELPERS

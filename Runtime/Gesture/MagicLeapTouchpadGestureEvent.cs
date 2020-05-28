@@ -101,7 +101,7 @@ namespace UnityEngine.XR.MagicLeap
         public MagicLeapInputControllerTouchpadGestureType type { get { return m_Type; } }
 
         /// <summary>
-        /// Gets a default-initialized <see cref="MagicLeapTouchpadGestureEvent"/>. 
+        /// Gets a default-initialized <see cref="MagicLeapTouchpadGestureEvent"/>.
         /// </summary>
         /// <returns>A default <see cref="MagicLeapTouchpadGestureEvent"/>.</returns>
         public static MagicLeapTouchpadGestureEvent GetDefault()
@@ -174,7 +174,7 @@ namespace UnityEngine.XR.MagicLeap
                 hashCode = (hashCode * 486187739) + ((int)m_Radius).GetHashCode();
                 hashCode = (hashCode * 486187739) + ((int)m_Speed).GetHashCode();
                 hashCode = (hashCode * 486187739) + ((int)m_Type).GetHashCode();
-                
+
                 return hashCode;
             }
         }

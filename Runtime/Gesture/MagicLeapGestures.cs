@@ -1,6 +1,5 @@
 using System;
-using System.Collections;
-using Unity.Collections;
+using UnityEngine.XR.Management;
 using UnityEngine.XR.InteractionSubsystems;
 
 namespace UnityEngine.XR.MagicLeap
@@ -12,7 +11,7 @@ namespace UnityEngine.XR.MagicLeap
     /// </para>
     /// </summary>
     [DisallowMultipleComponent]
-    public sealed class MagicLeapGestures : SubsystemLifecycleManager<XRGestureSubsystem, XRGestureSubsystemDescriptor>
+    public sealed class MagicLeapGestures : MonoBehaviour
     {
         /// <summary>
         /// Get the <c>MagicLeapGestureSubsystem</c> whose lifetime this component manages.
@@ -45,9 +44,12 @@ namespace UnityEngine.XR.MagicLeap
             get => m_ControllerGesturesEnabled;
             set
             {
-                m_ControllerGesturesEnabled = value;
-                if (gestureSubsystem != null)
-                    gestureSubsystem.EnableControllerGestures(m_ControllerGesturesEnabled);
+                if(m_ControllerGesturesEnabled != value)
+                {
+                    m_ControllerGesturesEnabled = value;
+                    if (enabled && gestureSubsystem != null)
+                        gestureSubsystem.ControllerGesturesEnabled = m_ControllerGesturesEnabled;
+                }
             }
         }
 
@@ -56,30 +58,34 @@ namespace UnityEngine.XR.MagicLeap
             get => m_HandGesturesEnabled;
             set
             {
-                m_HandGesturesEnabled = value;
-                if (gestureSubsystem != null)
-                    gestureSubsystem.EnableHandGestures(m_HandGesturesEnabled);
+                if (m_HandGesturesEnabled != value)
+                {
+                    m_HandGesturesEnabled = value;
+                    if (enabled && gestureSubsystem != null)
+                        gestureSubsystem.HandGesturesEnabled = m_HandGesturesEnabled;
+                }
             }
         }
 
-        protected override void OnEnable()
+        void OnEnable()
         {
-            base.OnEnable();
-
-            if (subsystem != null && subsystem is MagicLeapGestureSubsystem)
-                gestureSubsystem = subsystem as MagicLeapGestureSubsystem;
-
+            gestureSubsystem = XRGeneralSettings.Instance?.Manager?.activeLoader?.GetLoadedSubsystem<XRGestureSubsystem>() as MagicLeapGestureSubsystem;
             if (gestureSubsystem != null)
             {
-                    gestureSubsystem.EnableControllerGestures(m_ControllerGesturesEnabled);
-                    gestureSubsystem.EnableHandGestures(m_HandGesturesEnabled);
+                gestureSubsystem.HandGesturesEnabled = m_HandGesturesEnabled;
+                gestureSubsystem.ControllerGesturesEnabled = m_ControllerGesturesEnabled;
             }
         }
 
-        void Reset()
+        void OnDisable()
         {
-            m_ControllerGesturesEnabled = true;
-            m_HandGesturesEnabled = true;
+            if (gestureSubsystem != null)
+            {
+                gestureSubsystem.HandGesturesEnabled = false;
+                gestureSubsystem.ControllerGesturesEnabled = false;
+            }
+
+            gestureSubsystem = null;
         }
 
         void Update()

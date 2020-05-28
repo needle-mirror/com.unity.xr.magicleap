@@ -8,7 +8,7 @@ using System.Collections.Generic;
 namespace UnityEditor.XR.MagicLeap
 {
     /// <summary>
-    /// A scriptable object that is used to cache image library binary blob 
+    /// A scriptable object that is used to cache image library binary blob
     /// generation data to prevent rebuilds everytime the user presses play in
     /// the editor.
     /// </summary>
