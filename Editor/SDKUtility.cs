@@ -3,6 +3,7 @@ using System.IO;
 using System.Runtime.InteropServices;
 
 using UnityEditor;
+using UnityEngine;
 
 namespace UnityEditor.XR.MagicLeap
 {
@@ -23,6 +24,11 @@ namespace UnityEditor.XR.MagicLeap
 
             [DllImport("UnityMagicLeap", EntryPoint = "UnityMagicLeap_PlatformGetAPILevel")]
             public static extern uint GetAPILevel();
+        }
+
+        public class SDKManifest
+        {
+            public string version;
         }
 
         internal static bool isCompatibleSDK
@@ -76,6 +82,10 @@ namespace UnityEditor.XR.MagicLeap
             {
                 return EditorPrefs.GetString("LuminSDKRoot", null);
             }
+        }
+        internal static Version sdkVersion
+        {
+            get => new Version(JsonUtility.FromJson<SDKManifest>(File.ReadAllText(Path.Combine(sdkPath, kManifestPath))).version);
         }
     }
 }

@@ -1,5 +1,23 @@
 # Changelog
 
+## [4.2.0-preview.3] - 2020-08-19
+- Fix issue causing CI testing to fail erroneously.
+
+## [4.2.0-preview.2] - 2020-08-17
+- Update the target Unity version to 2019.4f4.4
+
+## [4.2.0-preview.1] - 2020-04-14
+- Update XR Management Dependency to 3.2.10
+- Added manifest setting to enable background music privileges
+- APIs added for `QuerySupportedTrackingOriginModes`, `QueryTrackingOriginMode`, and `SetTrackingOriginMode`
+- Fixed issue where controller state information was incorrectly surfaced from the companion application
+- Fixed issue where Zero Iteration libraries where incorrectly imported for MacOS
+- Fixed issue where using `NativeArrayUnsafeUtility.ConvertExistingDataToNativeArray` resulted in an error while running in the Editor
+- Fix issue where UnityMagicLeap libraries were included in Standalone Desktop builds when using Magic Leap
+Zero Iteration Plugin Provider from XR Management (The intent of the Standalone Desktop provider is to allow
+rapid iteration from the Unity Editor with Magic Leap's The Lab Zero Iteration module and not for use in standalone
+builds)
+
 ## [4.1.3] - 2020-04-07
 - Conditionally compile out XR Management related classes that depend on XR Management `3.2.x`
 - Revert dependency on XR Management `3.0.6`

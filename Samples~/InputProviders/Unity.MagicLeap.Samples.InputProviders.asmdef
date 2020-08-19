@@ -4,7 +4,10 @@
         "UnityEngine.SpatialTracking",
         "UnityEngine.XR.MagicLeap"
     ],
-    "includePlatforms": [],
+    "includePlatforms": [
+        "Editor",
+        "Lumin"
+    ],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,

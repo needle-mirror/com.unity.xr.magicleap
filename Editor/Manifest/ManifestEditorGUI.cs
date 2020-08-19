@@ -33,6 +33,10 @@ namespace UnityEditor.XR.MagicLeap
             {
                 var apiLevel = serializedObject.FindProperty("m_MinimumAPILevel");
                 apiLevel.intValue = PlatformLevelSelector.SelectorGUI(apiLevel.intValue);
+
+                var allowBMS = serializedObject.FindProperty("m_AllowBackgroundMusicService");
+                allowBMS.boolValue = EditorGUILayout.ToggleLeft("Allow Background Music Service", allowBMS.boolValue);
+
                 EditorGUILayout.LabelField("Privileges", EditorStyles.boldLabel);
                 var priv_groups = serializedObject.FindProperty("m_PrivilegeGroups");
                 for (int i = 0; i < priv_groups.arraySize; i++)
@@ -60,6 +64,7 @@ namespace UnityEditor.XR.MagicLeap
                     }
                     EditorGUILayout.EndFoldoutHeaderGroup();
                 }
+
                 serializedObject.ApplyModifiedProperties();
                 GUILayout.FlexibleSpace();
                 EditorGUILayout.HelpBox(Messages.kShouldSynchronize, MessageType.Info, true);

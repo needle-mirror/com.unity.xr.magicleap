@@ -2,6 +2,7 @@
     "name": "UnityEditor.XR.MagicLeap",
     "references": [
         "UnityEngine.XR.MagicLeap",
+        "Unity.XR.Management",
         "Unity.XR.Management.Editor"
     ],
     "optionalUnityReferences": [],

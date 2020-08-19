@@ -68,9 +68,9 @@ namespace UnityEngine.XR.MagicLeap.Rendering
             {
                 float farClip = kDefaultFarClip;
                 UnityMagicLeap_RenderingTryGetParameter("FarClipDistance", out farClip);
-                return RenderingUtility.ToUnityUnits(farClip, s_CachedCameraScale);
+                return farClip;
             }
-            internal set { UnityMagicLeap_RenderingSetParameter("FarClipDistance", RenderingUtility.ToMagicLeapUnits(value, s_CachedCameraScale)); }
+            internal set { UnityMagicLeap_RenderingSetParameter("FarClipDistance", value); }
         }
         public static float focusDistance
         {
@@ -78,9 +78,9 @@ namespace UnityEngine.XR.MagicLeap.Rendering
             {
                 float focus = 0f;
                 UnityMagicLeap_RenderingTryGetParameter("FocusDistance", out focus);
-                return RenderingUtility.ToUnityUnits(focus, s_CachedCameraScale); 
+                return focus;
             }
-            internal set { UnityMagicLeap_RenderingSetParameter("FocusDistance", RenderingUtility.ToMagicLeapUnits(value, s_CachedCameraScale)); }
+            internal set { UnityMagicLeap_RenderingSetParameter("FocusDistance", value); }
         }
         public static FrameTimingHint frameTimingHint
         {
@@ -107,7 +107,7 @@ namespace UnityEngine.XR.MagicLeap.Rendering
             {
                 float minNearClip = 0.5f;
                 UnityMagicLeap_RenderingTryGetParameter("MinNearClipDistance", out minNearClip);
-                return RenderingUtility.ToUnityUnits(minNearClip, s_CachedCameraScale);
+                return minNearClip;
             }
         }
         public static float nearClipDistance
@@ -116,9 +116,9 @@ namespace UnityEngine.XR.MagicLeap.Rendering
             {
                 float nearClip = 0.5f;
                 UnityMagicLeap_RenderingTryGetParameter("NearClipDistance", out nearClip);
-                return RenderingUtility.ToUnityUnits(nearClip, s_CachedCameraScale);
+                return nearClip;
             }
-            internal set { UnityMagicLeap_RenderingSetParameter("NearClipDistance", RenderingUtility.ToMagicLeapUnits(value, s_CachedCameraScale)); }
+            internal set { UnityMagicLeap_RenderingSetParameter("NearClipDistance", value); }
         }
         [Obsolete("use MagicLeapSettings.forceMultipass to force multipass rendering instead")]
         public static bool singlePassEnabled
@@ -137,9 +137,9 @@ namespace UnityEngine.XR.MagicLeap.Rendering
             {
                 float distance = 10f;
                 UnityMagicLeap_RenderingTryGetParameter("StabilizationDistance", out distance);
-                return RenderingUtility.ToUnityUnits(distance, s_CachedCameraScale);
+                return distance;
             }
-            internal set { UnityMagicLeap_RenderingSetParameter("StabilizationDistance", RenderingUtility.ToMagicLeapUnits(value, s_CachedCameraScale)); }
+            internal set { UnityMagicLeap_RenderingSetParameter("StabilizationDistance", value); }
         }
         public static bool useProtectedSurface
         {

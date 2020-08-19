@@ -7,10 +7,11 @@
         "GUID:0acc523941302664db1f4e527237feb3",
         "GUID:4e3c30dd36847b044bbb0be47153a753"
     ],
-    "includePlatforms": [],
-    "excludePlatforms": [
-        "LinuxStandalone64"
+    "includePlatforms": [
+        "Editor",
+        "Lumin"
     ],
+    "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": true,
     "precompiledReferences": [
