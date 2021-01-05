@@ -83,7 +83,7 @@ namespace UnityEngine.XR.MagicLeap
         {
             if (!isInitialized()) return false;
             var result = Native.CheckPrivilege(privilegeId);
-            MLLog.Debug(kLogTag, "requested id {0}: {1}", privilegeId, result.ToString());
+            MLLog.Debug(kLogTag, "checking privilege id {0}: {1}", privilegeId, result.ToString());
             return result == ResultCode.Granted;
         }
 
@@ -91,7 +91,7 @@ namespace UnityEngine.XR.MagicLeap
         {
             if (!isInitialized()) return false;
             var result = Native.RequestPrivilege(privilegeId);
-            MLLog.Debug(kLogTag, "requested id {0}: {1}", privilegeId, result.ToString());
+            MLLog.Debug(kLogTag, "requesting privilege id {0}: {1}", privilegeId, result.ToString());
             return result == ResultCode.Granted;
         }
     }

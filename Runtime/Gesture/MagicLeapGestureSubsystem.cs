@@ -87,8 +87,6 @@ namespace UnityEngine.XR.MagicLeap
             {
 #if PLATFORM_LUMIN
                 NativeApi.Create();
-#else
-                Debug.LogWarning("Attempting to create a MagicLeapGestureProvider while not on the Lumin platform.  This will be ignored.");
 #endif
             }
 
@@ -186,6 +184,7 @@ namespace UnityEngine.XR.MagicLeap
 #endif
         static void RegisterDescriptor()
         {
+#if PLATFORM_LUMIN
             XRGestureSubsystemDescriptor.RegisterDescriptor(
                 new XRGestureSubsystemDescriptor.Cinfo
                 {
@@ -193,6 +192,7 @@ namespace UnityEngine.XR.MagicLeap
                     subsystemImplementationType = typeof(MagicLeapGestureSubsystem),
                 }
             );
+#endif
         }
 
         static class NativeApi

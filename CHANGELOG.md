@@ -1,5 +1,18 @@
 # Changelog
 
+## [6.1.0-preview.2] - 2021-01-05
+- Fixed a bug discovered with a later version of Visual Studio 2019.
+- Fixed an issue where an unsupported MLSDK would prevent the Manifest Settings from rendering properly (Fixes FB# 1289174)
+- Fixed a issue where image tracking would automatically activate the image tracking camera on the device.
+
+## [6.1.0-preview.1] - 2020-08-26
+- Fixed issue where enabling / disabling / re-enabling the `MagicLeapGestures` component would cause hands to lose tracking
+for the rest of the session
+- Fixed a minor issue where an invalid Coordinate Frame UID was incorrectly causing excessive log spam
+
+## [6.0.1] - 2020-06-08
+- Fixed issue where `MagicLeapGestureSubsystem` would spout a warning in editor when not targeting the Lumin Platform.
+
 ## [6.0.0] - 2020-05-28
 - Update dependency for XR Management to `3.2.10`
 - Fix issue where UnityMagicLeap libraries were included in Standalone Desktop builds when using Magic Leap

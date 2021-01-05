@@ -159,13 +159,13 @@ namespace UnityEngine.XR.MagicLeap
                 CreateSubsystem<XRMeshSubsystemDescriptor, XRMeshSubsystem>(s_MeshSubsystemDescriptor, "MagicLeap-Mesh");
                 if (meshSubsystem != null)
                 {
+                    // Register native callbacks for feature API
+                    meshSubsystem.RegisterNativeSubsystemCallbacks();
+
                     MeshingSettings.meshingSettings = MLSpatialMapper.GetDefaultMeshingSettings();
                     MeshingSettings.batchSize = MLSpatialMapper.Defaults.batchSize;
                     MeshingSettings.density = MLSpatialMapper.Defaults.density;
                     MeshingSettings.SetBounds(Vector3.zero, Quaternion.identity, MLSpatialMapper.Defaults.boundsExtents);
-
-                    // Register native callbacks for feature API
-                    meshSubsystem.RegisterNativeSubsystemCallbacks();
                 }
             }
 

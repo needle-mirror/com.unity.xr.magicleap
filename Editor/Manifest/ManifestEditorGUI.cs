@@ -12,6 +12,7 @@ namespace UnityEditor.XR.MagicLeap
         internal static class Messages
         {
             internal const string kCannotLocateSDK = "Cannot find the Lumin SDK. Please specify the path to the Lumin SDK in the editor preferences";
+            internal const string kUnusableSDK = "Your Lumin SDK appears to have an API level below the minimum API level. Please upgrade your Lumin SDK";
             internal const string kShouldSynchronize = "Click the 'Synchronize' button below to update the privileges list against the Lumin SDK specified in the editor preferences. If you've recently upgraded the Lumin SDK, you'll need to do this to get access to newer privileges";
         }
         class RenderState
@@ -29,7 +30,10 @@ namespace UnityEditor.XR.MagicLeap
             var missingSdk = !SDKUtility.sdkAvailable;
             if (missingSdk)
                 EditorGUILayout.HelpBox(Messages.kCannotLocateSDK, MessageType.Error, true);
-            using (new EditorGUI.DisabledScope(missingSdk))
+            var invalidSdk = !SDKUtility.isCompatibleSDK;
+            if (invalidSdk)
+                EditorGUILayout.HelpBox(Messages.kUnusableSDK, MessageType.Error, true);
+            using (new EditorGUI.DisabledScope(missingSdk || invalidSdk))
             {
                 var apiLevel = serializedObject.FindProperty("m_MinimumAPILevel");
                 apiLevel.intValue = PlatformLevelSelector.SelectorGUI(apiLevel.intValue);
