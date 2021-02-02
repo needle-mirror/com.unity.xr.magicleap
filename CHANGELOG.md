@@ -1,5 +1,13 @@
 # Changelog
 
+## [6.2.0] - 2021-02-02
+- Downgrade to AR Subsystems `4.0.12`
+
+## [6.1.0] - 2021-01-28
+- Bump minimum Unity version to `2020.2`
+- Update XR Management to `4.0.1`
+- Fixed a case where hands weren't properly shutdown when stopping the XR Input subsystem
+
 ## [6.1.0-preview.2] - 2021-01-05
 - Fixed a bug discovered with a later version of Visual Studio 2019.
 - Fixed an issue where an unsupported MLSDK would prevent the Manifest Settings from rendering properly (Fixes FB# 1289174)

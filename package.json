@@ -1,8 +1,8 @@
 {
   "name": "com.unity.xr.magicleap",
   "displayName": "Magic Leap XR Plugin",
-  "version": "6.1.0-preview.2",
-  "unity": "2020.1",
+  "version": "6.2.0",
+  "unity": "2020.2",
   "description": "Provides rendering and spatial mapping support for Magic Leap.\n\nNOTE: As of Unity 2019.2, Legacy XR support for MagicLeap is disabled in favor of XR SDK",
   "keywords": [
     "magicleap",
@@ -17,17 +17,17 @@
     "com.unity.modules.vr": "1.0.0",
     "com.unity.modules.xr": "1.0.0",
     "com.unity.ugui": "1.0.0",
-    "com.unity.xr.arsubsystems": "4.0.1",
+    "com.unity.xr.arsubsystems": "4.0.12",
     "com.unity.xr.interactionsubsystems": "1.0.1",
-    "com.unity.xr.management": "3.2.10"
+    "com.unity.xr.management": "4.0.1"
   },
   "upmCi": {
-    "footprint": "9da474f929e3550a4012b9c3b4c3b37a0e04443a"
+    "footprint": "faa3dca49e5ced7b40097b7668dab6dba8cad4d3"
   },
   "repository": {
     "url": "https://github.cds.internal.unity3d.com/unity/xr.sdk.magicleap.git",
     "type": "git",
-    "revision": "23c7125e4064b4f3da36e2d9eeba841620febc5e"
+    "revision": "4f8fd329cae742cc7fc7291045094c97f02d26f8"
   },
   "samples": [
     {
