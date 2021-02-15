@@ -6,5 +6,9 @@
     ],
     "references": [
         "UnityEngine.XR.MagicLeap"
+    ],
+    "autoReferenced": false,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
     ]
 }

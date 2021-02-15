@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Runtime.InteropServices;
 
 using UnityEngine.XR;
@@ -187,6 +188,10 @@ namespace UnityEngine.XR.MagicLeap
 
             if (!isLegacyDeviceActive)
             {
+                StartSubsystem<XRDisplaySubsystem>();
+
+                // we need to set the layout after the display subsystem has started, as these values are not used during
+                // the XRDisplayProvider's startup (Starting the Subsystem).
                 var settings = MagicLeapSettings.currentSettings;
 #if UNITY_2020_1_OR_NEWER
                 if (settings != null && settings.forceMultipass)
@@ -199,7 +204,6 @@ namespace UnityEngine.XR.MagicLeap
                 else
                     displaySubsystem.singlePassRenderingDisabled = false;
 #endif // UNITY_2020_1_OR_NEWER
-                StartSubsystem<XRDisplaySubsystem>();
                 m_DisplaySubsystemRunning = true;
             }
             return true;
@@ -320,7 +324,7 @@ namespace UnityEngine.XR.MagicLeap
         internal static bool IsEnabledForPlatform(this XRLoader loader, BuildTargetGroup group)
         {
             var settings = XRGeneralSettingsPerBuildTarget.XRGeneralSettingsForBuildTarget(group);
-            return settings?.Manager?.loaders?.Contains(loader) ?? false;
+            return settings?.Manager?.activeLoaders?.Contains(loader) ?? false;
         }
 
         internal static bool IsEnabledForPlatform(this XRLoader loader, BuildTarget target)

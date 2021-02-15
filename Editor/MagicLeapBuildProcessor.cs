@@ -49,7 +49,7 @@ namespace UnityEditor.XR.MagicLeap
             if (generalSettings == null)
                 return false;
 
-            foreach (var loader in generalSettings.Manager.loaders)
+            foreach (var loader in generalSettings.Manager.activeLoaders)
             {
                 if (loader is MagicLeapLoader)
                     return true;

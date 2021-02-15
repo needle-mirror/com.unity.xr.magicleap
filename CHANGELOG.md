@@ -1,11 +1,17 @@
 # Changelog
 
+## [6.2.2] - 2021-02-15
+- Update C# assemblies to compile with "warnings as errors"
+- Fix usage of obsolete APIs from XR Managment
+- Fix an issue where eyetracking would fail in ZI.
+
 ## [6.2.0] - 2021-02-02
 - Downgrade to AR Subsystems `4.0.12`
 
 ## [6.1.0] - 2021-01-28
 - Bump minimum Unity version to `2020.2`
 - Update XR Management to `4.0.1`
+- Fixed a bug where setting 'Force Multipass' to true was being ignored.
 - Fixed a case where hands weren't properly shutdown when stopping the XR Input subsystem
 
 ## [6.1.0-preview.2] - 2021-01-05
