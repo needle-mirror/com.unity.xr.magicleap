@@ -1,6 +1,25 @@
 # Changelog
 
-## [4.2.0-preview.3] - 2020-08-19
+## [4.2.2] - 2021-02-15
+- Fix a usage of an obsolete XR Management API in editor code
+
+## [4.2.1] - 2021-02-11
+- Enable "warnings as errors" to make sure the package C# assemblies compile cleanly
+- Fix a couple warnings triggered by the upgrade to XR Management `4.0.1`
+- Fixed a bug where setting 'Force Multipass' to true was being ignored.
+- Fixed an issue where eyetracking would fail in ZI.
+
+## [4.2.0] - 2021-01-26
+- Update XR Management to `4.0.1`
+- Fixed a case where hands weren't properly shutdown when stopping the XR Input subsystem
+- Fixed a bug discovered with a later version of Visual Studio 2019.
+- Added an error message when attempting to use an unsupported MLSDK
+- Fixed an issue where an unsupported MLSDK would prevent the Manifest Settings from rendering properly (Fixes FB# 1289174)
+
+## [4.2.0-preview.4] - 2020-10-28
+- Fix Issue 1286802: Multipass rendering to only renders in the left eye.
+
+## [4.2.0-preview.3] - 2020-10-22
 - Fix issue causing CI testing to fail erroneously.
 
 ## [4.2.0-preview.2] - 2020-08-17

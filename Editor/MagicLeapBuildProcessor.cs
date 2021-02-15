@@ -49,7 +49,7 @@ namespace UnityEditor.XR.MagicLeap
             if (generalSettings == null)
                 return false;
 
-            foreach (var loader in generalSettings.Manager.loaders)
+            foreach (var loader in generalSettings.Manager.activeLoaders)
             {
                 if (loader is MagicLeapLoader)
                     return true;
@@ -58,7 +58,7 @@ namespace UnityEditor.XR.MagicLeap
 
             return false;
         }
-        
+
         // Remoting is only intended to work in the editor so builds are disallowed to have the libraries
         public bool ShouldIncludeRemotingPluginsInBuild(string path) => false;
 
