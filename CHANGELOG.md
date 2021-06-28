@@ -1,5 +1,14 @@
 # Changelog
 
+## [6.3.0-preview.1] - 2021-06-28
+- Update the Image Tracking subsystem to create the Image Tracker disabled and synchronously.
+- Explicitly add a way to increment the reference count of the Native Image Tracker to allow for external code to clean up the tracker.
+- Emit XRInputSubsystem.trackingOriginUpdated event when Lumin reports a new tracking session.
+- Fix a compiler warning about unused format arguments.
+- Fixed a new issue with unity 2021.2.0a14 where building a lumin project gives an error (Fixes FB# 1328078)
+- Fixed an issue where `isTracked` and `TrackingState` were not getting updated correctly (Fixes FB# 1175008)
+- Addressed a case where getting the best controller may not return a valid controller.
+
 ## [6.2.2] - 2021-02-15
 - Update C# assemblies to compile with "warnings as errors"
 - Fix usage of obsolete APIs from XR Managment
@@ -14,7 +23,6 @@
 - Fixed a bug where setting 'Force Multipass' to true was being ignored.
 - Fixed a case where hands weren't properly shutdown when stopping the XR Input subsystem
 
-## [6.1.0-preview.2] - 2021-01-05
 - Fixed a bug discovered with a later version of Visual Studio 2019.
 - Fixed an issue where an unsupported MLSDK would prevent the Manifest Settings from rendering properly (Fixes FB# 1289174)
 - Fixed a issue where image tracking would automatically activate the image tracking camera on the device.

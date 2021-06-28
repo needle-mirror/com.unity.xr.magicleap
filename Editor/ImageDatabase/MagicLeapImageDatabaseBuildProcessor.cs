@@ -43,7 +43,7 @@ namespace UnityEditor.XR.MagicLeap
 
         static MagicLeapImageDatabaseLibraryCache s_LibraryCache;
 
-        static readonly string k_ImageLibraryModificationCachePath = Path.Combine("Assets" + MagicLeapImageTrackingSubsystem.k_StreamingAssetsPath.Substring(Application.dataPath.Length), "ImageLibraryCache.asset");
+        static readonly string k_ImageLibraryModificationCachePath = Path.Combine(MagicLeapImageTrackingSubsystem.k_ImageTrackingDependencyPath, "ImageLibraryDB.json");
 
         public static IEnumerable<T> AssetsOfType<T>() where T : UnityEngine.Object
         {
@@ -58,34 +58,49 @@ namespace UnityEditor.XR.MagicLeap
         {
             string libraryCachePath = k_ImageLibraryModificationCachePath;
 
-            var libraryCache = AssetDatabase.LoadAssetAtPath<MagicLeapImageDatabaseLibraryCache>(libraryCachePath);
+            MagicLeapImageDatabaseLibraryCache libraryCache = null;
+            if (File.Exists(libraryCachePath))
+            {
+                libraryCache =
+                    JsonUtility.FromJson<MagicLeapImageDatabaseLibraryCache>(File.ReadAllText(libraryCachePath));
+            }
 
             if (libraryCache == null)
             {
-                libraryCache = ScriptableObject.CreateInstance<MagicLeapImageDatabaseLibraryCache>();
-                libraryCache.m_LibraryCache = new Dictionary<string, DateTime>();
+                libraryCache = new MagicLeapImageDatabaseLibraryCache();
             }
             else
             {
-                foreach (var libraryGuid in libraryCache.m_LibraryCache)
+                foreach (var libraryGuid in libraryCache.m_ImageLibraryCache)
                 {
-                    if (!assetGuids.Contains(libraryGuid.Key))
-                        libraryCache.m_LibraryCache.Remove(libraryGuid.Key);
+                    if (!assetGuids.Contains(libraryGuid.assetGuid))
+                        libraryCache.m_ImageLibraryCache.Remove(libraryGuid);
                 }
             }
 
             return libraryCache;
         }
 
-        static bool DoesLibraryNeedToBeUpdated(string libraryGuid, ref Dictionary<string, DateTime> libraryCache)
+        static bool DoesLibraryNeedToBeUpdated(string libraryGuid, ref List<ImageDatabaseEntry> libraryCache)
         {
             var libraryPath = AssetDatabase.GUIDToAssetPath(libraryGuid);
             var pakFilePath = Path.Combine(MagicLeapImageTrackingSubsystem.k_StreamingAssetsPath, libraryGuid + ".imgpak");
             var currentTimestamp = File.GetLastWriteTime(libraryPath);
 
-            if (libraryCache.ContainsKey(libraryGuid) || File.Exists(pakFilePath))
+            var libraryEntryIndex = libraryCache.FindIndex(x => x.assetGuid == libraryGuid);
+            if (libraryEntryIndex < 0)
             {
-                var previousTimestamp = libraryCache[libraryGuid];
+                libraryCache.Add(new ImageDatabaseEntry()
+                {
+                    assetGuid = libraryGuid
+                });
+                libraryEntryIndex = libraryCache.Count - 1;
+            }
+
+            else if (File.Exists(pakFilePath) ||
+                libraryCache[libraryEntryIndex].assetGuid == libraryGuid)
+            {
+                var previousTimestamp = libraryCache[libraryEntryIndex].timeStamp;
 
                 if (!(previousTimestamp < currentTimestamp))
                 {
@@ -93,16 +108,20 @@ namespace UnityEditor.XR.MagicLeap
                 }
             }
 
-            libraryCache[libraryGuid] = currentTimestamp;
+            libraryCache[libraryEntryIndex].timeStamp = currentTimestamp;
             return true;
         }
 
         static void SaveStaticLibraryCachePostBuild()
         {
-            if (AssetDatabase.Contains(s_LibraryCache))
-                AssetDatabase.SaveAssets();
-            else
-                AssetDatabase.CreateAsset(s_LibraryCache, k_ImageLibraryModificationCachePath);
+            // Overwrite the current library cache file
+            if (!Directory.Exists(MagicLeapImageTrackingSubsystem.k_ImageTrackingDependencyPath))
+            {
+                Directory.CreateDirectory(MagicLeapImageTrackingSubsystem.k_ImageTrackingDependencyPath);
+            }
+
+            var jsonData = JsonUtility.ToJson(s_LibraryCache);
+            File.WriteAllText(k_ImageLibraryModificationCachePath, jsonData);
         }
 
         static void SetTemporaryTextureImportSettingsIfNeeded(
@@ -181,7 +200,7 @@ namespace UnityEditor.XR.MagicLeap
 
             foreach (var library in AssetsOfType<XRReferenceImageLibrary>())
             {
-                if (!DoesLibraryNeedToBeUpdated(assetGuidList[count++], ref s_LibraryCache.m_LibraryCache))
+                if (!DoesLibraryNeedToBeUpdated(assetGuidList[count++], ref s_LibraryCache.m_ImageLibraryCache))
                     continue;
 
                 EditorUtility.DisplayProgressBar(
