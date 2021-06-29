@@ -16,9 +16,8 @@ namespace UnityEngine.XR.MagicLeap
     {
         static class Native
         {
-#if PLATFORM_LUMIN
             const string Library = "UnityMagicLeap";
-
+#if PLATFORM_LUMIN
             [DllImport(Library, EntryPoint="UnityMagicLeap_InputGetControllerTrackerActive")]
             [return: MarshalAs(UnmanagedType.I1)]
             public static extern bool GetControllerActive();
@@ -34,8 +33,11 @@ namespace UnityEngine.XR.MagicLeap
             public static extern void SetEyeTrackerActive([MarshalAs(UnmanagedType.I1)]bool value);
 #else
             public static bool GetControllerActive() => false;
+
             public static void SetControllerActive(bool value) {}
+
             public static bool GetEyeTrackerActive() => false;
+
             public static void SetEyeTrackerActive(bool value) {}
 
 #endif // PLATFORM_LUMIN

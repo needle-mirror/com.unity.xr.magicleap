@@ -118,6 +118,10 @@ namespace UnityEngine.XR.MagicLeap
                 m_GestureSubsystemRunning = true;
             }
 
+            // If we have the ControllerPose privilege, let's also ensure that the Controller Api is enabled
+            var hasControllerPose = MagicLeapPrivileges.IsPrivilegeApproved((uint) Privileges.ControllerPose);
+            inputSubsystem?.SetControllerApiEnabled(hasControllerPose);
+
             if (!isLegacyDeviceActive)
             {
                 StartSubsystem<XRDisplaySubsystem>();
@@ -138,6 +142,7 @@ namespace UnityEngine.XR.MagicLeap
 #endif // UNITY_2020_1_OR_NEWER
                 m_DisplaySubsystemRunning = true;
             }
+
             return true;
         }
 

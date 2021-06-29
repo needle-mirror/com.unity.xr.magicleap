@@ -1,5 +1,11 @@
 # Changelog
 
+## [4.2.3-preview.1] - 2021-06-29
+- Emit XRInputSubsystem.trackingOriginUpdated event when Lumin reports a new tracking session.
+- Fix a compiler warning about unused format arguments.
+- Fixed an issue where `isTracked` and `TrackingState` were not getting updated correctly (Fixes FB# 1175008)
+- Addressed a case where getting the best controller may not return a valid controller.
+
 ## [4.2.2] - 2021-02-15
 - Fix a usage of an obsolete XR Management API in editor code
 
