@@ -1,5 +1,8 @@
 # Changelog
 
+## [6.3.0-preview.2] - 2021-07-15
+- Fixed 90 degree offset issue for Image Tracking.
+
 ## [6.3.0-preview.1] - 2021-06-28
 - Update the Image Tracking subsystem to create the Image Tracker disabled and synchronously.
 - Explicitly add a way to increment the reference count of the Native Image Tracker to allow for external code to clean up the tracker.
