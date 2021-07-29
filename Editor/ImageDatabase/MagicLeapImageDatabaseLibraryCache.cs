@@ -41,7 +41,7 @@ namespace UnityEditor.XR.MagicLeap
             m_ImageLibraryCache = new List<ImageDatabaseEntry>(25);
         }
 
-        [Obsolete("To be removed when we bump the major version", true)]
+        [Obsolete("To be removed when we bump the major version", false)]
         public Dictionary<string, DateTime> m_LibraryCache;
 
         public List<ImageDatabaseEntry> m_ImageLibraryCache;

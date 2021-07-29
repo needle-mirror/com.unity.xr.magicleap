@@ -16,6 +16,19 @@ namespace UnityEditor.XR.MagicLeap
 {
     class XRPackage : IXRPackage
     {
+        const string k_NotificationKey = "DidWarnAboutLuminDeprecation";
+        const string k_PackageNotificationTooltip =
+            @"Unity 2020 LTS will be the last version of the editor which supports Magic Leap 1. Developers can continue to build for Magic Leap 1 using Unity 2020 LTS or 2019 LTS.";
+
+        static XRPackage()
+        {
+            if (!SessionState.GetBool(k_NotificationKey, false))
+            {
+                Debug.LogWarning(k_PackageNotificationTooltip);
+                SessionState.SetBool(k_NotificationKey, true);
+            }
+        }
+
         private class MagicLeapPackageMetadata : IXRPackageMetadata
         {
             public string packageName => "Magic Leap Plugin";
@@ -27,7 +40,11 @@ namespace UnityEditor.XR.MagicLeap
 
         private class MagicLeapLoaderMetadata : IXRLoaderMetadata
         {
+#if (UNITY_2021_1_OR_NEWER)
+            public string loaderName => "Magic Leap - Note: Lumin Platform will be deprecated in Unity 2021.2!";
+#else
             public string loaderName => "Magic Leap";
+#endif
             public string loaderType => "UnityEngine.XR.MagicLeap.MagicLeapLoader";
             public List<BuildTargetGroup> supportedBuildTargets => s_SupportedBuildTargets;
             private static List<BuildTargetGroup> s_SupportedBuildTargets = new List<BuildTargetGroup>() { BuildTargetGroup.Lumin };

@@ -14,6 +14,7 @@ namespace UnityEditor.XR.MagicLeap
             internal const string kCannotLocateSDK = "Cannot find the Lumin SDK. Please specify the path to the Lumin SDK in the editor preferences";
             internal const string kUnusableSDK = "Your Lumin SDK appears to have an API level below the minimum API level. Please upgrade your Lumin SDK";
             internal const string kShouldSynchronize = "Click the 'Synchronize' button below to update the privileges list against the Lumin SDK specified in the editor preferences. If you've recently upgraded the Lumin SDK, you'll need to do this to get access to newer privileges";
+            internal const string kLuminPlatformDeprecation = "Unity 2020 LTS will be the last version of the editor which supports Magic Leap 1. Developers can continue to build for Magic Leap 1 using Unity 2020 LTS or 2019 LTS.";
         }
         class RenderState
         {
@@ -35,6 +36,9 @@ namespace UnityEditor.XR.MagicLeap
                 EditorGUILayout.HelpBox(Messages.kUnusableSDK, MessageType.Error, true);
             using (new EditorGUI.DisabledScope(missingSdk || invalidSdk))
             {
+#if UNITY_2020_1_OR_NEWER
+                EditorGUILayout.HelpBox(Messages.kLuminPlatformDeprecation, MessageType.Warning, true);
+#endif
                 var apiLevel = serializedObject.FindProperty("m_MinimumAPILevel");
                 apiLevel.intValue = PlatformLevelSelector.SelectorGUI(apiLevel.intValue);
 

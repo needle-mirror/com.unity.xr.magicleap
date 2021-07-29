@@ -1,5 +1,13 @@
 # Changelog
 
+## [6.4.0-pre.3] - 2021-07-29
+- Bump preview revision
+
+## [6.4.0-pre.2] - 2021-07-29
+- Bump preview revision
+
+## [6.4.0-pre.1] - 2021-07-29
+- Deprecating Lumin for 2021.1 and onwards.
 ## [6.3.0-preview.2] - 2021-07-15
 - Fixed 90 degree offset issue for Image Tracking.
 
