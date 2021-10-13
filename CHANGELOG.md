@@ -1,17 +1,11 @@
 # Changelog
 
-## [6.4.0-pre.3] - 2021-07-29
-- Bump preview revision
+## [6.4.1] - 2021-10-13
+ - Update legal docs with appropriate formatting.
 
-## [6.4.0-pre.2] - 2021-07-29
-- Bump preview revision
-
-## [6.4.0-pre.1] - 2021-07-29
+## [6.4.0] - 2021-09-15
 - Deprecating Lumin for 2021.1 and onwards.
-## [6.3.0-preview.2] - 2021-07-15
 - Fixed 90 degree offset issue for Image Tracking.
-
-## [6.3.0-preview.1] - 2021-06-28
 - Update the Image Tracking subsystem to create the Image Tracker disabled and synchronously.
 - Explicitly add a way to increment the reference count of the Native Image Tracker to allow for external code to clean up the tracker.
 - Emit XRInputSubsystem.trackingOriginUpdated event when Lumin reports a new tracking session.
