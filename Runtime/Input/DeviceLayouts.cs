@@ -1,6 +1,5 @@
 #if UNITY_INPUT_SYSTEM
 using UnityEngine.Scripting;
-using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Controls;
 using UnityEngine.InputSystem.Layouts;
 using UnityEngine.InputSystem.XR;
@@ -89,22 +88,22 @@ namespace UnityEngine.XR.MagicLeap
         }
 
         [Preserve]
-        [InputControl]
+        [InputControl(displayName = "Confidence Level")]
         public AxisControl confidence { get; private set; }
         [Preserve]
-        [InputControl]
+        [InputControl(displayName = "Fixation Point Confidence")]
         public AxisControl fixationPointConfidence { get; private set; }
         [Preserve]
-        [InputControl]
+        [InputControl(displayName = "Left Eye Center Confidence")]
         public AxisControl eyeLeftCenterConfidence { get; private set; }
         [Preserve]
-        [InputControl]
+        [InputControl(displayName = "Right Eye Center Confidence")]
         public AxisControl eyeRightCenterConfidence { get; private set; }
         [Preserve]
-        [InputControl]
+        [InputControl(displayName = "Eyes")]
         public EyesControl eyes { get; private set; }
         [Preserve]
-        [InputControl]
+        [InputControl(displayName = "Eye Calibration Status")]
         public IntegerControl eyeCalibrationStatus { get; private set; }
 
 
@@ -128,26 +127,26 @@ namespace UnityEngine.XR.MagicLeap
     public class MagicLeapHandDevice : XRController
     {
         [Preserve]
-        [InputControl]
+        [InputControl(displayName = "Center Point")]
         public Vector3Control center { get; private set; }
         [Preserve]
-        [InputControl]
+        [InputControl(displayName = "Rotation")]
         public QuaternionControl rotation { get; private set; }
 
         [Preserve]
-        [InputControl]
+        [InputControl(displayName = "Hand Confidence")]
         public AxisControl handConfidence { get; private set; }
         [Preserve]
-        [InputControl]
+        [InputControl(displayName = "Normalized Center")]
         public Vector3Control normalizeCenter { get; private set; }
         [Preserve]
-        [InputControl]
+        [InputControl(displayName = "Wrist Center Point")]
         public Vector3Control wristCenter { get; private set; }
         [Preserve]
-        [InputControl]
+        [InputControl(displayName = "Wrist Ulnar Point")]
         public Vector3Control wristUlnar { get; private set; }
         [Preserve]
-        [InputControl]
+        [InputControl(displayName = "Wrist Radial Point")]
         public Vector3Control wristRadial { get; private set; }
 
         //Need Bone control and Hand Control
@@ -172,45 +171,47 @@ namespace UnityEngine.XR.MagicLeap
     public class MagicLeapController : XRController
     {
         [Preserve]
-        [InputControl]
+        [InputControl(displayName = "Touchpad 1 Pressed")]
         public ButtonControl touchpad1Pressed { get; private set; }
         [Preserve]
-        [InputControl]
+        [InputControl(displayName = "Touchpad 1 Position")]
         public Vector2Control touchpad1Position { get; private set; }
         [Preserve]
-        [InputControl]
+        [InputControl(displayName = "Touchpad 1 Force")]
         public AxisControl touchpad1Force { get; private set; }
 
         [Preserve]
-        [InputControl]
+        [InputControl(displayName = "Touchpad 2 Pressed")]
         public ButtonControl touchpad2Pressed { get; private set; }
         [Preserve]
-        [InputControl]
+        [InputControl(displayName = "Touchpad 2 Position")]
         public Vector2Control touchpad2Position { get; private set; }
         [Preserve]
-        [InputControl]
+        [InputControl(displayName = "Touchpad 2 Force")]
         public AxisControl touchpad2Force { get; private set; }
-
         [Preserve]
-        [InputControl]
+        [InputControl(displayName = "Trigger Button")]
         public ButtonControl triggerButton { get; private set; }
         [Preserve]
-        [InputControl]
+        [InputControl(displayName = "Trigger Axis")]
         public AxisControl trigger { get; private set; }
         [Preserve]
-        [InputControl]
-        public ButtonControl bumper { get; private set; }
+        [InputControl(displayName = "Bumper Button")]
+        public ButtonControl bumperButton { get; private set; }
         [Preserve]
-        [InputControl]
+        [InputControl(displayName = "Bumper Axis")]
+        public AxisControl bumper { get; private set; }
+        [Preserve]
+        [InputControl(displayName = "Menu")]
         public ButtonControl menu { get; private set; }
         [Preserve]
-        [InputControl]
+        [InputControl(displayName = "Degrees of Freedom")]
         public IntegerControl dof { get; private set; }
         [Preserve]
-        [InputControl]
+        [InputControl(displayName = "Calibration Accuracy")]
         public IntegerControl calibrationAccuracy { get; private set; }
         [Preserve]
-        [InputControl]
+        [InputControl(displayName = "Input Control Type")]
         public IntegerControl type { get; private set; }
 
 
@@ -248,7 +249,8 @@ namespace UnityEngine.XR.MagicLeap
 
             triggerButton = GetChildControl<ButtonControl>("triggerButton");
             trigger = GetChildControl<AxisControl>("trigger");
-            bumper = GetChildControl<ButtonControl>("bumper");
+            bumperButton = GetChildControl<ButtonControl>("bumperbutton");
+            bumper = GetChildControl<AxisControl>("bumper");
             menu = GetChildControl<ButtonControl>("menu");
 
             dof = GetChildControl<IntegerControl>("dof");

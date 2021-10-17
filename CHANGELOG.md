@@ -1,7 +1,11 @@
 # Changelog
 
+## [6.4.2-preview.1] - 2021-10-17
+- Updating AR Subsystems to AR Foundation.
+- Releasing Input System fix.
+
 ## [6.4.1] - 2021-10-13
- - Update legal docs with appropriate formatting.
+- Update legal docs with appropriate formatting.
 
 ## [6.4.0] - 2021-09-15
 - Deprecating Lumin for 2021.1 and onwards.
