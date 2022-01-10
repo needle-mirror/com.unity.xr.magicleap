@@ -1,5 +1,8 @@
 # Changelog
 
+## [6.4.2-preview.2] - 2022-01-10
+- Updating XR Image reference library to only resolve to the Assets folder
+
 ## [6.4.2-preview.1] - 2021-10-17
 - Updating AR Subsystems to AR Foundation.
 - Releasing Input System fix.

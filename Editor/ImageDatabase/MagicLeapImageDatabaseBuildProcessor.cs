@@ -8,7 +8,6 @@ using UnityEditor.Build;
 using UnityEngine;
 using Unity.Jobs;
 using UnityEngine.XR.ARSubsystems;
-using System.Collections;
 
 namespace UnityEditor.XR.MagicLeap
 {
@@ -47,7 +46,7 @@ namespace UnityEditor.XR.MagicLeap
 
         public static IEnumerable<T> AssetsOfType<T>() where T : UnityEngine.Object
         {
-            foreach (var guid in AssetDatabase.FindAssets("t:" + typeof(T).Name))
+            foreach (var guid in AssetDatabase.FindAssets("t:" + typeof(T).Name, new [] {"Assets/"}))
             {
                 var path = AssetDatabase.GUIDToAssetPath(guid);
                 yield return AssetDatabase.LoadAssetAtPath<T>(path);
