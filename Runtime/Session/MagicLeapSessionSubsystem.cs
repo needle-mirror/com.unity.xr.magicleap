@@ -15,6 +15,10 @@ namespace UnityEngine.XR.MagicLeap
     public sealed class MagicLeapSessionSubsystem : XRSessionSubsystem
     {
 #if !UNITY_2020_2_OR_NEWER
+        /// <summary>
+        /// Create a Magic Leap provider
+        /// </summary>
+        /// <returns>Magic Leap implementation of a Session Subsystem.</returns>
         protected override Provider CreateProvider() => new MagicLeapProvider();
 #endif
 
@@ -30,11 +34,11 @@ namespace UnityEngine.XR.MagicLeap
             public override Promise<SessionAvailability> GetAvailabilityAsync()
             {
                 var availability =
-#if PLATFORM_LUMIN
+#if UNITY_ANDROID
                 SessionAvailability.Installed | SessionAvailability.Supported;
 #else
                 SessionAvailability.None;
-#endif
+#endif // UNITY_ANDROID
                 return Promise<SessionAvailability>.CreateResolvedPromise(availability);
             }
 
@@ -128,7 +132,7 @@ namespace UnityEngine.XR.MagicLeap
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         static void RegisterDescriptor()
         {
-#if PLATFORM_LUMIN
+#if UNITY_ANDROID
             XRSessionSubsystemDescriptor.RegisterDescriptor(new XRSessionSubsystemDescriptor.Cinfo
             {
                 id = "MagicLeap-Session",
@@ -140,7 +144,7 @@ namespace UnityEngine.XR.MagicLeap
 #endif
                 supportsInstall = false
             });
-#endif
+#endif // UNITY_ANDROID
         }
     }
 }

@@ -8,7 +8,7 @@ using UnityEngine.Experimental.XR.Interaction;
 using UnityEngine.SpatialTracking;
 #endif
 using UnityEngine.XR;
-#if UNITY_LUMIN
+#if UNITY_ANDROID
 using UnityEngine.XR.MagicLeap;
 #endif
 
@@ -25,7 +25,7 @@ namespace UnityEngine.XR.MagicLeap.Samples
         }
 
         public TrackingInformation trackingInformation;
-#if UNITY_LUMIN
+#if UNITY_ANDROID
 #if LIH_2_OR_NEWER
         public override PoseDataFlags GetPoseFromProvider(out Pose output)
         {
@@ -170,7 +170,7 @@ namespace UnityEngine.XR.MagicLeap.Samples
                 }
             }
         }
-#else// UNITY_LUMIN
+#else// UNITY_ANDROID
 #if LIH_2_OR_NEWER
         public override PoseDataFlags GetPoseFromProvider(out Pose output)
         {
@@ -184,7 +184,7 @@ namespace UnityEngine.XR.MagicLeap.Samples
             return false;
         }
 #endif
-#endif// UNITY_LUMIN
+#endif// UNITY_ANDROID
     }
 }
 

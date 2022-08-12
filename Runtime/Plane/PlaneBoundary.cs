@@ -35,7 +35,6 @@ namespace UnityEngine.XR.MagicLeap
         /// <paramref name="polygonOut"/> is resized or created using <paramref cref="allocator"/> if necessary.
         /// The 2D vertices are in plane-space.
         /// </summary>
-        /// <param name="index">The index of the boundary to retrieve.</param>
         /// <param name="allocator">The Allocator to use if <paramref name="polygonOut"/> must be recreated.
         /// Must be <c>Allocator.TempJob</c> or <c>Allocator.Persistent</c>.</param>
         /// <param name="polygonOut">A NativeArray to fill with boundary points. If the array is not the correct size, it is disposed and recreated.</param>

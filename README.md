@@ -21,11 +21,10 @@ We are using Bee to build. You must be in the repository root:
 > [mono] ./bee
 ```
 
-If you are a Unity employee, Bee will try to automatically download a compatible SDK for you. If Bee cannot find a suitable MLSDK (or if you need to explictly override the one it does find), You may set the `LUMINSDK_UNITY` environment variable to the MLDSK path you would like to use. Example:
-```
-D:\mlsdks\MLSDK_Mainline_MLTP6_0.15.0_06052018\internal_mlsdk_win64_full\mlsdk
-```
+If you are a Unity employee, Bee will attempt to automatically download a compatible Android toolset SDK for you.
 
-This repository requires version 0.20.0 of the MLSDK. It will probably work with a newer version, but it's currently unsupported.
+If not, you will need to set up your Android NDK system paths.
+The build tool can discover the NDK at ANDROID_NDK_HOME or ANDROID_NDK_ROOT.
+The NDK version should be 21d, but this has been tested with 21e. [Download](https://developer.android.com/ndk/downloads/older_releases)
 
-Ping `@cary` or `@stuartr` if you have questions.
+Ping `@ashley.matheson` or `@ed` if you have questions.

@@ -9,7 +9,7 @@
     ],
     "includePlatforms": [
         "Editor",
-        "Lumin"
+        "Android"
     ],
     "excludePlatforms": [],
     "allowUnsafeCode": false,

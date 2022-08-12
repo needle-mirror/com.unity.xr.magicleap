@@ -7,7 +7,6 @@
         "Unity.XR.Management",
         "Unity.XR.Management.Editor"
     ],
-    "optionalUnityReferences": [],
     "includePlatforms": [
         "Editor"
     ],

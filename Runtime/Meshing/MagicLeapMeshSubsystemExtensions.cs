@@ -15,14 +15,14 @@ namespace UnityEngine.XR.MagicLeap
         [MonoPInvokeCallback(typeof(Action<Feature>))]
         static void OnMeshSubsystemStart(Feature feature)
         {
-            MagicLeapFeatures.SetCurrentFeatureEnabled(Feature.Meshing | Feature.PointCloud, false);
-            MagicLeapFeatures.SetCurrentFeatureEnabled(feature, true);
+            MagicLeapFeatures.SetFeatureRequested(Feature.Meshing | Feature.PointCloud, false);
+            MagicLeapFeatures.SetFeatureRequested(feature, true);
         }
 
         [MonoPInvokeCallback(typeof(Action))]
         static void OnMeshSubsystemStop()
         {
-            MagicLeapFeatures.SetCurrentFeatureEnabled(Feature.Meshing | Feature.PointCloud, false);
+            MagicLeapFeatures.SetFeatureRequested(Feature.Meshing | Feature.PointCloud, false);
         }
 
         static Action<Feature> s_OnMeshSubsystemStart = OnMeshSubsystemStart;

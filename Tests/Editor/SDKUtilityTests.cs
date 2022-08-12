@@ -10,7 +10,7 @@
         public void PluginAPILevelIsLessThanOrEqualToSDKAPILevel()
         {
             if (!SDKUtility.sdkAvailable)
-                Assert.Ignore("Cannot locate Lumin SDK");
+                Assert.Ignore("Cannot locate Relish SDK");
             Assert.That(SDKUtility.pluginAPILevel, Is.AtMost(SDKUtility.sdkAPILevel));
         }
     }

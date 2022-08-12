@@ -5,10 +5,6 @@ Component Name: Catch2
 
 License Type: Boost Software License 1.0
 
-Copyright © 2003 Catch Org - https://github.com/catchorg
-
-https://github.com/catchorg/Catch2
-
 Boost Software License - Version 1.0 - August 17th, 2003
 
 Permission is hereby granted, free of charge, to any person or organization

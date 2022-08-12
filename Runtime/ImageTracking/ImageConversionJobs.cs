@@ -50,7 +50,9 @@ namespace UnityEngine.XR.MagicLeap
             int lastOffset = outputOffset + width;
             while (outputOffset < lastOffset)
             {
-                grayscaleImageOut[outputOffset++] = (byte)(rfloatIn[inputOffset++] * 255);
+                //grayscaleImageOut[outputOffset++] = (byte)(rfloatIn[inputOffset++] * 255);
+                var output = (byte)(rfloatIn[inputOffset++] * 255);
+                grayscaleImageOut[outputOffset++] = output;
             }
         }
     }
@@ -76,10 +78,15 @@ namespace UnityEngine.XR.MagicLeap
             int lastOffset = grayImageOffset + width;
             while (grayImageOffset < lastOffset)
             {
-                grayscaleImageOut[grayImageOffset++] = (byte)(
+                // grayscaleImageOut[grayImageOffset++] = (byte)(
+                //     colorImageIn[colorImageOffset    ] * 0.11f +
+                //     colorImageIn[colorImageOffset + 1] * 0.59f +
+                //     colorImageIn[colorImageOffset + 2] * 0.3f);
+                var output = (byte)(
                     colorImageIn[colorImageOffset    ] * 0.11f +
                     colorImageIn[colorImageOffset + 1] * 0.59f +
                     colorImageIn[colorImageOffset + 2] * 0.3f);
+                grayscaleImageOut[grayImageOffset++] = output;
 
                 colorImageOffset += 4;
             }
@@ -107,10 +114,15 @@ namespace UnityEngine.XR.MagicLeap
             int lastOffset = grayImageOffset + width;
             while (grayImageOffset < lastOffset)
             {
-                grayscaleImageOut[grayImageOffset++] = (byte)(
+                // grayscaleImageOut[grayImageOffset++] = (byte)(
+                //     colorImageIn[colorImageOffset    ] * 0.3f +
+                //     colorImageIn[colorImageOffset + 1] * 0.59f +
+                //     colorImageIn[colorImageOffset + 2] * 0.11f);
+                var output = (byte)(
                     colorImageIn[colorImageOffset    ] * 0.3f +
                     colorImageIn[colorImageOffset + 1] * 0.59f +
                     colorImageIn[colorImageOffset + 2] * 0.11f);
+                grayscaleImageOut[grayImageOffset++] = output;
 
                 colorImageOffset += 4;
             }
@@ -147,10 +159,15 @@ namespace UnityEngine.XR.MagicLeap
             int lastOffset = grayImageOffset + width;
             while (grayImageOffset < lastOffset)
             {
-                grayscaleImageOut[grayImageOffset++] = (byte)(
+                // grayscaleImageOut[grayImageOffset++] = (byte)(
+                //     colorImageIn[colorImageOffset    ] * 0.3f +
+                //     colorImageIn[colorImageOffset + 1] * 0.59f +
+                //     colorImageIn[colorImageOffset + 2] * 0.11f);
+                var output = (byte)(
                     colorImageIn[colorImageOffset    ] * 0.3f +
                     colorImageIn[colorImageOffset + 1] * 0.59f +
                     colorImageIn[colorImageOffset + 2] * 0.11f);
+                grayscaleImageOut[grayImageOffset++] = output;
 
                 colorImageOffset += stride;
             }

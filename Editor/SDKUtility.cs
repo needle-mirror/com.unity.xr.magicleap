@@ -10,13 +10,6 @@ namespace UnityEditor.XR.MagicLeap
     internal static class SDKUtility
     {
         const string kManifestPath = ".metadata/sdk.manifest";
-#if UNITY_EDITOR_WIN
-        const string kRemoteLauncher = "VirtualDevice/bin/UIFrontend/MLRemote.exe";
-#elif UNITY_EDITOR_OSX
-        const string kRemoteLauncher = "VirtualDevice/bin/UIFrontend/Magic Leap Remote.app";
-#else
-        const string kRemoteLauncher = "Unsupported_on_this_platform.exe";
-#endif
 
         static class Native
         {
@@ -47,20 +40,6 @@ namespace UnityEditor.XR.MagicLeap
                 return (int)Native.GetAPILevel();
             }
         }
-        internal static bool remoteLauncherAvailable
-        {
-            get
-            {
-                if (!sdkAvailable)
-                    return false;
-                var launcher = Path.Combine(sdkPath, kRemoteLauncher);
-#if UNITY_EDITOR_OSX
-                return Directory.Exists(launcher);
-#else
-                return File.Exists(launcher);
-#endif
-            }
-        }
         internal static int sdkAPILevel
         {
             get
@@ -80,7 +59,11 @@ namespace UnityEditor.XR.MagicLeap
         {
             get
             {
-                return EditorPrefs.GetString("LuminSDKRoot", null);
+#if PLATFORM_ANDROID
+                return EditorPrefs.GetString("RelishSDKRoot", null);
+#else
+                return null;
+#endif
             }
         }
         internal static Version sdkVersion

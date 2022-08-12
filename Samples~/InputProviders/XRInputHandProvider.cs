@@ -8,7 +8,7 @@ using UnityEngine.Experimental.XR.Interaction;
 using UnityEngine.SpatialTracking;
 #endif
 using UnityEngine.XR;
-#if UNITY_LUMIN
+#if UNITY_ANDROID
 using UnityEngine.XR.MagicLeap;
 #endif
 
@@ -25,7 +25,7 @@ namespace UnityEngine.XR.MagicLeap.Samples
 
         public Hand hand = Hand.Left;
 
-#if UNITY_LUMIN
+#if UNITY_ANDROID
         private InputDeviceCharacteristics m_Characteristics => InputDeviceCharacteristics.HandTracking | ((hand == Hand.Left) ? InputDeviceCharacteristics.Left : InputDeviceCharacteristics.Right);
 
         public bool TryGetHandDevice(out InputDevice device)
@@ -74,7 +74,7 @@ namespace UnityEngine.XR.MagicLeap.Samples
             return result;
         }
 #endif // LIH_2_OR_NEWER
-#else// UNITY_LUMIN
+#else// UNITY_ANDROID
 #if LIH_2_OR_NEWER
         public override PoseDataFlags GetPoseFromProvider(out Pose output)
         {
@@ -88,7 +88,7 @@ namespace UnityEngine.XR.MagicLeap.Samples
             return false;
         }
 #endif
-#endif// UNITY_LUMIN
+#endif// UNITY_ANDROID
     }
 }
 

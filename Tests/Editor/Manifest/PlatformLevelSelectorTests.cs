@@ -12,7 +12,7 @@ namespace Tests
         public void VerifyPlatformLevelBelowMinimumIsSetToMinimum()
         {
             if (!SDKUtility.sdkAvailable)
-                Assert.Ignore("Cannot locate Lumin SDK");
+                Assert.Ignore("Cannot locate Relish SDK");
             var current = PlatformLevelSelector.GetChoices().Min() - 1;
             Assert.That(PlatformLevelSelector.EnsureValidValue(current), Is.EqualTo(PlatformLevelSelector.GetChoices().Min()));
         }
@@ -21,7 +21,7 @@ namespace Tests
         public void VerifyPlatformLevelAboveMaximumIsSetToMaximum()
         {
             if (!SDKUtility.sdkAvailable)
-                Assert.Ignore("Cannot locate Lumin SDK");
+                Assert.Ignore("Cannot locate Relish SDK");
             var current = PlatformLevelSelector.GetChoices().Max() + 1;
             Assert.That(PlatformLevelSelector.EnsureValidValue(current), Is.EqualTo(PlatformLevelSelector.GetChoices().Max()));
         }
@@ -30,7 +30,7 @@ namespace Tests
         public void VerifyPlatformLevelAtMinimumIsUnchanged()
         {
             if (!SDKUtility.sdkAvailable)
-                Assert.Ignore("Cannot locate Lumin SDK");
+                Assert.Ignore("Cannot locate Relish SDK");
             var min = PlatformLevelSelector.GetChoices().Min();
             Assert.That(PlatformLevelSelector.EnsureValidValue(min), Is.EqualTo(min));
         }
@@ -39,7 +39,7 @@ namespace Tests
         public void VerifyPlatformLevelAtMaximumIsUnchanged()
         {
             if (!SDKUtility.sdkAvailable)
-                Assert.Ignore("Cannot locate Lumin SDK");
+                Assert.Ignore("Cannot locate Relish SDK");
             var max = PlatformLevelSelector.GetChoices().Max();
             Assert.That(PlatformLevelSelector.EnsureValidValue(max), Is.EqualTo(max));
         }

@@ -18,7 +18,6 @@ namespace UnityEngine.XR.MagicLeap
     /// Use <c>XRAnchorSubsystemDescriptor.Create()</c> instead.
     /// </summary>
     [Preserve]
-    [UsesLuminPrivilege("PwFoundObjRead")]
     public sealed class MagicLeapAnchorSubsystem : XRAnchorSubsystem
     {
         const string kLogTag = "Unity-Anchors";
@@ -48,7 +47,11 @@ namespace UnityEngine.XR.MagicLeap
         {
             public const ulong InvalidHandle = ulong.MaxValue;
 
+#if UNITY_ANDROID
+            const string Library = "perception.magicleap";
+#else
             const string Library = "ml_perception_client";
+#endif
 
             [DllImport(Library, CallingConvention = CallingConvention.Cdecl, EntryPoint = "MLPersistentCoordinateFrameTrackerCreate")]
             public static extern MLApiResult Create(out ulong out_tracker_handle);
@@ -74,6 +77,10 @@ namespace UnityEngine.XR.MagicLeap
         }
 
 #if !UNITY_2020_2_OR_NEWER
+        /// <summary>
+        /// Method for creating the Magic Leap Provider 
+        /// </summary>
+        /// <returns>A generic <c>Provider</c> representing the Magic Leap Provider.</returns>
         protected override Provider CreateProvider() => new MagicLeapProvider();
 #endif
 
@@ -93,32 +100,13 @@ namespace UnityEngine.XR.MagicLeap
             /// </summary>
             const float k_CoordinateFramePositionEpsilonSquared = .0001f;
 
-            bool RequestPrivilegesIfNecessary()
-            {
-                if (MagicLeapPrivileges.IsPrivilegeApproved(k_MLPivilegeID_PwFoundObjRead))
-                {
-                    return true;
-                }
-                else
-                {
-                    return MagicLeapPrivileges.RequestPrivilege(k_MLPivilegeID_PwFoundObjRead);
-                }
-            }
-
             public MagicLeapProvider()
             {
                 m_PerceptionHandle = PerceptionHandle.Acquire();
-                RequestPrivilegesIfNecessary();
             }
 
             public override void Start()
             {
-                if (!RequestPrivilegesIfNecessary())
-                {
-                    LogWarning($"Could not start the anchor subsystem because privileges were denied.");
-                    return;
-                }
-
                 var result = Native.Create(out m_TrackerHandle);
                 if (result != MLApiResult.Ok)
                 {
@@ -399,7 +387,7 @@ namespace UnityEngine.XR.MagicLeap
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         static void RegisterDescriptor()
         {
-#if PLATFORM_LUMIN
+#if UNITY_ANDROID
             XRAnchorSubsystemDescriptor.Create(new XRAnchorSubsystemDescriptor.Cinfo
             {
                 id = "MagicLeap-Anchor",
@@ -411,7 +399,7 @@ namespace UnityEngine.XR.MagicLeap
 #endif
                 supportsTrackableAttachments = false
             });
-#endif
+#endif // UNITY_ANDROID
         }
     }
 }

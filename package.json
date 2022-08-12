@@ -1,9 +1,9 @@
 {
   "name": "com.unity.xr.magicleap",
   "displayName": "Magic Leap XR Plugin",
-  "version": "6.4.2-preview.2",
-  "unity": "2020.2",
-  "description": "Provides rendering and spatial mapping support for Magic Leap.\n\nNOTE: Unity 2020 LTS will be the last version of the editor which supports Magic Leap 1.\n\nDevelopers can continue to build for Magic Leap 1 using Unity 2020 LTS or 2019 LTS.",
+  "version": "7.0.0-exp.3",
+  "unity": "2022.2",
+  "description": "Provides rendering and spatial mapping support for Magic Leap 2.",
   "keywords": [
     "magicleap",
     "ar",
@@ -17,17 +17,18 @@
     "com.unity.modules.vr": "1.0.0",
     "com.unity.modules.xr": "1.0.0",
     "com.unity.ugui": "1.0.0",
-    "com.unity.xr.arfoundation": "4.1.7",
+    "com.unity.xr.arfoundation": "5.0.0-pre.12",
     "com.unity.xr.interactionsubsystems": "1.0.1",
-    "com.unity.xr.management": "4.1.0"
+    "com.unity.xr.management": "4.2.0",
+    "com.unity.modules.androidjni": "1.0.0"
   },
   "upmCi": {
-    "footprint": "03b63a2108ef7f94d5d745a141cb1ebe3ea87e37"
+    "footprint": "e296ea8736c0b5d6c392afa65eca5527e12c8d9b"
   },
   "repository": {
     "url": "https://github.cds.internal.unity3d.com/unity/xr.sdk.magicleap.git",
     "type": "git",
-    "revision": "f21a86f97e93415c175d60848301513cdb2ffc0b"
+    "revision": "67eb96a8f9473d51e9dd58a5e170af46fc9b4416"
   },
   "samples": [
     {

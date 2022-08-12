@@ -190,10 +190,16 @@ namespace UnityEngine.XR.MagicLeap
         /// </summary>
         ulong m_RequestHandle;
 
-        [DllImport("ml_perception_client", CallingConvention = CallingConvention.Cdecl)]
+#if UNITY_ANDROID
+        const string Library = "perception.magicleap";
+#else
+        const string Library = "ml_perception_client";
+#endif
+
+        [DllImport(Library, CallingConvention = CallingConvention.Cdecl)]
         static extern MLApiResult MLRaycastRequest(ulong tracker_handle, ref MLRaycastQuery request, out ulong out_handle);
 
-        [DllImport("ml_perception_client", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport(Library, CallingConvention = CallingConvention.Cdecl)]
         static extern MLApiResult MLRaycastGetResult(ulong tracker_handle, ulong raycast_request, out MLRaycastResult out_result);
 
         static Vector3 FlipHandedness(Vector3 v)

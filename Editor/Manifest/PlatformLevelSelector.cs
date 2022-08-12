@@ -11,7 +11,7 @@ namespace UnityEditor.XR.MagicLeap
     {
         public static int SelectorGUI(int value)
         {
-            if (SDKUtility.sdkAvailable && SDKUtility.isCompatibleSDK)
+            if (SDKUtility.sdkAvailable)
                 return EditorGUILayout.IntPopup("Minimum API Level",
                     EnsureValidValue(value),
                     GetChoices().Select(c => $"API Level {c}").ToArray(),

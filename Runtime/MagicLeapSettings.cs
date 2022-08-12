@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Collections.Generic;
 
 using UnityEngine;
 using UnityEngine.XR.Management;
@@ -11,47 +12,48 @@ namespace UnityEngine.XR.MagicLeap
         public DisabledAttribute() {}
     }
 
+    /// <summary>
+    /// Scriptable object containing project-wide Magic Leap settings
+    /// </summary>
     [Serializable]
     [XRConfigurationData("Magic Leap Settings", MagicLeapConstants.kSettingsKey)]
     public class MagicLeapSettings : ScriptableObject
     {
-        [Serializable]
-        public class GLCache
+        /// <summary>
+        /// Subsystems implemented outside the MagicLeap XR Plugin can utilize this class to be loaded
+        /// by the MagicLeapLoader instead of its usual defaults.
+        /// </summary>
+        internal class Subsystems
         {
-            [SerializeField, Tooltip("Select to optimize application and use cached shader data.")]
-            bool m_Enabled;
+            private static Dictionary<Type, string> s_OverrideMap = new Dictionary<Type, string>();
 
-            [SerializeField, Tooltip("The maximium size for each shader blob data, units in bytes.")]
-            uint m_MaxBlobSizeInBytes ;
+            /// <summary>
+            /// Register a subsystem id to be instantiated by the MagicLeapLoader instead of its default of
+            /// the same type.
+            /// This should be called before MagicLeapLoader is initialized. An ideal place would be inside
+            /// a function marked with the [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+            /// attribute.
+            /// </summary>
+            /// <typeparam name="T">Subsystem type</typeparam>
+            /// <param name="subsystemId">Id of the subsystem to be created</param>
+            public static void RegisterSubsystemOverride<T>(string subsystemId) => s_OverrideMap.Add(typeof(T), subsystemId);
 
-            [SerializeField, Tooltip("The maximium size for shader cache file, units in bytes.")]
-            uint m_MaxFileSizeInBytes;
-
-            public bool enabled
-            {
-                get { return m_Enabled; }
-                set { m_Enabled = value; }
-            }
-
-            public uint maxBlobSizeInBytes
-            {
-                get { return m_MaxBlobSizeInBytes; }
-                set { m_MaxBlobSizeInBytes = value; }
-            }
-
-            public uint maxFileSizeInBytes
-            {
-                get { return m_MaxFileSizeInBytes; }
-                set { m_MaxFileSizeInBytes = value; }
-            }
-
-            internal string cachePath => Path.Combine(Application.persistentDataPath, "blob_cache.dat");
+            /// <summary>
+            /// Get the Id registered for a given subsystem type.
+            /// </summary>
+            /// <typeparam name="T">Subsystem type</typeparam>
+            /// <param name="defaultId">Id to return if no override has been registered for the provided type</param>
+            /// <returns>Subsystemy id to create for the provided type</returns>
+            public static string GetSubsystemOverrideOrDefault<T>(string defaultId) => s_OverrideMap.TryGetValue(typeof(T), out string subsystemId) ? subsystemId : defaultId;
         }
 
     #if !UNITY_EDITOR
         static MagicLeapSettings s_RuntimeInstance = null;
     #endif // !UNITY_EDITOR
 
+        /// <summary>
+        /// Get the current MagicLeap Settings.
+        /// </summary>
         public static MagicLeapSettings currentSettings
         {
             get
@@ -73,10 +75,14 @@ namespace UnityEngine.XR.MagicLeap
         bool m_ForceMultipass;
 
         [SerializeField, Tooltip("Defines the minimum frame time interval, or the maximum speed at which the system will process frames")]
+#pragma warning disable 414
         Rendering.FrameTimingHint m_FrameTimingHint = Rendering.FrameTimingHint.Max_60Hz;
+#pragma warning restore
+        [SerializeField, Tooltip("When enabled, all of the content rendered by the application and system notifications will be headlocked. Use this mode with caution.")]
+        bool m_HeadlockGraphics;
 
-        [SerializeField, Tooltip("Allows OpenGLES shaders to be cached on device, saving compilation time on subsequent runs")]
-        GLCache m_GLCacheSettings;
+        [SerializeField, Tooltip("Enable MLAudio Support. Replaces default Android Audio Support.")]
+        bool m_EnableMLAudio;
 
         public Rendering.DepthPrecision depthPrecision
         {
@@ -84,22 +90,25 @@ namespace UnityEngine.XR.MagicLeap
             set { m_DepthPrecision = value; }
         }
 
+        /// <summary>
+        /// Get/set if we wish to force Multipass rendering.
+        /// </summary>
         public bool forceMultipass
         {
             get { return m_ForceMultipass; }
             set { m_ForceMultipass = value; }
         }
 
-        public Rendering.FrameTimingHint frameTimingHint
+        public bool headlockGraphics
         {
-            get { return m_FrameTimingHint; }
-            set { m_FrameTimingHint = value; }
+            get { return m_HeadlockGraphics; }
+            set { m_HeadlockGraphics = value; }
         }
 
-        public GLCache glCacheSettings
+        public bool enableMLAudio
         {
-            get { return m_GLCacheSettings; }
-            internal set { m_GLCacheSettings = value; }
+            get { return m_EnableMLAudio; }
+            set { m_EnableMLAudio = value; }
         }
 
         void Awake()

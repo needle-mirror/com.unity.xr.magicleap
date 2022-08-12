@@ -8,12 +8,22 @@ using UnityEditor.Build;
 using UnityEngine;
 using Unity.Jobs;
 using UnityEngine.XR.ARSubsystems;
+using System.Collections;
 
 namespace UnityEditor.XR.MagicLeap
 {
+    /// <summary>
+    /// Class used in building the Image Database used with the Magic Leap XR Image Tracking subsystem
+    /// </summary>
     public static class MagicLeapImageDatabaseBuildProcessor
     {
+        /// <summary>
+        /// Exception class for an invalid Image Setting
+        /// </summary>
         public class InvalidImageSettingsException : Exception { }
+        /// <summary>
+        /// Exception class for Invalid Image Physical size
+        /// </summary>
         public class InvalidImagePhysicalSizeException : Exception { }
 
         private class DisposableList : IDisposable
@@ -44,9 +54,14 @@ namespace UnityEditor.XR.MagicLeap
 
         static readonly string k_ImageLibraryModificationCachePath = Path.Combine(MagicLeapImageTrackingSubsystem.k_ImageTrackingDependencyPath, "ImageLibraryDB.json");
 
+        /// <summary>
+        /// Enumerator to find assets of a given type T in the Asset Database
+        /// </summary>
+        /// <typeparam name="T">Asset Type</typeparam>
+        /// <returns>Enumerable of type T</returns>
         public static IEnumerable<T> AssetsOfType<T>() where T : UnityEngine.Object
         {
-            foreach (var guid in AssetDatabase.FindAssets("t:" + typeof(T).Name, new [] {"Assets/"}))
+            foreach (var guid in AssetDatabase.FindAssets("t:" + typeof(T).Name))
             {
                 var path = AssetDatabase.GUIDToAssetPath(guid);
                 yield return AssetDatabase.LoadAssetAtPath<T>(path);
@@ -70,11 +85,7 @@ namespace UnityEditor.XR.MagicLeap
             }
             else
             {
-                foreach (var libraryGuid in libraryCache.m_ImageLibraryCache)
-                {
-                    if (!assetGuids.Contains(libraryGuid.assetGuid))
-                        libraryCache.m_ImageLibraryCache.Remove(libraryGuid);
-                }
+                libraryCache.m_LibraryCache.RemoveAll(entry => !assetGuids.Contains(entry.assetGuid));
             }
 
             return libraryCache;
@@ -181,9 +192,6 @@ namespace UnityEditor.XR.MagicLeap
         /// Build the image tracking library binary blob asset and create a cache
         /// to indicate when files were last updated
         /// </summary>
-#if PLATFORM_LUMIN
-        [InitializeOnEnterPlayMode]
-#endif
         public static void BuildImageTrackingAssets()
         {
             if (!Directory.Exists(MagicLeapImageTrackingSubsystem.k_StreamingAssetsPath))
@@ -199,7 +207,7 @@ namespace UnityEditor.XR.MagicLeap
 
             foreach (var library in AssetsOfType<XRReferenceImageLibrary>())
             {
-                if (!DoesLibraryNeedToBeUpdated(assetGuidList[count++], ref s_LibraryCache.m_ImageLibraryCache))
+                if (!DoesLibraryNeedToBeUpdated(assetGuidList[count++], ref s_LibraryCache.m_LibraryCache))
                     continue;
 
                 EditorUtility.DisplayProgressBar(

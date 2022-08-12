@@ -34,7 +34,7 @@ namespace Tests
         public void CanParseHeaderFromCurrentSDK()
         {
             if (!SDKUtility.sdkAvailable)
-                Assert.Ignore("Cannot locate Lumin SDK");
+                Assert.Ignore("Cannot locate Relish SDK");
             var path = Path.Combine(SDKUtility.sdkPath, PrivilegeParser.kPrivilegeHeaderPath);
             var privs = PrivilegeParser.ParsePrivilegesFromHeader(path);
             Assert.That(privs, Is.Not.Empty);

@@ -2,7 +2,6 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
-using System.Threading;
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
 using Unity.Jobs;
@@ -15,8 +14,10 @@ namespace UnityEngine.XR.MagicLeap
 {
     using MLLog = UnityEngine.XR.MagicLeap.MagicLeapLogger;
 
+    /// <summary>
+    /// Subsystem for Image Tracking
+    /// </summary>
     [Preserve]
-    [UsesLuminPrivilege("CameraCapture")]
     public sealed class MagicLeapImageTrackingSubsystem : XRImageTrackingSubsystem
     {
         const string kLogTag = "Unity-ImageTracking";
@@ -34,6 +35,10 @@ namespace UnityEngine.XR.MagicLeap
         internal static string GetDatabaseFilePathFromLibrary(XRReferenceImageLibrary library) => Path.Combine(k_StreamingAssetsPath, $"{library.name}_{library.guid}.imgpak");
 
 #if !UNITY_2020_2_OR_NEWER
+        /// <summary>
+        /// Create the generic XR Provider object from the magic leap Provider
+        /// </summary>
+        /// <returns>A Provider</returns>
         protected override Provider CreateProvider() => new MagicLeapProvider();
 #endif
 
@@ -50,38 +55,6 @@ namespace UnityEngine.XR.MagicLeap
         /// </remarks>
         public bool IsValid() => MagicLeapProvider.IsSubsystemStateValid();
 
-        /// <summary>
-        /// Increment the internal reference count to the Native Image Tracker.
-        /// </summary>
-        /// <remarks>
-        /// Attention: Do not use unless you plan on managing the lifetime of the Magic Leap Image Tracker.
-        ///
-        /// By utilizing the <c>IncRefcount</c>, you are indicating that you are 'holding on' to the Magic Leap Image Tracker -
-        /// that is, you are managing the clean-up of the Image tracker yourself.
-        ///
-        /// As long as you are managing the lifetime of the image tracker yourself, you do not need to call <c>DecRefcount</c>
-        /// </remarks>
-        public static void IncRefcount()
-        {
-            RcoApi.Retain(nativeProviderPtr);
-        }
-
-        /// <summary>
-        /// Decrement the internal reference count to the Native Image Tracker.
-        /// </summary>
-        /// <remarks>
-        /// Attention: Do not use unless you plan on managing the lifetime of the Magic Leap Image Tracker.
-        ///
-        /// By utilizing the <c>DecRefcount</c>, you are indicating that you are releasing the reference to the Magic Leap Image Tracker -
-        /// that is, you are relinquishing controlling the lifetime of the Image Tracking subsystem.
-        ///
-        /// As long as you are managing the lifetime of the image tracker yourself, you do not need to call <c>DecRefcount</c>
-        /// </remarks>
-        public static void DecRefcount()
-        {
-            RcoApi.Release(nativeProviderPtr);
-        }
-
         // Reference Counted Native Provider
         internal static IntPtr nativeProviderPtr => MagicLeapProvider.s_NativeProviderPtr;
 
@@ -93,12 +66,7 @@ namespace UnityEngine.XR.MagicLeap
         /// Lumin devices has an average startup time of anywhere between ~1500ms - ~6000ms
         /// depending on the state of the device and is blocking.  This subsystem opts to
         /// perform this operation asynchronously because of this.
-        /// Please note that if you enable the image tracker in a disabled state, you do not
-        /// incur the ~1500 - ~6000 ms startup cost.
-        /// As is stands, getting `MagicLeapProvider.s_NativeTrackerCreationJobHandle` will go away, thus making
-        /// `nativeTrackerCreationJobHandle` irrelevant.
         /// </remarks>
-        [Obsolete("This usage is no longer supported as creation of the native Image Tracker is no longer asynchronous.")]
         public static JobHandle nativeTrackerCreationJobHandle => MagicLeapProvider.s_NativeTrackerCreationJobHandle;
 
         /// <summary>
@@ -139,7 +107,6 @@ namespace UnityEngine.XR.MagicLeap
         {
             internal static IntPtr s_NativeProviderPtr = IntPtr.Zero;
             internal static JobHandle s_NativeTrackerCreationJobHandle = default(JobHandle);
-            internal static JobHandle s_SetDatabaseJobHandle = default(JobHandle);
 
             internal static bool IsSubsystemStateValid()
             {
@@ -157,12 +124,25 @@ namespace UnityEngine.XR.MagicLeap
             const uint k_MLPrivilegeID_CameraCapture = 26;
 
 
-            struct DummyNoopJob : IJob
+            // This job is used to gate the creation of image libraries while also bypassing
+            // the 6000ms wait time it takes to start a tracking system.  The job handle is then
+            // passed with the handle to allow other asynchronous jobs to use it as a dependency.
+            struct CreateNativeImageTrackerJob : IJob
             {
+                [NativeDisableUnsafePtrRestriction]
+                public IntPtr nativeProvider;
+
                 public void Execute()
                 {
-                    Thread.Sleep(10); // Just a delay to ensure we get a small pause.
+                    if (!CreateNativeTracker(nativeProvider))
+                    {
+                        LogError($"Unable to create native tracker due to internal device error.  Subsystem will be set to invalid.  See native output for more details.");
+                    }
+                    RcoApi.Release(s_NativeProviderPtr);
                 }
+
+                [DllImport("UnityMagicLeap", CallingConvention = CallingConvention.Cdecl, EntryPoint = "UnityMagicLeap_ImageTracking_TryCreateNativeTracker")]
+                public static extern bool CreateNativeTracker(IntPtr nativeProviderPtr);
             }
 
             /// <summary>
@@ -171,15 +151,16 @@ namespace UnityEngine.XR.MagicLeap
             /// <returns>
             /// <c>true</c> if the Color Camera privileges were granted and <c>false</c> otherwise.
             /// </returns>
-            public bool RequestPrivilegesIfNecessary()
+            public bool RequestPermissionIfNecessary()
             {
-                if (MagicLeapPrivileges.IsPrivilegeApproved(k_MLPrivilegeID_CameraCapture))
+                if (Android.Permission.HasUserAuthorizedPermission("android.permission.CAMERA"))
                 {
                     return true;
                 }
                 else
                 {
-                    return MagicLeapPrivileges.RequestPrivilege(k_MLPrivilegeID_CameraCapture);
+                    Android.Permission.RequestUserPermission("android.permission.CAMERA");
+                    return Android.Permission.HasUserAuthorizedPermission("android.permission.CAMERA");
                 }
             }
 
@@ -189,22 +170,13 @@ namespace UnityEngine.XR.MagicLeap
 
                 if (s_NativeProviderPtr == IntPtr.Zero)
                     s_NativeProviderPtr = Native.Construct();
-
-                if (RequestPrivilegesIfNecessary())
+                if (RequestPermissionIfNecessary())
                 {
-                    // We set the s_NativeTrackerCreationJobHandle to a 'do nothing' job that quits immediately.
-                    // This should have the effect of having any dependencies on s_NativeTrackerCreationJobHandle
-                    // automatically go.
-                    RcoApi.Retain(s_NativeProviderPtr);
-                    if (!Native.CreateNativeTracker(s_NativeProviderPtr))
+                    if (s_NativeTrackerCreationJobHandle.Equals(default(JobHandle)))
                     {
-                        LogError($"Unable to create native tracker due to internal device error.  Subsystem will be set to invalid.  See native output for more details.");
+                        RcoApi.Retain(s_NativeProviderPtr);
+                        s_NativeTrackerCreationJobHandle = new CreateNativeImageTrackerJob { nativeProvider = s_NativeProviderPtr }.Schedule();
                     }
-                    else
-                    {
-                        s_NativeTrackerCreationJobHandle = new DummyNoopJob().Schedule();
-                    }
-                    RcoApi.Release(s_NativeProviderPtr);
                 }
                 else
                 {
@@ -224,47 +196,12 @@ namespace UnityEngine.XR.MagicLeap
             {
                 if (s_NativeProviderPtr != IntPtr.Zero)
                 {
-                    if (RcoApi.RetainCount(s_NativeProviderPtr) == 0)
-                    {
-                        // We assume at this point in time that someone else will be maintaining the cleanup
-                        // of the Image Tracker
-                        LogWarning("");
-                        Native.Destroy(s_NativeProviderPtr);
-                    }
+                    Native.Destroy(s_NativeProviderPtr);
                     s_NativeProviderPtr = IntPtr.Zero;
                     s_NativeTrackerCreationJobHandle = default(JobHandle);
-                    s_SetDatabaseJobHandle = default(JobHandle);
                 }
 
-                if (m_PerceptionHandle.active)
-                {
-                    m_PerceptionHandle.Dispose();
-
-                    // Release retained privileges class
-                    MagicLeapPrivileges.Shutdown();
-                }
-            }
-
-            /// <summary>
-            /// The <see cref="JobHandle"/> that refers to the Image Database binding job
-            /// </summary>
-            /// <remarks>
-            /// The initial call to setting the Image Database can be expensive; it can be anywhere from 500 - 6000 ms.
-            /// Therefore we do this asynchronously to hide that cost. You can check to see if this <see cref="JobHandle"/>
-            /// is busy by testing it against a `default(JobHandle)`.
-            /// </remarks>
-            struct SetDatabaseTrackerJob : IJob
-            {
-                [NativeDisableUnsafePtrRestriction]
-                public IntPtr nativeProvider;
-                [NativeDisableUnsafePtrRestriction]
-                public IntPtr databasePointer;
-
-                public void Execute()
-                {
-                    Native.SetDatabase(nativeProvider, databasePointer);
-                    RcoApi.Release(s_NativeProviderPtr);
-                }
+                m_PerceptionHandle.Dispose();
             }
 
             /// <summary>
@@ -274,14 +211,12 @@ namespace UnityEngine.XR.MagicLeap
             {
                 set
                 {
-                    if (RequestPrivilegesIfNecessary())
+                    if (RequestPermissionIfNecessary())
                     {
                         if (value == null)
                         {
                             Native.SetDatabase(s_NativeProviderPtr, IntPtr.Zero);
                             MagicLeapFeatures.SetFeatureRequested(Feature.ImageTracking, false);
-
-                            s_SetDatabaseJobHandle = default(JobHandle);
                         }
                         else if (value is MagicLeapImageDatabase database)
                         {
@@ -289,19 +224,8 @@ namespace UnityEngine.XR.MagicLeap
                             {
                                 throw new InvalidOperationException($"Attempted to set an invalid image library.  The native resource for this library has been released making the library invalid.");
                             }
-
-                            // This is the jobified version of setting the database.
-                            if (!s_NativeTrackerCreationJobHandle.Equals(default(JobHandle)))
-                            {
-                                RcoApi.Retain(s_NativeProviderPtr);
-                                s_SetDatabaseJobHandle = new SetDatabaseTrackerJob
-                                {
-                                    nativeProvider = s_NativeProviderPtr,
-                                    databasePointer = database.nativePtr
-                                }.Schedule(s_NativeTrackerCreationJobHandle);
-
-                                MagicLeapFeatures.SetFeatureRequested(Feature.ImageTracking, true);
-                            }
+                            Native.SetDatabase(s_NativeProviderPtr, database.nativePtr);
+                            MagicLeapFeatures.SetFeatureRequested(Feature.ImageTracking, true);
                         }
                         else
                         {
@@ -313,9 +237,7 @@ namespace UnityEngine.XR.MagicLeap
 
             public unsafe override TrackableChanges<XRTrackedImage> GetChanges(XRTrackedImage defaultTrackedImage, Allocator allocator)
             {
-                if (!IsSubsystemStateValid() ||
-                    s_SetDatabaseJobHandle.Equals(default(JobHandle)) ||
-                    !s_SetDatabaseJobHandle.IsCompleted)
+                if (!IsSubsystemStateValid())
                     return default(TrackableChanges<XRTrackedImage>);
 
                 void* addedPtr, updatedPtr, removedPtr;
@@ -433,15 +355,12 @@ namespace UnityEngine.XR.MagicLeap
 
             [DllImport("UnityMagicLeap", CallingConvention = CallingConvention.Cdecl, EntryPoint = "UnityMagicLeap_ImageTracking_TrySetReferenceImageStationary")]
             public static extern bool TrySetReferenceImageStationary(IntPtr nativeProviderPtr, Guid guid, bool isStationary);
-
-            [DllImport("UnityMagicLeap", CallingConvention = CallingConvention.Cdecl, EntryPoint = "UnityMagicLeap_ImageTracking_TryCreateNativeTracker")]
-            public static extern bool CreateNativeTracker(IntPtr nativeProviderPtr);
         }
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         static void RegisterDescriptor()
         {
-#if PLATFORM_LUMIN
+#if UNITY_ANDROID
             XRImageTrackingSubsystemDescriptor.Create(new XRImageTrackingSubsystemDescriptor.Cinfo
             {
                 id = "MagicLeap-ImageTracking",
@@ -454,7 +373,7 @@ namespace UnityEngine.XR.MagicLeap
                 supportsMovingImages = true,
                 supportsMutableLibrary = true
             });
-#endif
+#endif // UNITY_ANDROID
         }
     }
 }

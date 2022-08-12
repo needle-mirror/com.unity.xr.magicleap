@@ -9,14 +9,33 @@ namespace UnityEngine.XR.MagicLeap
     /// </summary>
     public enum MagicLeapTouchpadGestureDirection
     {
+        /// <summary>
+        /// No Gesture Detected
+        /// </summary>
         None,
+        /// <summary>
+        /// Up direction detected
+        /// </summary>
         Up,
+        /// <summary>
+        /// Down direction detected
+        /// </summary>
         Down,
+        /// <summary>
+        /// Left direction detected
+        /// </summary>
         Left,
+        /// <summary>
+        /// Right direction detected
+        /// </summary>
         Right,
-        In,
-        Out,
+        /// <summary>
+        /// Clockwise direction detected
+        /// </summary>
         Clockwise,
+        /// <summary>
+        /// Counter Clockwise direction detected
+        /// </summary>
         CounterClockwise
     };
 
@@ -25,17 +44,43 @@ namespace UnityEngine.XR.MagicLeap
     /// </summary>
     public enum MagicLeapInputControllerTouchpadGestureType
     {
+        /// <summary>
+        /// No Gesture detected
+        /// </summary>
         None,
+        /// <summary>
+        /// Tap 
+        /// </summary>
         Tap,
+        /// <summary>
+        /// ForceTapDown
+        /// </summary>
+        [InspectorName("Force Tap Down")]
         ForceTapDown,
+        /// <summary>
+        /// Force Tap Up
+        /// </summary>
+        [InspectorName("Force Tap Up")]
         ForceTapUp,
+        /// <summary>
+        /// Force Dwell
+        /// </summary>
+        [InspectorName("Force Dwell")]
         ForceDwell,
+        /// <summary>
+        /// Second force down
+        /// </summary>
+        [InspectorName("Secondary Force Down")]
         SecondForceDown,
-        LongHold,
+        /// <summary>
+        /// Radial scroll
+        /// </summary>
+        [InspectorName("Radial Scroll")]
         RadialScroll,
-        Swipe,
-        Scroll,
-        Pinch
+        /// <summary>
+        /// Swipe
+        /// </summary>
+        Swipe
     };
 
     /// <summary>
@@ -76,11 +121,6 @@ namespace UnityEngine.XR.MagicLeap
         public float distance { get { return m_Distance; } }
 
         /// <summary>
-        /// Distance between the two fingers performing the gestures in touchpad distance. The touchpad is defined as having extents of [-1.0,1.0] so this distance has a range of [0.0,2.0].
-        /// </summary>
-        public float fingerGap { get { return m_FingerGap; } }
-
-        /// <summary>
         /// Gesture position (x,y) and force (z). Position is in the [-1.0,1.0] range and force is in the [0.0,1.0] range.
         /// </summary>
         public Vector3 positionAndForce { get { return m_PositionAndForce; } }
@@ -107,7 +147,7 @@ namespace UnityEngine.XR.MagicLeap
         public static MagicLeapTouchpadGestureEvent GetDefault()
         {
             return new MagicLeapTouchpadGestureEvent(GestureId.invalidId, GestureState.Invalid,
-                0, 0.0f, MagicLeapTouchpadGestureDirection.None, 0.0f, 0.0f, Vector3.zero,
+                0, 0.0f, MagicLeapTouchpadGestureDirection.None, 0.0f, Vector3.zero,
                 0.0f, 0.0f, MagicLeapInputControllerTouchpadGestureType.None);
         }
 
@@ -120,13 +160,12 @@ namespace UnityEngine.XR.MagicLeap
         /// <param name="angle">The angel of the touch of the gesture.</param>
         /// <param name="direction">The direction of the touch of the gesture.</param>
         /// <param name="distance">The distance of the gesture.</param>
-        /// <param name="fingerGap">The finger gap the touch of the gesture.</param>
         /// <param name="positionAndForce">The <see cref="Vector3"/> position and force of the gesture.</param>
         /// <param name="radius">The radius of the touch of the gesture.</param>
         /// <param name="speed">The speed of the gesture.</param>
         /// <param name="type">The <see cref="MagicLeapInputControllerTouchpadGestureType"/> type of the gesture.</param>
         public MagicLeapTouchpadGestureEvent(GestureId id, GestureState state, byte controllerId, float angle,
-            MagicLeapTouchpadGestureDirection direction, float distance, float fingerGap, Vector3 positionAndForce,
+            MagicLeapTouchpadGestureDirection direction, float distance, Vector3 positionAndForce,
             float radius, float speed, MagicLeapInputControllerTouchpadGestureType type)
         {
             m_Id = id;
@@ -135,7 +174,6 @@ namespace UnityEngine.XR.MagicLeap
             m_Angle = angle;
             m_Direction = direction;
             m_Distance = distance;
-            m_FingerGap = fingerGap;
             m_PositionAndForce = positionAndForce;
             m_Radius = radius;
             m_Speed = speed;
@@ -149,16 +187,25 @@ namespace UnityEngine.XR.MagicLeap
         public override string ToString()
         {
             return string.Format(
-                "Touchpad Gesture:\n\tgestureId: {0}\n\tgestureState: {1}\n\tcontrollerId: {2}\n\tangle: {3}\n\tdirection: {4}\n\tdistance: {5}\n\tfingerGap: {6}\n\tpositionAndForce: {7}\n\tradius: {8}\n\tspeed: {9}\n\ttype: {10}",
-                id, state, controllerId, angle, direction, distance, fingerGap, positionAndForce, radius, speed, type);
+                "Touchpad Gesture:\n\tgestureId: {0}\n\tgestureState: {1}\n\tcontrollerId: {2}\n\tangle: {3}\n\tdirection: {4}\n\tdistance: {5}\n\tpositionAndForce: {6}\n\tradius: {7}\n\tspeed: {8}\n\ttype: {9}",
+                id, state, controllerId, angle, direction, distance, positionAndForce, radius, speed, type);
         }
 
+        /// <summary>
+        /// Equals test
+        /// </summary>
+        /// <param name="obj">Object to compare with</param>
+        /// <returns><c>true</c> if equal</returns>
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj)) return false;
             return obj is MagicLeapTouchpadGestureEvent && Equals((MagicLeapTouchpadGestureEvent)obj);
         }
 
+        /// <summary>
+        /// Generate a hash code from this object
+        /// </summary>
+        /// <returns>Integer representing the hash code of this object.</returns>
         public override int GetHashCode()
         {
             unchecked
@@ -169,7 +216,6 @@ namespace UnityEngine.XR.MagicLeap
                 hashCode = (hashCode * 486187739) + ((int)m_Angle).GetHashCode();
                 hashCode = (hashCode * 486187739) + ((int)m_Direction).GetHashCode();
                 hashCode = (hashCode * 486187739) + ((int)m_Distance).GetHashCode();
-                hashCode = (hashCode * 486187739) + ((int)m_FingerGap).GetHashCode();
                 hashCode = (hashCode * 486187739) + m_PositionAndForce.GetHashCode();
                 hashCode = (hashCode * 486187739) + ((int)m_Radius).GetHashCode();
                 hashCode = (hashCode * 486187739) + ((int)m_Speed).GetHashCode();
@@ -179,16 +225,33 @@ namespace UnityEngine.XR.MagicLeap
             }
         }
 
+        /// <summary>
+        /// Equivalency operator
+        /// </summary>
+        /// <param name="lhs">Left hand side</param>
+        /// <param name="rhs">Right hand side</param>
+        /// <returns>true if equal</returns>
         public static bool operator ==(MagicLeapTouchpadGestureEvent lhs, MagicLeapTouchpadGestureEvent rhs)
         {
             return lhs.Equals(rhs);
         }
 
+        /// <summary>
+        /// Inequality operator
+        /// </summary>
+        /// <param name="lhs">Left hand side</param>
+        /// <param name="rhs">Right hand side</param>
+        /// <returns>true if not equal</returns>
         public static bool operator !=(MagicLeapTouchpadGestureEvent lhs, MagicLeapTouchpadGestureEvent rhs)
         {
             return !lhs.Equals(rhs);
         }
 
+        /// <summary>
+        /// Equals test
+        /// </summary>
+        /// <param name="other">other object to compare with</param>
+        /// <returns>true if equal</returns>
         public bool Equals(MagicLeapTouchpadGestureEvent other)
         {
             return
@@ -198,7 +261,6 @@ namespace UnityEngine.XR.MagicLeap
                 m_Angle == other.angle &&
                 m_Direction == other.direction &&
                 m_Distance == other.distance &&
-                m_FingerGap == other.fingerGap &&
                 m_PositionAndForce == other.positionAndForce &&
                 m_Radius == other.radius &&
                 m_Speed == other.speed &&
@@ -211,7 +273,6 @@ namespace UnityEngine.XR.MagicLeap
         float m_Angle;
         MagicLeapTouchpadGestureDirection m_Direction;
         float m_Distance;
-        float m_FingerGap;
         Vector3 m_PositionAndForce;
         float m_Radius;
         float m_Speed;

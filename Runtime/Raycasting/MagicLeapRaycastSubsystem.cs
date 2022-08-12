@@ -1,7 +1,4 @@
-using System;
 using System.Runtime.InteropServices;
-using Unity.Collections;
-using Unity.Jobs;
 using UnityEngine.Lumin;
 using UnityEngine.Scripting;
 using UnityEngine.XR.ARSubsystems;
@@ -14,7 +11,6 @@ namespace UnityEngine.XR.MagicLeap
     /// Use <c>XRRaycastSubsystemDescriptor.Create()</c> instead.
     /// </summary>
     [Preserve]
-    [UsesLuminPrivilege("WorldReconstruction")]
     public sealed class MagicLeapRaycastSubsystem : XRRaycastSubsystem
     {
         /// <summary>
@@ -33,6 +29,10 @@ namespace UnityEngine.XR.MagicLeap
 #else
         MagicLeapProvider magicLeapProvider;
 
+        /// <summary>
+        /// Create a Magic Leap provider
+        /// </summary>
+        /// <returns>Concrete implementation of raycast provider</returns>
         protected override Provider CreateProvider()
         {
             magicLeapProvider = new MagicLeapProvider();
@@ -91,7 +91,11 @@ namespace UnityEngine.XR.MagicLeap
         {
             public const ulong InvalidHandle = ulong.MaxValue;
 
-            const string Library = "ml_perception_client";
+#if UNITY_ANDROID
+        const string Library = "perception.magicleap";
+#else
+        const string Library = "ml_perception_client";
+#endif
 
             [DllImport(Library, CallingConvention = CallingConvention.Cdecl, EntryPoint = "MLRaycastCreate")]
             public static extern MLApiResult Create(out ulong handle);
@@ -103,7 +107,7 @@ namespace UnityEngine.XR.MagicLeap
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         static void RegisterDescriptor()
         {
-#if PLATFORM_LUMIN
+#if UNITY_ANDROID
             XRRaycastSubsystemDescriptor.RegisterDescriptor(new XRRaycastSubsystemDescriptor.Cinfo
             {
                 id = "MagicLeap-Raycast",
@@ -117,7 +121,7 @@ namespace UnityEngine.XR.MagicLeap
                 supportsWorldBasedRaycast = false,
                 supportedTrackableTypes = TrackableType.None,
             });
-#endif
+#endif // UNITY_ANDROID
         }
     }
 }

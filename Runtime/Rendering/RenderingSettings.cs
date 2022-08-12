@@ -6,27 +6,81 @@ using System.Text;
 
 namespace UnityEngine.XR.MagicLeap.Rendering
 {
+    /// <summary>
+    /// Enumeration representing the Depth precision
+    /// </summary>
     public enum DepthPrecision : int
     {
+        /// <summary>
+        /// 32 bit depth precision
+        /// </summary>
+        [InspectorName("32 bit Depth Precision")]
         Depth32,
+        /// <summary>
+        /// 24 bit depth precision with an 8 bit stencil buffer
+        /// </summary>
+        [InspectorName("24 bit Depth, 8 bit Stencil buffer")]
         Depth24Stencil8
     }
 
+    /// <summary>
+    /// Enumeration for the Frame Timing hint
+    /// </summary>
     public enum FrameTimingHint : int
     {
+        /// <summary>
+        /// Unspecified
+        /// </summary>
         Unspecified = 0,
+        /// <summary>
+        /// Maximum/uncapped
+        /// </summary>
+        [InspectorName("Maximum (Uncapped) framerate")]
         Maximum,
+        /// <summary>
+        /// Maximum of 60 Hz
+        /// </summary>
+        [InspectorName("Max 60 Hz")]
         Max_60Hz,
+        /// <summary>
+        /// Maximum of 120 Hz
+        /// </summary>
+        [InspectorName("Max 120 Hz")]
         Max_120Hz,
     }
 
+    /// <summary>
+    /// Enumeration for the Stabilization mode
+    /// </summary>
     public enum StabilizationMode : byte
     {
+        /// <summary>
+        /// No stabilization
+        /// </summary>
         None,
+        /// <summary>
+        /// Far clip plane stabilization
+        /// </summary>
+        [InspectorName("Far Clip stabilization")]
         FarClip,
+        /// <summary>
+        /// Furthest Object stabilization
+        /// </summary>
+        [InspectorName("Furthest Object stabilization")]
         FurthestObject,
+        /// <summary>
+        /// Custom stabilization
+        /// Should you decide to write your own custom stabilization, please ensure that you set the property
+        /// <c>RenderingSettings.stabilizationDistance</c> on each frame. Please ensure you understand the ramifications of
+        /// rolling your own stabilization code before using this enum.
+        /// </summary>
+        [InspectorName("Custom stabilization")]
         Custom
     }
+
+    /// <summary>
+    /// Static class for Render settings
+    /// </summary>
     public static class RenderingSettings
     {
         const float kDefaultFarClip = 10f;
@@ -38,6 +92,10 @@ namespace UnityEngine.XR.MagicLeap.Rendering
         // in MagicLeap units (meters), so we do all the conversion here to keep logic
         // elsewhere as simple as possible.
         internal static float s_CachedCameraScale = 1.0f;
+
+        /// <summary>
+        /// Getter/internal setter for the camera scale
+        /// </summary>
         public static float cameraScale
         {
             get
@@ -62,6 +120,22 @@ namespace UnityEngine.XR.MagicLeap.Rendering
                 UnityMagicLeap_RenderingSetDepthPrecision(value);
             }
         }
+
+        internal static bool headlocked
+        {
+            get
+            {
+                return UnityMagicLeap_RenderingGetIsHeadlocked();
+            }
+            set
+            {
+                UnityMagicLeap_RenderingSetIsHeadlocked(value);
+            }
+        }
+
+        /// <summary>
+        /// Getter/internal Setter for the far clip distance
+        /// </summary>
         public static float farClipDistance
         {
             get
@@ -72,6 +146,10 @@ namespace UnityEngine.XR.MagicLeap.Rendering
             }
             internal set { UnityMagicLeap_RenderingSetParameter("FarClipDistance", value); }
         }
+
+        /// <summary>
+        /// Getter/internal Setter for the Focal distance
+        /// </summary>
         public static float focusDistance
         {
             get
@@ -82,11 +160,10 @@ namespace UnityEngine.XR.MagicLeap.Rendering
             }
             internal set { UnityMagicLeap_RenderingSetParameter("FocusDistance", value); }
         }
-        public static FrameTimingHint frameTimingHint
-        {
-            get { return UnityMagicLeap_RenderingGetFrameTimingHint(); }
-            internal set { UnityMagicLeap_RenderingSetFrameTimingHint(value); }
-        }
+
+        /// <summary>
+        /// Getter for the maximum Far Clip distance
+        /// </summary>
         public static float maxFarClipDistance
         {
             get
@@ -96,11 +173,19 @@ namespace UnityEngine.XR.MagicLeap.Rendering
                 return RenderingUtility.ToUnityUnits(maxFarClip, s_CachedCameraScale);
             }
         }
+
+        /// <summary>
+        /// TODO: Delete
+        /// </summary>
         [Obsolete("use minNearClipDistance instead")]
         public static float maxNearClipDistance
         {
             get { return minNearClipDistance;}
         }
+
+        /// <summary>
+        /// Getter for the minimum Near Clip Distance
+        /// </summary>
         public static float minNearClipDistance
         {
             get
@@ -110,6 +195,10 @@ namespace UnityEngine.XR.MagicLeap.Rendering
                 return minNearClip;
             }
         }
+
+        /// <summary>
+        /// Getter/internal Setter for the near Clip distance
+        /// </summary>
         public static float nearClipDistance
         {
             get
@@ -120,6 +209,11 @@ namespace UnityEngine.XR.MagicLeap.Rendering
             }
             internal set { UnityMagicLeap_RenderingSetParameter("NearClipDistance", value); }
         }
+
+
+        /// <summary>
+        /// TODO: Remove
+        /// </summary>
         [Obsolete("use MagicLeapSettings.forceMultipass to force multipass rendering instead")]
         public static bool singlePassEnabled
         {
@@ -131,6 +225,10 @@ namespace UnityEngine.XR.MagicLeap.Rendering
             }
             internal set { UnityMagicLeap_RenderingSetParameter("SinglePassEnabled", value ? 1.0f : 0.0f); }
         }
+
+        /// <summary>
+        /// Getter/internal Setter for the Stabilization distance
+        /// </summary>
         public static float stabilizationDistance
         {
             get
@@ -141,6 +239,10 @@ namespace UnityEngine.XR.MagicLeap.Rendering
             }
             internal set { UnityMagicLeap_RenderingSetParameter("StabilizationDistance", value); }
         }
+
+        /// <summary>
+        /// Getter/internal Setter for the Protected surface property
+        /// </summary>
         public static bool useProtectedSurface
         {
             get
@@ -151,6 +253,11 @@ namespace UnityEngine.XR.MagicLeap.Rendering
             }
             internal set { UnityMagicLeap_RenderingSetParameter("UseProtectedSurface", value ? 1.0f : 0.0f); }
         }
+
+
+        /// <summary>
+        /// TODO: Remove
+        /// </summary>
         [Obsolete("Use UnityEngine.XR.XRSettings.renderViewportScale instead")]
         public static float surfaceScale
         {
@@ -162,6 +269,10 @@ namespace UnityEngine.XR.MagicLeap.Rendering
             }
             internal set { UnityMagicLeap_RenderingSetParameter("SurfaceScale", value); }
         }
+
+        /// <summary>
+        /// TODO: Remove
+        /// </summary>
         [Obsolete("useLegacyFrameParameters is ignored on XR SDK")]
         internal static bool useLegacyFrameParameters
         {
@@ -180,12 +291,8 @@ namespace UnityEngine.XR.MagicLeap.Rendering
             return Mathf.Approximately(val, 0f);
         }
 
-#if PLATFORM_LUMIN
+#if UNITY_ANDROID
         const string kLibrary = "UnityMagicLeap";
-        [DllImport(kLibrary)]
-        internal static extern FrameTimingHint UnityMagicLeap_RenderingGetFrameTimingHint();
-        [DllImport(kLibrary)]
-        internal static extern void UnityMagicLeap_RenderingSetFrameTimingHint(FrameTimingHint newValue);
         [DllImport(kLibrary, CharSet = CharSet.Ansi)]
         internal static extern void UnityMagicLeap_RenderingSetParameter(string key, float newValue);
         [DllImport(kLibrary, CharSet = CharSet.Ansi)]
@@ -195,26 +302,34 @@ namespace UnityEngine.XR.MagicLeap.Rendering
         internal static extern DepthPrecision UnityMagicLeap_RenderingGetDepthPrecision();
         [DllImport(kLibrary)]
         internal static extern void UnityMagicLeap_RenderingSetDepthPrecision(DepthPrecision depthPrecision);
+        [DllImport(kLibrary)]
+        internal static extern bool UnityMagicLeap_RenderingGetIsHeadlocked();
+        [DllImport(kLibrary)]
+        internal static extern void UnityMagicLeap_RenderingSetIsHeadlocked(bool isHeadlocked);
 #else
-        internal static FrameTimingHint UnityMagicLeap_RenderingGetFrameTimingHint() { return FrameTimingHint.Unspecified; }
-        internal static void UnityMagicLeap_RenderingSetFrameTimingHint(FrameTimingHint newValue) {}
         internal static void UnityMagicLeap_RenderingSetParameter(string key, float newValue) {}
         internal static bool UnityMagicLeap_RenderingTryGetParameter(string key, out float value) { value = 0f; return false; }
         internal static DepthPrecision UnityMagicLeap_RenderingGetDepthPrecision() { return DepthPrecision.Depth32; }
         internal static void UnityMagicLeap_RenderingSetDepthPrecision(DepthPrecision depthPrecision) {}
-#endif
+        internal static bool UnityMagicLeap_RenderingGetIsHeadlocked() { return false; }
+        internal static void UnityMagicLeap_RenderingSetIsHeadlocked(bool isHeadlocked) {}
+#endif // UNITY_ANDROID
 
         // device-specific calls.
-#if PLATFORM_LUMIN && !UNITY_EDITOR
+#if UNITY_ANDROID && !UNITY_EDITOR
         [DllImport("libc", EntryPoint = "__system_property_get")]
         private static extern int _GetSystemProperty(string name, StringBuilder @value);
 
+        /// <summary>
+        /// Get a value from a system property
+        /// <param="name">Key of the system property you're looking for</param>
+        /// <return>Value for the given key. If the key is not found, return null.</return>
         public static string GetSystemProperty(string name)
         {
             var sb = new StringBuilder(255);
             var ret = _GetSystemProperty(name, sb);
             return ret == 0 ? sb.ToString() : null;
         }
-#endif
+#endif // UNITY_ANDROID && !UNITY_EDITOR
     }
 }

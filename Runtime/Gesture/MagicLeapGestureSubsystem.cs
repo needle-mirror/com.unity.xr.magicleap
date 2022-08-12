@@ -16,12 +16,6 @@ namespace UnityEngine.XR.MagicLeap
     public sealed class MagicLeapGestureSubsystem : XRGestureSubsystem
     {
         /// <summary>
-        /// A collection of all MagicLeapKeyPoseGestureEvents managed by this subsystem.
-        /// This is cleared every frame and refreshed with new gesture events.
-        /// </summary>
-        public NativeArray<MagicLeapKeyPoseGestureEvent> keyPoseGestureEvents { get { return magicLeapProvider.keyPoseGestureEvents; } }
-
-        /// <summary>
         /// A collection of all MagicLeapTouchpadGestureEvents managed by this subsystem.
         /// This is cleared every frame and refreshed with new gesture events.
         /// </summary>
@@ -43,41 +37,20 @@ namespace UnityEngine.XR.MagicLeap
         {
             get
             {
-#if PLATFORM_LUMIN
+#if UNITY_ANDROID
                 return NativeApi.IsControllerGesturesEnabled();
 #else
-                Debug.LogWarning("Attempting to get MagicLeapGestureSubsystem.ControllerGesturesEnabled while not on the Lumin platform.  This will be ignored.");
+                Debug.LogWarning("Attempting to get MagicLeapGestureSubsystem.ControllerGesturesEnabled while not on a Magic Leap platform.  This will be ignored.");
                 return false;
-#endif
+#endif // UNITY_ANDROID
             }
             set
             {
-#if PLATFORM_LUMIN
+#if UNITY_ANDROID
                 NativeApi.SetControllerGesturesEnabled(value);
 #else
-                Debug.LogWarning("Attempting to set MagicLeapGestureSubsystem.ControllerGesturesEnabled while not on the Lumin platform.  This will be ignored.");
-#endif
-            }
-        }
-
-        internal bool HandGesturesEnabled
-        {
-            get
-            {
-#if PLATFORM_LUMIN
-                return NativeApi.IsHandGesturesEnabled();
-#else
-                Debug.LogWarning("Attempting to get MagicLeapGestureSubsystem.HandGesturesEnabled while not on the Lumin platform.  This will be ignored.");
-                return false;
-#endif
-            }
-            set
-            {
-#if PLATFORM_LUMIN
-                NativeApi.SetHandGesturesEnabled(value);
-#else
-                Debug.LogWarning("Attempting to set MagicLeapGestureSubsystem.HandGesturesEnabled while not on the Lumin platform.  This will be ignored.");
-#endif
+                Debug.LogWarning("Attempting to set MagicLeapGestureSubsystem.ControllerGesturesEnabled while not on a Magic Leap platform.  This will be ignored.");
+#endif // UNITY_ANDROID
             }
         }
 
@@ -85,32 +58,32 @@ namespace UnityEngine.XR.MagicLeap
         {
             public MagicLeapGestureProvider()
             {
-#if PLATFORM_LUMIN
+#if UNITY_ANDROID
                 NativeApi.Create();
-#endif
+#endif // UNITY_ANDROID
             }
 
             public override void Start()
             {
-#if PLATFORM_LUMIN
+#if UNITY_ANDROID
                 NativeApi.Start();
-#endif
+#endif // UNITY_ANDROID
             }
 
             public override void Stop()
             {
-#if PLATFORM_LUMIN
+#if UNITY_ANDROID
                 NativeApi.Stop();
-#endif
+#endif // UNITY_ANDROID
             }
 
             public override void Update()
             {
-#if PLATFORM_LUMIN
+#if UNITY_ANDROID
                 NativeApi.Update();
 
                 RetrieveGestureEvents();
-#endif
+#endif // UNITY_ANDROID
             }
 
             public unsafe delegate void* GetGesturesDelegate(out int gestureEventsLength, out int elementSize);
@@ -134,57 +107,37 @@ namespace UnityEngine.XR.MagicLeap
 
             unsafe void RetrieveGestureEvents()
             {
-                if (NativeApi.IsHandGesturesEnabled())
-                    GetGestureEvents<MagicLeapKeyPoseGestureEvent>(ref m_KeyPoseGestureEvents, NativeApi.GetKeyPoseGestureEventsPtr);
                 if (NativeApi.IsControllerGesturesEnabled())
                     GetGestureEvents<MagicLeapTouchpadGestureEvent>(ref m_TouchpadGestureEvents, NativeApi.GetTouchpadGestureEventsPtr);
 
                 // Count up valid activate gestures (Have to do this as we cannot dynamically grow NativeArray).
                 // This should be possible to fix with NativeList (when out of preview package).
                 int activateGestureEventCount = 0;
-                foreach (var gestureEvent in m_KeyPoseGestureEvents)
-                {
-                    if (gestureEvent.state == GestureState.Started && gestureEvent.keyPose == MagicLeapKeyPose.Finger)
-                        activateGestureEventCount++;
-                }
-
                 if (m_ActivateGestureEvents.IsCreated)
                     m_ActivateGestureEvents.Dispose();
                 m_ActivateGestureEvents = new NativeArray<ActivateGestureEvent>(activateGestureEventCount, Allocator.Persistent);
-
-                int iActivateGestureEvent = 0;
-                foreach (var gestureEvent in m_KeyPoseGestureEvents)
-                {
-                    if (gestureEvent.state == GestureState.Started && gestureEvent.keyPose == MagicLeapKeyPose.Finger)
-                        m_ActivateGestureEvents[iActivateGestureEvent++] =
-                            new ActivateGestureEvent(GetNextGUID(), gestureEvent.state);
-                }
             }
 
             public override void Destroy()
             {
-#if PLATFORM_LUMIN
+#if UNITY_ANDROID
                 NativeApi.Destroy();
 
-                m_KeyPoseGestureEvents.Dispose();
                 m_TouchpadGestureEvents.Dispose();
-#endif
+#endif // UNITY_ANDROID
                 base.Destroy();
             }
-
-            public NativeArray<MagicLeapKeyPoseGestureEvent> keyPoseGestureEvents { get { return m_KeyPoseGestureEvents; } }
-            NativeArray<MagicLeapKeyPoseGestureEvent> m_KeyPoseGestureEvents = new NativeArray<MagicLeapKeyPoseGestureEvent>(0, Allocator.Persistent);
 
             public NativeArray<MagicLeapTouchpadGestureEvent> touchpadGestureEvents { get { return m_TouchpadGestureEvents; } }
             NativeArray<MagicLeapTouchpadGestureEvent> m_TouchpadGestureEvents = new NativeArray<MagicLeapTouchpadGestureEvent>(0, Allocator.Persistent);
         }
 
-#if UNITY_EDITOR || PLATFORM_LUMIN
+#if UNITY_EDITOR || UNITY_ANDROID
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
 #endif
         static void RegisterDescriptor()
         {
-#if PLATFORM_LUMIN
+#if UNITY_ANDROID
             XRGestureSubsystemDescriptor.RegisterDescriptor(
                 new XRGestureSubsystemDescriptor.Cinfo
                 {
@@ -192,7 +145,7 @@ namespace UnityEngine.XR.MagicLeap
                     subsystemImplementationType = typeof(MagicLeapGestureSubsystem),
                 }
             );
-#endif
+#endif // UNITY_ANDROID
         }
 
         static class NativeApi
@@ -208,9 +161,6 @@ namespace UnityEngine.XR.MagicLeap
             [DllImport(Library, EntryPoint="UnityMagicLeap_GesturesStart")]
             public static extern void Start();
 
-            [DllImport(Library, EntryPoint="UnityMagicLeap_GesturesGetKeyPoseGestureEventsPtr")]
-            public static extern unsafe void* GetKeyPoseGestureEventsPtr(out int gesturesLength, out int elementSize);
-
             [DllImport(Library, EntryPoint="UnityMagicLeap_GesturesGetTouchpadGestureEventsPtr")]
             public static extern unsafe void* GetTouchpadGestureEventsPtr(out int gesturesLength, out int elementSize);
 
@@ -224,15 +174,8 @@ namespace UnityEngine.XR.MagicLeap
             [return: MarshalAs(UnmanagedType.I1)]
             public static extern bool IsControllerGesturesEnabled();
 
-            [DllImport(Library, EntryPoint="UnityMagicLeap_GesturesIsHandGesturesEnabled")]
-            [return: MarshalAs(UnmanagedType.I1)]
-            public static extern bool IsHandGesturesEnabled();
-
             [DllImport(Library, EntryPoint="UnityMagicLeap_GesturesSetControllerGesturesEnabled")]
             public static extern void SetControllerGesturesEnabled([MarshalAs(UnmanagedType.I1)] bool value);
-
-            [DllImport(Library, EntryPoint="UnityMagicLeap_GesturesSetHandGesturesEnabled")]
-            public static extern void SetHandGesturesEnabled([MarshalAs(UnmanagedType.I1)] bool value);
         }
 
         // High GUID bits saved for common (Activate) gesture for this subsystem

@@ -1,7 +1,7 @@
 using System;
-#if PLATFORM_LUMIN
+#if UNITY_ANDROID
 using System.Runtime.InteropServices;
-#endif // PLATFORM_LUMIN
+#endif // UNITY_ANDROID
 
 namespace UnityEngine.XR.MagicLeap.Internal
 {
@@ -9,7 +9,7 @@ namespace UnityEngine.XR.MagicLeap.Internal
     {
         static class Native
         {
-#if PLATFORM_LUMIN
+#if UNITY_ANDROID
             const string k_Library = "UnityMagicLeap";
 
             [DllImport(k_Library, EntryPoint = "UnityMagicLeap_ReleasePerceptionStack")]
@@ -20,7 +20,7 @@ namespace UnityEngine.XR.MagicLeap.Internal
 #else
             internal static void Release(IntPtr ptr) {}
             internal static IntPtr Retain() => IntPtr.Zero;
-#endif // PLATFORM_LUMIN
+#endif // UNITY_ANDROID
         }
 
         IntPtr m_Handle;

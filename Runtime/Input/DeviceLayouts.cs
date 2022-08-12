@@ -1,4 +1,5 @@
 #if UNITY_INPUT_SYSTEM
+using System;
 using UnityEngine.Scripting;
 using UnityEngine.InputSystem.Controls;
 using UnityEngine.InputSystem.Layouts;
@@ -47,8 +48,7 @@ namespace UnityEngine.XR.MagicLeap
     public enum ControllerType
     {
         None = 0,
-        Device,
-        MobileApp
+        Device
     }
 
     [Preserve]
@@ -127,13 +127,6 @@ namespace UnityEngine.XR.MagicLeap
     public class MagicLeapHandDevice : XRController
     {
         [Preserve]
-        [InputControl(displayName = "Center Point")]
-        public Vector3Control center { get; private set; }
-        [Preserve]
-        [InputControl(displayName = "Rotation")]
-        public QuaternionControl rotation { get; private set; }
-
-        [Preserve]
         [InputControl(displayName = "Hand Confidence")]
         public AxisControl handConfidence { get; private set; }
         [Preserve]
@@ -154,10 +147,6 @@ namespace UnityEngine.XR.MagicLeap
         protected override void FinishSetup()
         {
             base.FinishSetup();
-
-            center = GetChildControl<Vector3Control>("center");
-            rotation = GetChildControl<QuaternionControl>("rotation");
-
             handConfidence = GetChildControl<AxisControl>("handConfidence");
             normalizeCenter = GetChildControl<Vector3Control>("normalizeCenter");
             wristCenter = GetChildControl<Vector3Control>("wristCenter");
@@ -182,12 +171,15 @@ namespace UnityEngine.XR.MagicLeap
 
         [Preserve]
         [InputControl(displayName = "Touchpad 2 Pressed")]
+        [Obsolete("This feature is no longer available as Magic Leap does not support Secondary Touch.")]
         public ButtonControl touchpad2Pressed { get; private set; }
         [Preserve]
         [InputControl(displayName = "Touchpad 2 Position")]
+        [Obsolete("This feature is no longer available as Magic Leap does not support Secondary Touch.")]
         public Vector2Control touchpad2Position { get; private set; }
         [Preserve]
         [InputControl(displayName = "Touchpad 2 Force")]
+        [Obsolete("This feature is no longer available as Magic Leap does not support Secondary Touch.")]
         public AxisControl touchpad2Force { get; private set; }
         [Preserve]
         [InputControl(displayName = "Trigger Button")]
@@ -242,10 +234,6 @@ namespace UnityEngine.XR.MagicLeap
             touchpad1Pressed = GetChildControl<ButtonControl>("touchpad1Pressed");
             touchpad1Position = GetChildControl<Vector2Control>("touchpad1Position");
             touchpad1Force = GetChildControl<AxisControl>("touchpad1Force");
-
-            touchpad2Pressed = GetChildControl<ButtonControl>("touchpad2Pressed");
-            touchpad2Position = GetChildControl<Vector2Control>("touchpad2Position");
-            touchpad2Force = GetChildControl<AxisControl>("touchpad2Force");
 
             triggerButton = GetChildControl<ButtonControl>("triggerButton");
             trigger = GetChildControl<AxisControl>("trigger");

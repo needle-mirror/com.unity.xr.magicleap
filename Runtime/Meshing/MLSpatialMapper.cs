@@ -12,15 +12,16 @@ using UnityEngine.XR.MagicLeap.Meshing;
 
 #if UNITY_EDITOR
 using UnityEditor;
-using UnityEditor.XR.MagicLeap.Remote;
 #endif
 
 namespace UnityEngine.XR.MagicLeap
 {
     using MLLog = UnityEngine.XR.MagicLeap.MagicLeapLogger;
 
+    /// <summary>
+    /// Monobehaviour representing the Magic Leap Spatial mapper
+    /// </summary>
     [AddComponentMenu("AR/Magic Leap/ML Spatial Mapper")]
-    [UsesLuminPrivilege("WorldReconstruction")]
     [DisallowMultipleComponent]
     public sealed class MLSpatialMapper : MonoBehaviour
     {
@@ -96,6 +97,11 @@ namespace UnityEngine.XR.MagicLeap
             }
         }
 
+        /// <summary>
+        /// Convert a LevelOfDetail to a float, ranged between 0 and 1
+        /// </summary>
+        /// <param name="lod">Level of detail</param>
+        /// <returns>Float value between 0 and 1</returns>
         public static float LevelOfDetailToDensity( LevelOfDetail lod )
         {
             if (lod == LevelOfDetail.Minimum)
@@ -106,6 +112,11 @@ namespace UnityEngine.XR.MagicLeap
                 return 1.0f;
         }
 
+        /// <summary>
+        /// Step the Level of detail to Minimum, Medium and Maximum
+        /// </summary>
+        /// <param name="density">float input value</param>
+        /// <returns></returns>
         public static LevelOfDetail DensityToLevelOfDetail( float density )
         {
             if (density < 0.33f)
@@ -116,6 +127,9 @@ namespace UnityEngine.XR.MagicLeap
                 return LevelOfDetail.Maximum;
         }
 
+        /// <summary>
+        /// TODO: Remove as this is no longer valid
+        /// </summary>
         [Obsolete("Replaced by density")]
         public LevelOfDetail levelOfDetail
         {
@@ -133,6 +147,9 @@ namespace UnityEngine.XR.MagicLeap
         [SerializeField]
         float m_Density = Defaults.density;
 
+        /// <summary>
+        /// Getter/Setter for the density property
+        /// </summary>
         public float density
         {
             get { return m_Density; }
@@ -164,6 +181,7 @@ namespace UnityEngine.XR.MagicLeap
 
         /// <summary>
         /// Whether to generate a triangle mesh or point cloud points.
+        /// TODO: Remove this method
         /// </summary>
         [Obsolete("Replaced by requestedMeshType and currentMeshType")]
         public MeshType meshType
@@ -570,6 +588,9 @@ namespace UnityEngine.XR.MagicLeap
                 m_MeshSubsystem = m_Loader.meshSubsystem;
 
             MLLog.Assert(m_MeshSubsystem != null, kLogTag, "Cannot get reference to Mesh Subsystem!");
+
+            // Register native callbacks for feature API
+            m_MeshSubsystem.RegisterNativeSubsystemCallbacks();
 
             UpdateSettings();
             UpdateBounds();

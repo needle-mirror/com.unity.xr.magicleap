@@ -2,6 +2,11 @@
 
 namespace Unity.MagicLeap.Samples.Rendering
 {
+    /// <summary>
+    /// MonoBehaviour for the Stabilization component
+    /// This component is used as a part of the 'Furthest Object' implementation of `stabilizationMode`. Users can use the two to
+    /// explicitly define which objects are considered for determining the 'furthest object' in the scene.
+    /// </summary>
     public sealed class StabilizationComponent : MonoBehaviour
     {
         void OnBecameInvisible()

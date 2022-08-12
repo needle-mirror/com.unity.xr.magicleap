@@ -17,7 +17,6 @@ namespace UnityEngine.XR.MagicLeap
     /// Use <c>MagicLeapPlaneSubsystemDescriptor.Create()</c> instead.
     /// </summary>
     [Preserve]
-    [UsesLuminPrivilege("WorldReconstruction")]
     public sealed class MagicLeapPlaneSubsystem : XRPlaneSubsystem
     {
         /// <summary>
@@ -43,6 +42,10 @@ namespace UnityEngine.XR.MagicLeap
 #else
         MagicLeapProvider magicLeapProvider;
 
+        /// <summary>
+        /// Create the Magic Leap provider
+        /// </summary>
+        /// <returns>Magic Leap implementaion of a plane provider.</returns>
         protected override Provider CreateProvider()
         {
             magicLeapProvider = new MagicLeapProvider();
@@ -334,7 +337,7 @@ namespace UnityEngine.XR.MagicLeap
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         static void RegisterDescriptor()
         {
-#if PLATFORM_LUMIN
+#if UNITY_ANDROID
             XRPlaneSubsystemDescriptor.Create(new XRPlaneSubsystemDescriptor.Cinfo
             {
                 id = "MagicLeap-Planes",
@@ -343,7 +346,7 @@ namespace UnityEngine.XR.MagicLeap
                 subsystemTypeOverride = typeof(MagicLeapPlaneSubsystem),
 #else
                 subsystemImplementationType = typeof(MagicLeapPlaneSubsystem),
-#endif
+#endif // UNITY_ANDROID
                 supportsHorizontalPlaneDetection = true,
                 supportsVerticalPlaneDetection = true,
                 supportsArbitraryPlaneDetection = true,
@@ -357,7 +360,11 @@ namespace UnityEngine.XR.MagicLeap
         {
             public const ulong k_InvalidHandle = ulong.MaxValue;
 
+#if UNITY_ANDROID
+            const string Library = "perception.magicleap";
+#else
             const string Library = "ml_perception_client";
+#endif
 
             [DllImport(Library, CallingConvention = CallingConvention.Cdecl, EntryPoint = "MLPlanesCreate")]
             public static extern MLApiResult Create(out ulong planes_tracker);

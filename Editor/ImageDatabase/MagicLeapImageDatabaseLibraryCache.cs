@@ -4,9 +4,16 @@ using UnityEngine;
 
 namespace UnityEditor.XR.MagicLeap
 {
+    /// <summary>
+    /// Class representing a single Image Database Entry.
+    /// It essentially is a pair of an Asset Guid (stored as a string) and a Timestamp
+    /// </summary>
     [Serializable]
     public class ImageDatabaseEntry
     {
+        /// <summary>
+        /// Asset GUID
+        /// </summary>
         public string assetGuid;
         [SerializeField]
         private long _timestamp;
@@ -34,16 +41,23 @@ namespace UnityEditor.XR.MagicLeap
     /// the editor.
     /// </summary>
     [Serializable]
+    /// <summary>
+    /// Class representing a list of `ImageDatabaseEntry`
+    /// </summary>
+
     public class MagicLeapImageDatabaseLibraryCache
     {
+        /// <summary>
+        /// Constructor
+        /// </summary>
         public MagicLeapImageDatabaseLibraryCache()
         {
-            m_ImageLibraryCache = new List<ImageDatabaseEntry>(25);
+            m_LibraryCache = new List<ImageDatabaseEntry>(25);
         }
 
-        [Obsolete("To be removed when we bump the major version", false)]
-        public Dictionary<string, DateTime> m_LibraryCache;
-
-        public List<ImageDatabaseEntry> m_ImageLibraryCache;
+        /// <summary>
+        /// A simple list of ImageDatabaseEntry objects.
+        /// </summary>
+        public List<ImageDatabaseEntry> m_LibraryCache;
     }
 }

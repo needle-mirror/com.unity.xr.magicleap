@@ -100,7 +100,7 @@ namespace UnityEditor.XR.MagicLeap
             m_ComputeNormals = this.serializedObject.FindProperty("m_ComputeNormals");
             m_Density = this.serializedObject.FindProperty("m_Density");
             m_MeshParent = this.serializedObject.FindProperty("m_MeshParent");
-            m_MeshType = this.serializedObject.FindProperty("m_RequestedMeshType");
+            m_MeshType = this.serializedObject.FindProperty("m_MeshType");
             m_FillHoleLength = this.serializedObject.FindProperty("m_FillHoleLength");
             m_MeshQueueSize = this.serializedObject.FindProperty("m_MeshQueueSize");
             m_PollingRate = this.serializedObject.FindProperty("m_PollingRate");
