@@ -24,32 +24,6 @@ namespace UnityEngine.XR.MagicLeap.Rendering
     }
 
     /// <summary>
-    /// Enumeration for the Frame Timing hint
-    /// </summary>
-    public enum FrameTimingHint : int
-    {
-        /// <summary>
-        /// Unspecified
-        /// </summary>
-        Unspecified = 0,
-        /// <summary>
-        /// Maximum/uncapped
-        /// </summary>
-        [InspectorName("Maximum (Uncapped) framerate")]
-        Maximum,
-        /// <summary>
-        /// Maximum of 60 Hz
-        /// </summary>
-        [InspectorName("Max 60 Hz")]
-        Max_60Hz,
-        /// <summary>
-        /// Maximum of 120 Hz
-        /// </summary>
-        [InspectorName("Max 120 Hz")]
-        Max_120Hz,
-    }
-
-    /// <summary>
     /// Enumeration for the Stabilization mode
     /// </summary>
     public enum StabilizationMode : byte
@@ -226,19 +200,6 @@ namespace UnityEngine.XR.MagicLeap.Rendering
             internal set { UnityMagicLeap_RenderingSetParameter("SinglePassEnabled", value ? 1.0f : 0.0f); }
         }
 
-        /// <summary>
-        /// Getter/internal Setter for the Stabilization distance
-        /// </summary>
-        public static float stabilizationDistance
-        {
-            get
-            {
-                float distance = 10f;
-                UnityMagicLeap_RenderingTryGetParameter("StabilizationDistance", out distance);
-                return distance;
-            }
-            internal set { UnityMagicLeap_RenderingSetParameter("StabilizationDistance", value); }
-        }
 
         /// <summary>
         /// Getter/internal Setter for the Protected surface property

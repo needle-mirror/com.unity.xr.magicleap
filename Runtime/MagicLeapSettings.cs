@@ -74,10 +74,6 @@ namespace UnityEngine.XR.MagicLeap
         [SerializeField, Tooltip("Force Multipass rendering. Select this option when shaders are incompatible with Single Pass Instancing")]
         bool m_ForceMultipass;
 
-        [SerializeField, Tooltip("Defines the minimum frame time interval, or the maximum speed at which the system will process frames")]
-#pragma warning disable 414
-        Rendering.FrameTimingHint m_FrameTimingHint = Rendering.FrameTimingHint.Max_60Hz;
-#pragma warning restore
         [SerializeField, Tooltip("When enabled, all of the content rendered by the application and system notifications will be headlocked. Use this mode with caution.")]
         bool m_HeadlockGraphics;
 

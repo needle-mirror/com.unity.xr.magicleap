@@ -1,5 +1,11 @@
 # Changelog
 
+## [7.0.0-exp.4] - 2022-08-19
+
+- Fix for memory leak and eventual crash after many cycles of pause/resume.
+- Removed RenderingSettings.stabilizationDistance & MagicLeapSettings.FrameTimingHint. These were deprecated properties in the underlying graphics system which have now been removed.
+- Updating MLSDK to 2022-Aug-22.
+
 ## [7.0.0-exp.3] - 2022-08-12
 
 - Updating the package description.
