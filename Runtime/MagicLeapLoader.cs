@@ -139,7 +139,7 @@ namespace UnityEngine.XR.MagicLeap
 #if UNITY_EDITOR
             if (!DisableValidationChecksOnEnteringPlaymode)
             {
-                // This will only work when "Magic Leap Zero Iteration" is selected as the Editor's XR Plugin
+                // This will only work when "Magic Leap App Simulator" is selected as the Editor's XR Plugin
                 if (MagicLeapProjectValidation.LogPlaymodeValidationIssues())
                     return false;
             }
@@ -246,7 +246,7 @@ namespace UnityEngine.XR.MagicLeap
 
         internal static bool isLegacyDeviceActive
         {
-            get { return XRSettings.enabled && (XRSettings.loadedDeviceName == "Lumin"); }
+            get { return XRSettings.enabled && (XRSettings.loadedDeviceName == "Android"); }
         }
 
         internal void StartMeshSubsystem()

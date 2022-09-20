@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using UnityEngine.Lumin;
 using UnityEngine.XR;
 
 namespace UnityEngine.XR.MagicLeap

@@ -5,7 +5,6 @@ using System.Runtime.InteropServices;
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
 using Unity.Jobs;
-using UnityEngine.Lumin;
 using UnityEngine.Scripting;
 using UnityEngine.XR.ARSubsystems;
 using UnityEngine.XR.MagicLeap.Internal;
@@ -63,7 +62,7 @@ namespace UnityEngine.XR.MagicLeap
         /// </summary>
         /// <remarks>
         /// The creation of the native image tracker handle that enables image tracking on
-        /// Lumin devices has an average startup time of anywhere between ~1500ms - ~6000ms
+        /// Magic Leap devices has an average startup time of anywhere between ~1500ms - ~6000ms
         /// depending on the state of the device and is blocking.  This subsystem opts to
         /// perform this operation asynchronously because of this.
         /// </remarks>

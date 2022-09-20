@@ -98,6 +98,12 @@ namespace URP.SegmentedDimmer
             if (m_InitDone)
                 return true;
 
+            if (!LoadMaterial())
+            {
+                m_InitDone = false;
+                return false;
+            }
+
             // If an app has enabled the SegmentedDimmer feature but doesn't
             // enable 'Magic Leap' in the XR Plugin Management settings, then
             // we should not proceed with this function, otherwise the
@@ -121,11 +127,6 @@ namespace URP.SegmentedDimmer
             m_XRMultipass = !singlePassEnabled;
             m_XRPassFormatChecked = new[] {false,false};
             m_DimmerTechnique = DimmerTechnique.Undefined;
-            if (!LoadMaterial())
-            {
-                m_InitDone = false;
-                return false;
-            }
 
             // Select the technique to use for writing the Alpha
             if (settings.useFullResolution)

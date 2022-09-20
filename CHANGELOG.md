@@ -1,5 +1,14 @@
 # Changelog
 
+## [7.0.0-exp.5] - 2022-09-20
+
+- Bugfix for random crash on OSX Big Sur.
+- Updated AssemblyInfo.cs to support renamed Magic Leap SDK assembly.
+- Added native library build for Apple Silicon.
+- Fix for memory leak and eventual crash after many cycles of pause/resume.
+- Removed RenderingSettings.stabilizationDistance & MagicLeapSettings.FrameTimingHint. These were deprecated properties in the underlying graphics system which have now been removed.
+- Removed references to Lumin that were no longer needed, and renamed other instances of Lumin and Zero Iteration to Magic Leap and App Simulator.
+
 ## [7.0.0-exp.4] - 2022-08-19
 
 - Fix for memory leak and eventual crash after many cycles of pause/resume.

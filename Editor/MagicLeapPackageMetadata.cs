@@ -33,11 +33,11 @@ namespace UnityEditor.XR.MagicLeap
             private static List<BuildTargetGroup> s_SupportedBuildTargets = new List<BuildTargetGroup>() {BuildTargetGroup.Android };
         }
 
-        // Loader targeting MagicLeap's ZI.
+        // Loader targeting MagicLeap's App Simulator.
         // Since MagicLeap Package includes it's own loader there will be no conflicting asset in user projects.
         private class MLZeroIterationLoaderMetadata : IXRLoaderMetadata
         {
-            public string loaderName => "Magic Leap Zero Iteration";
+            public string loaderName => "Magic Leap App Simulator";
             public string loaderType => "UnityEngine.XR.MagicLeap.MagicLeapLoader";
             public List<BuildTargetGroup> supportedBuildTargets => s_SupportedBuildTargets;
             private static List<BuildTargetGroup> s_SupportedBuildTargets = new List<BuildTargetGroup>() { BuildTargetGroup.Standalone };

@@ -151,14 +151,14 @@ namespace UnityEditor.XR.MagicLeap
                 maybeOriginalImportSettings = new TextureImporterSettings();
                 textureImporter.ReadTextureSettings(maybeOriginalImportSettings);
 
-                maybeOriginalPlatformSettings = textureImporter.GetPlatformTextureSettings("Lumin");
-                var luminImportSettings = textureImporter.GetPlatformTextureSettings("Lumin");
+                maybeOriginalPlatformSettings = textureImporter.GetPlatformTextureSettings("Android");
+                var magicLeapImportSettings = textureImporter.GetPlatformTextureSettings("Android");
 
                 textureImporter.isReadable = true;
                 textureImporter.mipmapEnabled = false;
-                luminImportSettings.overridden = true;
-                luminImportSettings.format = TextureImporterFormat.RGBA32;
-                textureImporter.SetPlatformTextureSettings(luminImportSettings);
+                magicLeapImportSettings.overridden = true;
+                magicLeapImportSettings.format = TextureImporterFormat.RGBA32;
+                textureImporter.SetPlatformTextureSettings(magicLeapImportSettings);
                 textureImporter.SaveAndReimport();
             }
         }

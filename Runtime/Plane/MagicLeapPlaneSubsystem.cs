@@ -5,7 +5,6 @@ using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
 using Unity.Jobs;
 using UnityEngine.XR.ARSubsystems;
-using UnityEngine.Lumin;
 using UnityEngine.Scripting;
 using UnityEngine.XR.MagicLeap.PlaneJobs;
 using UnityEngine.XR.MagicLeap.Internal;
