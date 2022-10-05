@@ -1,4 +1,13 @@
+---
+uid: magic-leap-changelog
+---
+
 # Changelog
+
+## [7.0.0-exp.6] - 2022-10-05
+
+- Updating to the latest MLSDK (Sept 23, 2022).
+- Removing Image Tracking and Anchor subsystems as it relates to ARF.
 
 ## [7.0.0-exp.5] - 2022-09-20
 

@@ -8,7 +8,7 @@ namespace UnityEngine.XR.MagicLeap
 {
     /// <summary>
     /// Represents a collection of concave <c>BoundedPlane</c> boundaries obtained from
-    /// <see cref="MagicLeapPlaneSubsystem.GetAllBoundariesForPlane(TrackableId)"/>.
+    /// <see cref="MagicLeapPlaneSubsystem.GetAllBoundariesForPlane(ARSubsystems.TrackableId)"/>.
     /// </summary>
     /// <remarks>
     /// <para>
@@ -24,7 +24,7 @@ namespace UnityEngine.XR.MagicLeap
     /// so you should not hold onto an instance of this struct past a frame boundary.
     /// </para>
     /// </remarks>
-    /// <seealso cref="MagicLeapPlaneSubsystem.GetPlaneBoundaries(TrackableId)"/>.
+    /// <seealso cref="MagicLeapPlaneSubsystem.GetPlaneBoundaries(ARSubsystems.TrackableId)"/>.
     public struct PlaneBoundaryCollection : IEquatable<PlaneBoundaryCollection>
     {
         /// <summary>
@@ -44,8 +44,8 @@ namespace UnityEngine.XR.MagicLeap
         }
 
         /// <summary>
-        /// Attempts to get the plane boundary at index <paramref cref="index"/> and, if successful, copies it to <paramref name="boundaryOut"/>.
-        /// <paramref name="boundaryOut"/> is resized or created using <paramref cref="allocator"/> if necessary.
+        /// Attempts to get the plane boundary at index <paramref name="index"/> and, if successful, copies it to <paramref name="boundaryOut"/>.
+        /// <paramref name="boundaryOut"/> is resized or created using <paramref name="allocator"/> if necessary.
         /// </summary>
         /// <param name="index">The index of the boundary to retrieve.</param>
         /// <param name="allocator">The Allocator to use if <paramref name="boundaryOut"/> must be recreated.

@@ -145,7 +145,6 @@ namespace UnityEngine.XR.MagicLeap
         /// </summary>
         /// <param name="points"></param>
         /// <param name="allocator"></param>
-        /// <returns></returns>
         public static void Giftwrap(NativeArray<Vector2> points, Allocator allocator, ref NativeArray<Vector2> convexHullOut)
         {
             if (!points.IsCreated)

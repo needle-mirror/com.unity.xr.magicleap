@@ -15,9 +15,9 @@ namespace UnityEngine.XR.MagicLeap
     {
         /// <summary>
         /// Whether this <see cref="PlaneBoundary"/> is valid. You should check
-        /// for validity before invoking <see cref="GetPolygon(Allocator, NativeArray{Vector2})"/>,
+        /// for validity before invoking <see cref="GetPolygon(Allocator, ref NativeArray{Vector2})"/>,
         /// <see cref="GetPolygon(Allocator)"/>, <see cref="GetHole(int, Allocator)"/>, or
-        /// <see cref="GetHole(int, Allocator, NativeArray{Vector2})"/>.
+        /// <see cref="GetHole(int, Allocator, ref NativeArray{Vector2})"/>.
         /// </summary>
         public bool valid
         {
@@ -32,7 +32,7 @@ namespace UnityEngine.XR.MagicLeap
 
         /// <summary>
         /// Gets the polygon representing a plane's boundary, and, if successful, copies it to <paramref name="polygonOut"/>.
-        /// <paramref name="polygonOut"/> is resized or created using <paramref cref="allocator"/> if necessary.
+        /// <paramref name="polygonOut"/> is resized or created using <paramref name="allocator"/> if necessary.
         /// The 2D vertices are in plane-space.
         /// </summary>
         /// <param name="allocator">The Allocator to use if <paramref name="polygonOut"/> must be recreated.
@@ -183,7 +183,8 @@ namespace UnityEngine.XR.MagicLeap
         /// </summary>
         /// <param name="lhs">The left-hand side of the comparison.</param>
         /// <param name="rhs">The right-hand side of the comparison.</param>
-        /// <returns><c>true</c> if all fields of this <see cref="PlaneBoundary"/> compare equal to <paramref name="other"/>.</returns>
+        /// <returns><c>true</c> if all fields of this <see cref="PlaneBoundary"/> compare equal to the fields of the other 
+        /// <see cref="PlaneBoundary"/>.</returns>
         public static bool operator ==(PlaneBoundary lhs, PlaneBoundary rhs)
         {
             return lhs.Equals(rhs);
@@ -194,7 +195,8 @@ namespace UnityEngine.XR.MagicLeap
         /// </summary>
         /// <param name="lhs">The left-hand side of the comparison.</param>
         /// <param name="rhs">The right-hand side of the comparison.</param>
-        /// <returns><c>true</c> if any of the fields of this <see cref="PlaneBoundary"/> are not equal to <paramref name="other"/>.</returns>
+        /// <returns><c>true</c> if any field of this <see cref="PlaneBoundary"/> is not equal to the same field on 
+        /// the other <see cref="PlaneBoundary"/>.</returns>
         public static bool operator !=(PlaneBoundary lhs, PlaneBoundary rhs)
         {
             return !lhs.Equals(rhs);

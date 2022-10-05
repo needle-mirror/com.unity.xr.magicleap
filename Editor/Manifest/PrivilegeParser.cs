@@ -24,25 +24,6 @@ namespace UnityEditor.XR.MagicLeap
         public const string kPrivilegeHeaderPath = "include/ml_privilege_ids.h";
 
 
-        //[MenuItem("Magic Leap/PrivilegeParserTest")]
-        static void RunPrivilegeParser()
-        {
-            var path = Path.Combine(SDKUtility.sdkPath, kPrivilegeHeaderPath);
-            Debug.LogFormat("path to header: {0}", path);
-            foreach (var d in ParsePrivilegesFromHeader(path))
-            {
-                Debug.LogFormat("Privilege: {0}, Type: {1}", d.name, d.category);
-            }
-        }
-
-        //[MenuItem("Magic Leap/PlatformParserTest")]
-        static void RunPlatformParser()
-        {
-            var path = Path.Combine(SDKUtility.sdkPath, kPlatformHeaderPath);
-            Debug.LogFormat("path to header: {0}", path);
-            Debug.LogFormat("platform level: {0}", ParsePlatformLevelFromHeader(path));
-        }
-
         public static int ParsePlatformLevelFromHeader(string header_path)
         {
             if (header_path == null || !File.Exists(header_path))

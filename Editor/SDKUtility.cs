@@ -1,8 +1,6 @@
 using System;
 using System.IO;
 using System.Runtime.InteropServices;
-
-using UnityEditor;
 using UnityEngine;
 
 namespace UnityEditor.XR.MagicLeap
@@ -13,8 +11,6 @@ namespace UnityEditor.XR.MagicLeap
 
         static class Native
         {
-            const string Library = "UnityMagicLeap";
-
             [DllImport("UnityMagicLeap", EntryPoint = "UnityMagicLeap_PlatformGetAPILevel")]
             public static extern uint GetAPILevel();
         }

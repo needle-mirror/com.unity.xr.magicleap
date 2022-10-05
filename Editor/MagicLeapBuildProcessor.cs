@@ -1,8 +1,6 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
-
-using UnityEditor;
 using UnityEditor.Android;
 using UnityEditor.Build;
 using UnityEditor.Build.Reporting;
@@ -23,8 +21,7 @@ namespace UnityEditor.XR.MagicLeap
         static readonly string kXrBootSettingsKey = "xr-boot-settings";
         Dictionary<string, string> bootConfigSettings;
 
-        private BuildReport buildReport;
-        private string bootConfigPath;
+        private readonly BuildReport buildReport;
 
         public BootConfig(BuildReport report)
         {
@@ -36,7 +33,7 @@ namespace UnityEditor.XR.MagicLeap
             bootConfigSettings = new Dictionary<string, string>();
 
             string buildTargetName = BuildPipeline.GetBuildTargetName(buildReport.summary.platform);
-            string xrBootSettings = UnityEditor.EditorUserBuildSettings.GetPlatformSettings(buildTargetName, kXrBootSettingsKey);
+            string xrBootSettings = EditorUserBuildSettings.GetPlatformSettings(buildTargetName, kXrBootSettingsKey);
             if (!String.IsNullOrEmpty(xrBootSettings))
             {
                 // boot settings string format
@@ -102,23 +99,21 @@ namespace UnityEditor.XR.MagicLeap
     public class MagicLeapBuildProcessor : IPreprocessBuildWithReport, IPostprocessBuildWithReport, IPostGenerateGradleAndroidProject
     {
         /// <summary>
-        /// Overridden from IOrderedCallback. 
+        /// Overridden from IOrderedCallback.
         /// Returns the relative callback order for callbacks.
         /// Callbacks with lower values are called before ones with higher values.
         /// </summary>
         public int callbackOrder => 0;
 
-        private static readonly string kXrBootSettingsKey = "xr-boot-settings";
         private static readonly string kHaveAndroidWindowSupportBootSettingsKey = "android-device-have-window-support";
         private static readonly string kUseNullDisplayManagerBootSettingsKey = "android-device-use-null-display-manager";
         private static readonly string kAndroidAudioUseMLAudio = "android-audio-use-MLAudio";
         private static readonly string kVulkanForceDisableETCSupport = "vulkan-force-disable-ETC-support";
         private static readonly string kVulkanForceDisableASTCSupport = "vulkan-force-disable-ASTC-support";
         private static readonly string kVulkanDisablePreTransform = "vulkan-disable-pre-transform";
-        
-        private string[] runtimePluginNames = new string[] { "UnityMagicLeap.elf", "UnityMagicLeap.so", "libUnityMagicLeap.so" };
-        private string[] remotingPluginNames = new string[] { "UnityMagicLeap.dll", "UnityMagicLeap.dylib" };
-        private string[] audioPluginNames = new string[] { "UnityMagicLeap.dll" };
+
+        private readonly string[] runtimePluginNames = new string[] { "UnityMagicLeap.elf", "UnityMagicLeap.so", "libUnityMagicLeap.so" };
+        private readonly string[] remotingPluginNames = new string[] { "UnityMagicLeap.dll", "UnityMagicLeap.dylib" };
 
         void CleanOldSettings()
         {
@@ -181,23 +176,33 @@ namespace UnityEditor.XR.MagicLeap
             {
                 if (plugin.isNativePlugin)
                 {
-                    foreach (var pluginName in runtimePluginNames)
-                    {
-                        if (plugin.assetPath.Contains(pluginName))
-                        {
-                            plugin.SetIncludeInBuildDelegate(ShouldIncludeRuntimePluginsInBuild);
-                            break;
-                        }
-                    }
+                    CheckEachPlugin(plugin);
+                }
+            }
+        }
 
-                    foreach (var pluginName in remotingPluginNames)
-                    {
-                        if (plugin.assetPath.Contains(pluginName))
-                        {
-                            plugin.SetIncludeInBuildDelegate(ShouldIncludeRemotingPluginsInBuild);
-                            break;
-                        }
-                    }
+        /// <summary>
+        /// For every plugin, check to see if there is a build delegate. As well, check to see if we should set the
+        /// include for that build delegate.
+        /// </summary>
+        /// <param name="plugin">The PluginImporter to check.</param>
+        private void CheckEachPlugin(PluginImporter plugin)
+        {
+            foreach (var pluginName in runtimePluginNames)
+            {
+                if (plugin.assetPath.Contains(pluginName))
+                {
+                    plugin.SetIncludeInBuildDelegate(ShouldIncludeRuntimePluginsInBuild);
+                    break;
+                }
+            }
+
+            foreach (var pluginName in remotingPluginNames)
+            {
+                if (plugin.assetPath.Contains(pluginName))
+                {
+                    plugin.SetIncludeInBuildDelegate(ShouldIncludeRemotingPluginsInBuild);
+                    break;
                 }
             }
         }
@@ -210,7 +215,7 @@ namespace UnityEditor.XR.MagicLeap
         {
             BootConfig bootConfig = new BootConfig(report);
             bootConfig.ReadBootConfg();
-            
+
             if (report.summary.platform == BuildTarget.Android)
             {
                 bootConfig.SetValueForKey(kHaveAndroidWindowSupportBootSettingsKey, "0", true);
@@ -290,7 +295,6 @@ namespace UnityEditor.XR.MagicLeap
         /// <param name="path">The path to the root of the Unity Library Gradle project.</param>
         public void OnPostGenerateGradleAndroidProject(string path)
         {
-            // TODO : check if this plugin is actually enabled.
             string manifestPath = System.IO.Path.Combine(path, "src", "main", "AndroidManifest.xml");
             Debug.Log($"Android manifest path = {manifestPath}");
 

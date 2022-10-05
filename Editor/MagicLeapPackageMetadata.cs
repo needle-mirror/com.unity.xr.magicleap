@@ -1,15 +1,6 @@
 #if XR_MANAGEMENT_3_2_0_OR_NEWER
-using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-
 using UnityEngine;
-using UnityEngine.XR.MagicLeap;
-
-using UnityEditor;
-using UnityEditor.XR.Management;
 using UnityEditor.XR.Management.Metadata;
 
 namespace UnityEditor.XR.MagicLeap

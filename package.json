@@ -1,7 +1,7 @@
 {
   "name": "com.unity.xr.magicleap",
   "displayName": "Magic Leap XR Plugin",
-  "version": "7.0.0-exp.5",
+  "version": "7.0.0-exp.6",
   "unity": "2022.2",
   "description": "Provides rendering and spatial mapping support for Magic Leap 2.",
   "keywords": [
@@ -23,12 +23,12 @@
     "com.unity.modules.androidjni": "1.0.0"
   },
   "upmCi": {
-    "footprint": "155e88a4db08b6063e96d4983459755a1b8c5186"
+    "footprint": "b16cf1ba4f478ad26ed4da67e4c558f01932108d"
   },
   "repository": {
     "url": "https://github.cds.internal.unity3d.com/unity/xr.sdk.magicleap.git",
     "type": "git",
-    "revision": "3bb329da42d5f1155d5ee6e39744e159a1b40259"
+    "revision": "698616cadbfd0a79b03ec899082f5f8c20bb274a"
   },
   "samples": [
     {

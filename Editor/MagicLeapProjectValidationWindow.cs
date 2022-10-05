@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEditor.Build;
 using UnityEditor.Build.Reporting;
-using UnityEditor.Callbacks;
 using UnityEngine;
-using UnityEngine.Rendering;
 using UnityEngine.XR.MagicLeap;
 
 namespace UnityEditor.XR.MagicLeap
@@ -95,11 +92,11 @@ namespace UnityEditor.XR.MagicLeap
 
         // Fix all state
         private List<MagicLeapProjectValidation.ValidationRule> m_FixAllStack = new List<MagicLeapProjectValidation.ValidationRule>();
-        
+
         /// <summary>
-        /// Last time the issues in the window were upated
+        /// Last time the issues in the window were updated
         /// </summary>
-        private double m_LastUpdate = 0.0;
+        private double m_LastUpdate;
 
         /// <summary>
         /// Interval that that issues should be updated
@@ -183,10 +180,10 @@ namespace UnityEditor.XR.MagicLeap
                     if (!string.IsNullOrEmpty(result.HelpText) || !string.IsNullOrEmpty(result.HelpLink))
                     {
                         Content.k_HelpButton.tooltip = result.HelpText;
-                        if (GUILayout.Button(Content.k_HelpButton, Styles.s_Icon, GUILayout.Width(Content.k_IconSize.x * 1.5f)))
+                        if (GUILayout.Button(Content.k_HelpButton, Styles.s_Icon, GUILayout.Width(Content.k_IconSize.x * 1.5f)) &&
+                            !string.IsNullOrEmpty(result.HelpLink))
                         {
-                            if (!string.IsNullOrEmpty(result.HelpLink))
-                                UnityEngine.Application.OpenURL(result.HelpLink);
+                            UnityEngine.Application.OpenURL(result.HelpLink);
                         }
                     }
                     else
@@ -237,7 +234,7 @@ namespace UnityEditor.XR.MagicLeap
             var failureCount = m_Failures.Count;
 
             MagicLeapProjectValidation.GetCurrentValidationIssues(m_Failures);
-            
+
             // Repaint the window if the failure count has changed
             if(m_Failures.Count > 0 || failureCount > 0)
                 Repaint();

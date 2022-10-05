@@ -108,7 +108,7 @@ namespace UnityEngine.XR.MagicLeap
                 // Magic Leap supports almost everything working at the same time except Point Clouds and Meshing
                 if (configuration.features.HasFlag(Feature.Meshing | Feature.PointCloud))
                 {
-                    /// TODO (5/26/2020): Move MLSpatialMapper specific features to shared XRMeshSubsystem extensions
+                    // TODO (5/26/2020): Move MLSpatialMapper specific features to shared XRMeshSubsystem extensions
                     // Currently, the MLSpatialMapper component is required to do PointClouds on magic leap.  So
                     // if meshing is detected at all then simply request a start to the subsystem because it will be
                     // handled either by ARMeshManager or the MLSpatialMapper.

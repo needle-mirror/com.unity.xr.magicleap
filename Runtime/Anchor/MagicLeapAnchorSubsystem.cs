@@ -220,7 +220,7 @@ namespace UnityEngine.XR.MagicLeap
             /// Returns an array containing all the updated anchors since the last
             /// call to <see cref="GetChanges(XRAnchor, Allocator)"/>.
             /// This method considers all <see cref="m_ReferenceFrames"/>, so it should
-            /// be called before <see cref="GetAdded(NativeArray<XRAnchor>)"/> since
+            /// be called before <see cref="GetAdded(NativeArray{XRAnchor})"/> since
             /// that method will add elements to <see cref="m_ReferenceFrames"/>.
             /// </summary>
             /// <param name="allocator">The allocator to use for the returned array.</param>

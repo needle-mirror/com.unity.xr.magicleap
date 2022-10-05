@@ -48,7 +48,7 @@ namespace UnityEngine.XR.MagicLeap
             return "UnityMagicLeap";
         }
 #endif
-        
+
         enum Privileges : uint
         {
             ControllerPose = 263,
@@ -85,12 +85,39 @@ namespace UnityEngine.XR.MagicLeap
         /// </summary>
         public XRGestureSubsystem gestureSubsystem => GetLoadedSubsystem<XRGestureSubsystem>();
 
+        // Expose subsystem lifecycle events and methods internally so that
+        // the MagicLeap UnitySDK can drive subsystems that the XR Package doesn't have supported.
+        // Subscribe to any of the events you need and then use the below functions to 
+        // trigger the lifecycle change of a subsystem.
+        /* Example (using the anchor subsystem):
+                    MagicLeapLoader.OnSubsystemsCreate += OnSubsystemsCreate;
+                    private static void OnSubsystemsCreate(MagicLeapLoader loader) =>  loader.ForwardCreateSubsystem<XRAnchorSubsystemDescriptor, XRAnchorSubsystem>(new List<XRAnchorSubsystemDescriptor>(), MagicLeapSettings.Subsystems.GetSubsystemOverrideOrDefault<XRAnchorSubsystem>(MagicLeapConstants.kAnchorSubsystemId));
+        */
+        internal static event Action<MagicLeapLoader> OnSubsystemsCreate;
+        internal static event Action<MagicLeapLoader> OnSubsystemsStart;
+        internal static event Action<MagicLeapLoader> OnSubsystemsStop;
+        internal static event Action<MagicLeapLoader> OnSubsystemsDestroy;
+
+        // These calls used in conjunction with the above events to create/start/stop/destroy the subsystems 
+        // that are not supported by the XR Package alone. After subscribing to one of the above lifecycle events 
+        // these calls are used to actually trigger the lifecycle change.
+        internal void ForwardCreateSubsystem<TDescriptor, TSubsystem>(List<TDescriptor> descriptors, string id)
+    where TDescriptor : ISubsystemDescriptor
+    where TSubsystem : ISubsystem
+    => this.CreateSubsystem<TDescriptor, TSubsystem>(descriptors, id);
+
+        internal void ForwardStartSubsystem<T>() where T : class, ISubsystem => this.StartSubsystem<T>();
+
+        internal void ForwardStopSubsystem<T>() where T : class, ISubsystem => this.StopSubsystem<T>();
+
+        internal void ForwardDestroySubsystem<T>() where T : class, ISubsystem => this.DestroySubsystem<T>();
+
+
         // ARSubsystems
         static List<XRSessionSubsystemDescriptor> s_SessionSubsystemDescriptors = new List<XRSessionSubsystemDescriptor>();
         static List<XRPlaneSubsystemDescriptor> s_PlaneSubsystemDescriptors = new List<XRPlaneSubsystemDescriptor>();
         static List<XRAnchorSubsystemDescriptor> s_AnchorSubsystemDescriptors = new List<XRAnchorSubsystemDescriptor>();
         static List<XRRaycastSubsystemDescriptor> s_RaycastSubsystemDescriptors = new List<XRRaycastSubsystemDescriptor>();
-        static List<XRImageTrackingSubsystemDescriptor> s_ImageTrackingSubsystemDescriptors = new List<XRImageTrackingSubsystemDescriptor>();
 
         /// <summary>
         /// XR Session Subsystem property.
@@ -103,20 +130,10 @@ namespace UnityEngine.XR.MagicLeap
         /// </summary>
         public XRPlaneSubsystem planeSubsystem => GetLoadedSubsystem<XRPlaneSubsystem>();
         /// <summary>
-        /// XR Plane Subsystem property.
-        /// Use this to determine the loaded XR Anchor Subsystem.
-        /// </summary>
-        public XRAnchorSubsystem anchorSubsystem => GetLoadedSubsystem<XRAnchorSubsystem>();
-        /// <summary>
         /// XR Raycast Subsystem property.
         /// Use this to determine the loaded XR Raycast Subsystem.
         /// </summary>
         public XRRaycastSubsystem raycastSubsystem => GetLoadedSubsystem<XRRaycastSubsystem>();
-        /// <summary>
-        /// XR Image Tracking Subsystem property.
-        /// Use this to determine the loaded XR Image Tracking Subsystem.
-        /// </summary>
-        public XRImageTrackingSubsystem imageTrackingSubsystem => GetLoadedSubsystem<XRImageTrackingSubsystem>();
 
 #if UNITY_EDITOR
         /// <summary>
@@ -147,20 +164,19 @@ namespace UnityEngine.XR.MagicLeap
             ApplySettings();
 
             // Display Subsystem depends on Input Subsystem, so initialize that first.
-            //CheckForInputRelatedPermissions();
             CreateSubsystem<XRInputSubsystemDescriptor, XRInputSubsystem>(s_InputSubsystemDescriptors, MagicLeapSettings.Subsystems.GetSubsystemOverrideOrDefault<XRInputSubsystem>(MagicLeapConstants.kInputSubsystemId));
             CreateSubsystem<XRDisplaySubsystemDescriptor, XRDisplaySubsystem>(s_DisplaySubsystemDescriptors, MagicLeapSettings.Subsystems.GetSubsystemOverrideOrDefault<XRDisplaySubsystem>(MagicLeapConstants.kDisplaySubsytemId));
             CreateSubsystem<XRGestureSubsystemDescriptor, XRGestureSubsystem>(s_GestureSubsystemDescriptors, MagicLeapSettings.Subsystems.GetSubsystemOverrideOrDefault<XRGestureSubsystem>(MagicLeapConstants.kGestureSubsystemId));
-
             CreateSubsystem<XRMeshSubsystemDescriptor, XRMeshSubsystem>(s_MeshSubsystemDescriptor, MagicLeapSettings.Subsystems.GetSubsystemOverrideOrDefault<XRMeshSubsystem>(MagicLeapConstants.kMeshSubsystemId));
 
             // Now that subsystem creation is strictly handled by the loaders we must create the following subsystems
             // that live in ARSubsystems
             CreateSubsystem<XRSessionSubsystemDescriptor, XRSessionSubsystem>(s_SessionSubsystemDescriptors, MagicLeapSettings.Subsystems.GetSubsystemOverrideOrDefault<XRSessionSubsystem>(MagicLeapConstants.kSessionSubsystemId));
             CreateSubsystem<XRPlaneSubsystemDescriptor, XRPlaneSubsystem>(s_PlaneSubsystemDescriptors, MagicLeapSettings.Subsystems.GetSubsystemOverrideOrDefault<XRPlaneSubsystem>(MagicLeapConstants.kPlanesSubsystemId));
-            //CreateSubsystem<XRAnchorSubsystemDescriptor, XRAnchorSubsystem>(s_AnchorSubsystemDescriptors, MagicLeapSettings.Subsystems.GetSubsystemOverrideOrDefault<XRAnchorSubsystem>(MagicLeapConstants.kAnchorSubsystemId));
+            CreateSubsystem<XRAnchorSubsystemDescriptor, XRAnchorSubsystem>(s_AnchorSubsystemDescriptors, MagicLeapSettings.Subsystems.GetSubsystemOverrideOrDefault<XRAnchorSubsystem>(MagicLeapConstants.kAnchorSubsystemId));
             CreateSubsystem<XRRaycastSubsystemDescriptor, XRRaycastSubsystem>(s_RaycastSubsystemDescriptors, MagicLeapSettings.Subsystems.GetSubsystemOverrideOrDefault<XRRaycastSubsystem>(MagicLeapConstants.kRaycastSubsystemId));
-            CreateSubsystem<XRImageTrackingSubsystemDescriptor, XRImageTrackingSubsystem>(s_ImageTrackingSubsystemDescriptors, MagicLeapSettings.Subsystems.GetSubsystemOverrideOrDefault<XRImageTrackingSubsystem>(MagicLeapConstants.kImageTrackingSubsystemId));
+
+            OnSubsystemsCreate?.Invoke(this);
 
             return true;
         }
@@ -197,6 +213,10 @@ namespace UnityEngine.XR.MagicLeap
                 StartSubsystem<XRDisplaySubsystem>();
                 m_DisplaySubsystemRunning = true;
             }
+
+
+            OnSubsystemsStart?.Invoke(this);
+
             return true;
         }
 
@@ -218,11 +238,13 @@ namespace UnityEngine.XR.MagicLeap
             }
             StopSubsystem<XRPlaneSubsystem>();
             StopSubsystem<XRGestureSubsystem>();
-            //StopSubsystem<XRAnchorSubsystem>();
+            StopSubsystem<XRAnchorSubsystem>();
             StopSubsystem<XRRaycastSubsystem>();
             StopSubsystem<XRImageTrackingSubsystem>();
             StopSubsystem<XRInputSubsystem>();
             StopSubsystem<XRSessionSubsystem>();
+
+            OnSubsystemsStop?.Invoke(this);
             return true;
         }
 
@@ -238,9 +260,11 @@ namespace UnityEngine.XR.MagicLeap
             DestroySubsystem<XRGestureSubsystem>();
             DestroySubsystem<XRImageTrackingSubsystem>();
             DestroySubsystem<XRRaycastSubsystem>();
-            //DestroySubsystem<XRAnchorSubsystem>();
+            DestroySubsystem<XRAnchorSubsystem>();
             DestroySubsystem<XRInputSubsystem>();
             DestroySubsystem<XRSessionSubsystem>();
+
+            OnSubsystemsDestroy?.Invoke(this);
             return true;
         }
 
@@ -251,27 +275,23 @@ namespace UnityEngine.XR.MagicLeap
 
         internal void StartMeshSubsystem()
         {
-            //MagicLeapLogger.Debug(kLogTag, "m_MeshSubsystemRefcount: {0}", m_MeshSubsystemRefcount);
             m_MeshSubsystemRefcount += 1;
-            //MagicLeapLogger.Debug(kLogTag, "m_MeshSubsystemRefcount: {0}", m_MeshSubsystemRefcount);
+
             if (m_MeshSubsystemRefcount == 1)
             {
-                MagicLeapLogger.Debug(kLogTag, "Starting Mesh Subsystem");
                 StartSubsystem<XRMeshSubsystem>();
             }
         }
 
         internal void StopMeshSubsystem()
         {
-            //MagicLeapLogger.Debug(kLogTag, "m_MeshSubsystemRefcount: {0}", m_MeshSubsystemRefcount);
             if (m_MeshSubsystemRefcount == 0)
                 return;
 
             m_MeshSubsystemRefcount -= 1;
-            //MagicLeapLogger.Debug(kLogTag, "m_MeshSubsystemRefcount: {0}", m_MeshSubsystemRefcount);
+
             if (m_MeshSubsystemRefcount == 0)
             {
-                MagicLeapLogger.Debug(kLogTag, "Stopping Mesh Subsystem");
                 StopSubsystem<XRMeshSubsystem>();
             }
         }
@@ -282,9 +302,7 @@ namespace UnityEngine.XR.MagicLeap
             if (settings != null)
             {
                 // set depth buffer precision
-                MagicLeapLogger.Debug(kLogTag, $"Setting Depth Precision: {settings.depthPrecision}");
                 Rendering.RenderingSettings.depthPrecision = settings.depthPrecision;
-                MagicLeapLogger.Debug(kLogTag, $"Setting Headlocked: {settings.headlockGraphics}");
                 Rendering.RenderingSettings.headlocked = settings.headlockGraphics;
             }
         }

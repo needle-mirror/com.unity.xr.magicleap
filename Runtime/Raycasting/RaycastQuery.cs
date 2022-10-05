@@ -5,8 +5,6 @@ namespace UnityEngine.XR.MagicLeap
     /// <summary>
     /// Represents a raycast query.
     /// </summary>
-    /// <seealso cref="MagicLeapRaycastSubsystem.CreateRaycastJob(NativeArray{RaycastQuery}, NativeArray{RaycastResult})"/>
-    /// <seealso cref="MagicLeapRaycastSubsystem.Raycast(RaycastQuery)"/>
     public struct RaycastQuery : IEquatable<RaycastQuery>
     {
         /// <summary>
@@ -34,7 +32,7 @@ namespace UnityEngine.XR.MagicLeap
 
         /// <summary>
         /// The horizontal field of view, in degrees. When
-        /// <paramref name="width"/> or <paramref name="height"/>
+        /// <see cref="width"/> or <see cref="height"/>
         /// are greater than 1, this is used to determine the frustum in which
         /// to cast multiple rays.
         /// </summary>
@@ -49,7 +47,7 @@ namespace UnityEngine.XR.MagicLeap
 
         /// <summary>
         /// Constructs a "single-point" raycast query, i.e.,
-        /// <paramref name="width"/> and <paramref name="height"/> are both 1.
+        /// <see cref="width"/> and <see cref="height"/> are both 1.
         /// </summary>
         /// <param name="ray">The ray, in session space, to cast.</param>
         /// <param name="collideWithUnobserved">If <c>true</c>, a ray will temrinate when encountering an unobserved area and return a surface or the ray will continue until it ends or hits an observed surface.</param>

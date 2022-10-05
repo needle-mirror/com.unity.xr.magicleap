@@ -29,7 +29,7 @@ namespace UnityEngine.XR.MagicLeap
         /// <param name="trackableId"></param>
         /// <returns>A <see cref="PlaneBoundaryCollection"/> containing all the boundaries associated
         /// with the plane with <paramref name="trackableId"/>.</returns>
-        /// <exception cref="System.InvalidOperationException">Thrown if the plane with the given <paramref cref="trackableId"/> cannot be found.</exception>
+        /// <exception cref="System.InvalidOperationException">Thrown if the plane with the given <paramref name="trackableId"/> cannot be found.</exception>
         /// <seealso cref="PlaneBoundaryCollection"/>
         public PlaneBoundaryCollection GetAllBoundariesForPlane(TrackableId trackableId)
         {
