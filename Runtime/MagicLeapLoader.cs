@@ -1,27 +1,15 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Runtime.InteropServices;
-
-using UnityEngine.XR;
 using UnityEngine.XR.ARSubsystems;
 using UnityEngine.XR.InteractionSubsystems;
-using UnityEngine.XR.MagicLeap.Meshing;
 using UnityEngine.XR.MagicLeap.Rendering;
 using UnityEngine.XR.Management;
 
 #if UNITY_EDITOR
 using UnityEditor;
 using UnityEditor.XR.Management;
-using UnityEngine.Rendering;
 #endif //UNITY_EDITOR
-
-#if UNITY_INPUT_SYSTEM
-using UnityEngine.InputSystem;
-using UnityEngine.InputSystem.Layouts;
-using UnityEngine.InputSystem.XR;
-#endif //UNITY_INPUT_SYSTEM
 
 #if UNITY_2020_1_OR_NEWER
 using XRTextureLayout = UnityEngine.XR.XRDisplaySubsystem.TextureLayout;
@@ -87,7 +75,7 @@ namespace UnityEngine.XR.MagicLeap
 
         // Expose subsystem lifecycle events and methods internally so that
         // the MagicLeap UnitySDK can drive subsystems that the XR Package doesn't have supported.
-        // Subscribe to any of the events you need and then use the below functions to 
+        // Subscribe to any of the events you need and then use the below functions to
         // trigger the lifecycle change of a subsystem.
         /* Example (using the anchor subsystem):
                     MagicLeapLoader.OnSubsystemsCreate += OnSubsystemsCreate;
@@ -98,8 +86,8 @@ namespace UnityEngine.XR.MagicLeap
         internal static event Action<MagicLeapLoader> OnSubsystemsStop;
         internal static event Action<MagicLeapLoader> OnSubsystemsDestroy;
 
-        // These calls used in conjunction with the above events to create/start/stop/destroy the subsystems 
-        // that are not supported by the XR Package alone. After subscribing to one of the above lifecycle events 
+        // These calls used in conjunction with the above events to create/start/stop/destroy the subsystems
+        // that are not supported by the XR Package alone. After subscribing to one of the above lifecycle events
         // these calls are used to actually trigger the lifecycle change.
         internal void ForwardCreateSubsystem<TDescriptor, TSubsystem>(List<TDescriptor> descriptors, string id)
     where TDescriptor : ISubsystemDescriptor

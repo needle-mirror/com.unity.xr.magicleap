@@ -1,9 +1,6 @@
-using System;
-using System.Linq;
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
 using System.Runtime.InteropServices;
-using UnityEngine;
 using UnityEngine.Scripting;
 using UnityEngine.XR.InteractionSubsystems;
 
@@ -19,19 +16,7 @@ namespace UnityEngine.XR.MagicLeap
         /// A collection of all MagicLeapTouchpadGestureEvents managed by this subsystem.
         /// This is cleared every frame and refreshed with new gesture events.
         /// </summary>
-        public NativeArray<MagicLeapTouchpadGestureEvent> touchpadGestureEvents { get { return magicLeapProvider.touchpadGestureEvents; } }
-
-        MagicLeapGestureProvider magicLeapProvider;
-
-        /// <summary>
-        /// Creates the provider interface.
-        /// </summary>
-        /// <returns>The provider interface for MagicLeap</returns>
-        protected override Provider CreateProvider()
-        {
-            magicLeapProvider = new MagicLeapGestureProvider();
-            return magicLeapProvider;
-        }
+        public NativeArray<MagicLeapTouchpadGestureEvent> touchpadGestureEvents => ((provider as MagicLeapGestureProvider)!).touchpadGestureEvents;
 
         internal bool ControllerGesturesEnabled
         {
@@ -40,7 +25,7 @@ namespace UnityEngine.XR.MagicLeap
 #if UNITY_ANDROID
                 return NativeApi.IsControllerGesturesEnabled();
 #else
-                Debug.LogWarning("Attempting to get MagicLeapGestureSubsystem.ControllerGesturesEnabled while not on a Magic Leap platform.  This will be ignored.");
+                Debug.LogError($"Cannot get {nameof(MagicLeapGestureSubsystem.ControllerGesturesEnabled)} while not on the Magic Leap platform.  This will be ignored.");
                 return false;
 #endif // UNITY_ANDROID
             }
@@ -49,12 +34,12 @@ namespace UnityEngine.XR.MagicLeap
 #if UNITY_ANDROID
                 NativeApi.SetControllerGesturesEnabled(value);
 #else
-                Debug.LogWarning("Attempting to set MagicLeapGestureSubsystem.ControllerGesturesEnabled while not on a Magic Leap platform.  This will be ignored.");
+                Debug.LogError($"Cannot set {nameof(MagicLeapGestureSubsystem.ControllerGesturesEnabled)} while not on the Magic Leap platform.  This will be ignored.");
 #endif // UNITY_ANDROID
             }
         }
 
-        class MagicLeapGestureProvider : Provider
+        internal class MagicLeapGestureProvider : Provider
         {
             public MagicLeapGestureProvider()
             {
@@ -81,7 +66,6 @@ namespace UnityEngine.XR.MagicLeap
             {
 #if UNITY_ANDROID
                 NativeApi.Update();
-
                 RetrieveGestureEvents();
 #endif // UNITY_ANDROID
             }
@@ -107,24 +91,19 @@ namespace UnityEngine.XR.MagicLeap
 
             unsafe void RetrieveGestureEvents()
             {
+#if UNITY_ANDROID
                 if (NativeApi.IsControllerGesturesEnabled())
                     GetGestureEvents<MagicLeapTouchpadGestureEvent>(ref m_TouchpadGestureEvents, NativeApi.GetTouchpadGestureEventsPtr);
-
-                // Count up valid activate gestures (Have to do this as we cannot dynamically grow NativeArray).
-                // This should be possible to fix with NativeList (when out of preview package).
-                int activateGestureEventCount = 0;
-                if (m_ActivateGestureEvents.IsCreated)
-                    m_ActivateGestureEvents.Dispose();
-                m_ActivateGestureEvents = new NativeArray<ActivateGestureEvent>(activateGestureEventCount, Allocator.Persistent);
+#endif // UNITY_ANDROID
             }
 
             public override void Destroy()
             {
 #if UNITY_ANDROID
                 NativeApi.Destroy();
+#endif // UNITY_ANDROID
 
                 m_TouchpadGestureEvents.Dispose();
-#endif // UNITY_ANDROID
                 base.Destroy();
             }
 
@@ -142,7 +121,8 @@ namespace UnityEngine.XR.MagicLeap
                 new XRGestureSubsystemDescriptor.Cinfo
                 {
                     id = "MagicLeap-Gesture",
-                    subsystemImplementationType = typeof(MagicLeapGestureSubsystem),
+                    providerType = typeof(MagicLeapGestureSubsystem.MagicLeapGestureProvider),
+                    subsystemTypeOverride = typeof(MagicLeapGestureSubsystem),
                 }
             );
 #endif // UNITY_ANDROID

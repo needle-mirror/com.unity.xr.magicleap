@@ -4,7 +4,12 @@ uid: magic-leap-changelog
 
 # Changelog
 
-## [7.0.0-pre.1] - 2922-10-10
+## [7.0.0-pre.2] - 2022-12-01
+
+- Update subsystem registration for gesture components.
+- Fixed bug where Use MLAudio checkbox in Project settings does not save between Unity sessions
+
+## [7.0.0-pre.1] - 2022-10-10
 
 - Added enforcement that the camera's near clipping plane will be at least the amount specified by MagicLeap Graphics API.
 

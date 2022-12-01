@@ -1,6 +1,6 @@
 using System;
-using UnityEngine.XR.Management;
 using UnityEngine.XR.InteractionSubsystems;
+using UnityEngine.XR.Management;
 
 namespace UnityEngine.XR.MagicLeap
 {

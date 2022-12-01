@@ -61,9 +61,7 @@ namespace UnityEditor.XR.MagicLeap
                 if (m_ShowAudioSettings)
                 {
                     EditorGUI.indentLevel++;
-                    MagicLeapSettings.currentSettings.enableMLAudio = EditorGUILayout.Toggle( s_EnableMLAudioLabel, MagicLeapSettings.currentSettings.enableMLAudio);
-                    var typeRect = GUILayoutUtility.GetLastRect();
-                    GUI.Label(typeRect, new GUIContent("", "Enable MLAudio Support. Replaces default Android Audio Support."));
+                    DrawPropertiesExcluding(serializedObject, new string[] { "m_Script", "m_DepthPrecision", "m_ForceMultipass", "m_HeadlockGraphics" });
                     EditorGUI.indentLevel--;
                 }
                 
