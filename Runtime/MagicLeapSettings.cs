@@ -1,8 +1,5 @@
 using System;
-using System.IO;
 using System.Collections.Generic;
-
-using UnityEngine;
 using UnityEngine.XR.Management;
 
 namespace UnityEngine.XR.MagicLeap
@@ -19,6 +16,10 @@ namespace UnityEngine.XR.MagicLeap
     [XRConfigurationData("Magic Leap Settings", MagicLeapConstants.kSettingsKey)]
     public class MagicLeapSettings : ScriptableObject
     {
+#if UNITY_EDITOR
+        internal bool versionChanged = false;
+#endif
+
         /// <summary>
         /// Subsystems implemented outside the MagicLeap XR Plugin can utilize this class to be loaded
         /// by the MagicLeapLoader instead of its usual defaults.

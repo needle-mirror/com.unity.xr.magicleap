@@ -95,6 +95,14 @@ namespace UnityEngine.XR.MagicLeap.Rendering
             }
         }
 
+        /// <summary>
+        /// Allows apps to choose whether the system recommended near clip distance should be enforced by Unity or not. 
+        /// Disable this enforcement at your own risk as a clipping plane lower than the system recommended value can 
+        /// cause discomfort to some users.
+        /// </summary>
+        /// <value></value>
+        public static bool enforceNearClip { get; set; } = true;
+
         internal static bool headlocked
         {
             get

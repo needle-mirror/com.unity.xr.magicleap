@@ -255,6 +255,9 @@ namespace UnityEngine.XR.MagicLeap
             DestroySubsystem<XRSessionSubsystem>();
 
             OnSubsystemsDestroy?.Invoke(this);
+
+            Application.onBeforeRender -= CameraEnforcement.EnforceCameraProperties;
+
             return true;
         }
 
