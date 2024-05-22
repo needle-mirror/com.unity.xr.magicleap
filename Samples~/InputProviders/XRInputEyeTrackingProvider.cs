@@ -159,15 +159,9 @@ namespace UnityEngine.XR.MagicLeap.Samples
         void OnEnable()
         {
             // enable ML Eye tracking if it's not already enabled
-            var list = new List<XRInputSubsystem>();
-            SubsystemManager.GetInstances(list);
-            if (list.Count > 0)
+            if (!MagicLeapInputExtensions.eyeTrackingEnabled)
             {
-                if (!list[0].IsEyeTrackingApiEnabled())
-                {
-                    MagicLeapLogger.Debug("XRInputEyeTrackingProvider", "Enabling Eye Tracking!");
-                    list[0].SetEyeTrackingApiEnabled(true);
-                }
+                MagicLeapInputExtensions.eyeTrackingEnabled = true;
             }
         }
 #else// UNITY_ANDROID

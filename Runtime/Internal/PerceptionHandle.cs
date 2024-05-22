@@ -18,7 +18,7 @@ namespace UnityEngine.XR.MagicLeap.Internal
             [DllImport(k_Library, EntryPoint = "UnityMagicLeap_RetainPerceptionStack")]
             internal static extern IntPtr Retain();
 #else
-            internal static void Release(IntPtr ptr) {}
+            internal static void Release(IntPtr ptr) { /* Dummy for non-Android Compilation */ }
             internal static IntPtr Retain() => IntPtr.Zero;
 #endif // UNITY_ANDROID
         }
@@ -40,11 +40,11 @@ namespace UnityEngine.XR.MagicLeap.Internal
 
         public void Dispose()
         {
-            if (!active)
-                throw new ObjectDisposedException("Handle has already been disposed");
-
-            Native.Release(m_Handle);
-            m_Handle = IntPtr.Zero;
+            if (active)
+            {
+                Native.Release(m_Handle);
+                m_Handle = IntPtr.Zero;
+            }
         }
     }
 }

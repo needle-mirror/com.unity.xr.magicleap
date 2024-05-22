@@ -6,6 +6,10 @@ using UnityEngine.XR.InteractionSubsystems;
 using UnityEngine.XR.MagicLeap.Rendering;
 using UnityEngine.XR.Management;
 
+#if XR_HANDS
+using UnityEngine.XR.Hands;
+#endif
+
 #if UNITY_EDITOR
 using UnityEditor;
 using UnityEditor.XR.Management;
@@ -107,6 +111,9 @@ namespace UnityEngine.XR.MagicLeap
         static List<XRAnchorSubsystemDescriptor> s_AnchorSubsystemDescriptors = new List<XRAnchorSubsystemDescriptor>();
         static List<XRRaycastSubsystemDescriptor> s_RaycastSubsystemDescriptors = new List<XRRaycastSubsystemDescriptor>();
 
+#if XR_HANDS
+        static List<XRHandSubsystemDescriptor> s_HandSubsystemDescriptors = new List<XRHandSubsystemDescriptor>();
+#endif
         /// <summary>
         /// XR Session Subsystem property.
         /// Use this to determine the loaded XR Session Subsystem.
@@ -165,7 +172,9 @@ namespace UnityEngine.XR.MagicLeap
             CreateSubsystem<XRPlaneSubsystemDescriptor, XRPlaneSubsystem>(s_PlaneSubsystemDescriptors, MagicLeapSettings.Subsystems.GetSubsystemOverrideOrDefault<XRPlaneSubsystem>(MagicLeapConstants.kPlanesSubsystemId));
             CreateSubsystem<XRAnchorSubsystemDescriptor, XRAnchorSubsystem>(s_AnchorSubsystemDescriptors, MagicLeapSettings.Subsystems.GetSubsystemOverrideOrDefault<XRAnchorSubsystem>(MagicLeapConstants.kAnchorSubsystemId));
             CreateSubsystem<XRRaycastSubsystemDescriptor, XRRaycastSubsystem>(s_RaycastSubsystemDescriptors, MagicLeapSettings.Subsystems.GetSubsystemOverrideOrDefault<XRRaycastSubsystem>(MagicLeapConstants.kRaycastSubsystemId));
-
+#if XR_HANDS
+            CreateSubsystem<XRHandSubsystemDescriptor, XRHandSubsystem>(s_HandSubsystemDescriptors, MagicLeapSettings.Subsystems.GetSubsystemOverrideOrDefault<XRHandSubsystem>("MagicLeap-Hand"));
+#endif
             OnSubsystemsCreate?.Invoke(this);
 
             return true;
@@ -180,6 +189,9 @@ namespace UnityEngine.XR.MagicLeap
             StartSubsystem<XRInputSubsystem>();
             StartSubsystem<XRGestureSubsystem>();
 
+#if XR_HANDS
+            StartSubsystem<XRHandSubsystem>();
+#endif
             if (!isLegacyDeviceActive)
             {
                 var settings = MagicLeapSettings.currentSettings;
@@ -207,6 +219,9 @@ namespace UnityEngine.XR.MagicLeap
 
             OnSubsystemsStart?.Invoke(this);
 
+            // Enable the Controller API by default to enable the position and rotation tracking.
+            MagicLeapInputExtensions.controllerEnabled = true;
+
             return true;
         }
 
@@ -233,8 +248,13 @@ namespace UnityEngine.XR.MagicLeap
             StopSubsystem<XRImageTrackingSubsystem>();
             StopSubsystem<XRInputSubsystem>();
             StopSubsystem<XRSessionSubsystem>();
-
+#if XR_HANDS
+            StopSubsystem<XRHandSubsystem>();
+#endif
             OnSubsystemsStop?.Invoke(this);
+
+            Application.onBeforeRender -= CameraEnforcement.EnforceCameraProperties;
+            
             return true;
         }
 
@@ -254,10 +274,10 @@ namespace UnityEngine.XR.MagicLeap
             DestroySubsystem<XRInputSubsystem>();
             DestroySubsystem<XRSessionSubsystem>();
 
+#if XR_HANDS
+            DestroySubsystem<XRHandSubsystem>();
+#endif
             OnSubsystemsDestroy?.Invoke(this);
-
-            Application.onBeforeRender -= CameraEnforcement.EnforceCameraProperties;
-
             return true;
         }
 

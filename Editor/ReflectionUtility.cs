@@ -23,7 +23,7 @@ namespace UnityEditor.XR.MagicLeap
         {
             return GetAllTypes()
                 .SelectMany(t => Attribute.GetCustomAttributes(t))
-                .Where(a => a is T)
+                .OfType<T>()
                 .Select(a => a as T);
         }
 

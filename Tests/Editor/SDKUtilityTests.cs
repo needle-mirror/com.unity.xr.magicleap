@@ -10,7 +10,7 @@
         public void PluginAPILevelIsLessThanOrEqualToSDKAPILevel()
         {
             if (!SDKUtility.sdkAvailable)
-                Assert.Ignore("Cannot locate Relish SDK");
+                Assert.Ignore("Cannot locate Magic Leap SDK");
             Assert.That(SDKUtility.pluginAPILevel, Is.AtMost(SDKUtility.sdkAPILevel));
         }
     }

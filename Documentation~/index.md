@@ -2,6 +2,12 @@
 uid: magic-leap-home
 ---
 
+# Deprecation
+
+This version of the *Magic Leap XR Support* package will be deprecated after Unity 6. Magic Leap support is moving to the *OpenXR SDK* package. Please review the [Magic Leap Documentation](https://developer-docs.magicleap.cloud/docs/guides/openxr/openxr-overview/) in order to get started with OpenXR.
+
+For more information on the Unity OpenXR package, please review the package [details and documentation](https://docs.unity3d.com/Manual/com.unity.xr.openxr.html).
+
 # About Magic Leap XR Support
 
 Use the *Magic Leap XR Support* package to enable Magic Leap via Unity's multi-platform XR SDK. This package implements the following XR Subsystems:
@@ -21,7 +27,7 @@ This topic only discusses how to install the individual *Magic Leap XR Support* 
 
 To install this package:
 
-1. Open the project that you plan to use (in Unity 2022.2+).
+1. Open the project that you plan to use (in Unity 2022.3+).
 2. Click the following link to begin the installation: [com.unity.xr.magicleap](com.unity3d.kharma:upmpackage/com.unity.xr.magicleap).
 
    The Unity Package Manager window opens with the package name entered in the **Add package by name** dialog.
@@ -128,7 +134,9 @@ Also see the relevant Magic Leap documentation about gestures for supported devi
 
 This version of *Magic Leap XR Support* is compatible with the following versions of the Unity Editor:
 
-* Unity 2022.2+
+* Unity 2022.3+
+
+This version of the package will be deprecated after Unity 6.
 
 ## Known limitations
 

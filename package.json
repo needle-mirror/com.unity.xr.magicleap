@@ -1,9 +1,9 @@
 {
   "name": "com.unity.xr.magicleap",
   "displayName": "Magic Leap XR Plugin",
-  "version": "7.0.0",
-  "unity": "2022.2",
-  "description": "Provides rendering and spatial mapping support for Magic Leap 2.",
+  "version": "7.1.0",
+  "unity": "2022.3",
+  "description": "Provides rendering and spatial mapping support for Magic Leap 2.\n\nThis package will be deprecated after Unity 6.\n(See Documentation for more detailed information.)",
   "keywords": [
     "magicleap",
     "ar",
@@ -23,16 +23,16 @@
     "com.unity.modules.androidjni": "1.0.0"
   },
   "_upm": {
-    "changelog": "- When there is no SegmentedDimmer RenderFeature to control the ML2 dimmer, the depthbuffer will be used to prime the dimmer data.\n- Updating Project Validation to follow the visual standard recently laid out.\n- Allow apps to disable enforcement of Main Camera's minimum near clip distance through the RenderSettings.enforceNearClip bool."
+    "changelog": "- Deprecation messaging for deprecation after Unity 6\n- Fix a Vulkan issue that could cause the device to randomly freeze with some projects.\n- Adding support within the MagicLeapLoader to support the XRHandSubsystem.\n- Updated controller tracking api to be enabled by default.\n- Change ML2s projection type request to better align with Unity's depth model."
   },
   "upmCi": {
-    "footprint": "e0c894d92782fcba7ee23788faf4a5defc99f115"
+    "footprint": "ee67bfa7604665aae3e1018e847b6d0f8393916f"
   },
-  "documentationUrl": "https://docs.unity3d.com/Packages/com.unity.xr.magicleap@7.0/manual/index.html",
+  "documentationUrl": "https://docs.unity3d.com/Packages/com.unity.xr.magicleap@7.1/manual/index.html",
   "repository": {
     "url": "https://github.cds.internal.unity3d.com/unity/xr.sdk.magicleap.git",
     "type": "git",
-    "revision": "ad4312c5c8f60e2b172a47491a9a7cc06c0cf32f"
+    "revision": "4c673f965a67796c3771eeff1723835fe979ba10"
   },
   "samples": [
     {

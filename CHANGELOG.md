@@ -4,6 +4,14 @@ uid: magic-leap-changelog
 
 # Changelog
 
+## [7.1.0] - 2024-05-22
+
+- Deprecation messaging for deprecation after Unity 6
+- Fix a Vulkan issue that could cause the device to randomly freeze with some projects.
+- Adding support within the MagicLeapLoader to support the XRHandSubsystem.
+- Updated controller tracking api to be enabled by default.
+- Change ML2s projection type request to better align with Unity's depth model.
+
 ## [7.0.0] - 2023-01-25
 
 - When there is no SegmentedDimmer RenderFeature to control the ML2 dimmer, the depthbuffer will be used to prime the dimmer data.

@@ -23,7 +23,7 @@ namespace UnityEditor.XR.MagicLeap
 
         bool m_AdvancedOptionsExpanded;
 
-        class Tooltips
+        static class Tooltips
         {
             public static readonly GUIContent MeshPrefab = new GUIContent(
                 "Mesh Prefab",

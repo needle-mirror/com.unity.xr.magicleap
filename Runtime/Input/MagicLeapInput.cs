@@ -62,7 +62,7 @@ namespace UnityEngine.XR.MagicLeap
             /// default, unbound method
             /// Noop
             /// </summary>
-            public static void SetControllerActive(bool value) {}
+            public static void SetControllerActive(bool value) { /* Dummy for non-Android Compilation */ }
             /// <summary>
             /// default, unbound method
             /// Always returns false
@@ -72,49 +72,39 @@ namespace UnityEngine.XR.MagicLeap
             /// default, unbound method
             /// Noop
             /// </summary>
-            public static void SetEyeTrackerActive(bool value) {}
+            public static void SetEyeTrackerActive(bool value) { /* Dummy for non-Android Compilation */ }
 
 #endif // UNITY_ANDROID
         }
-
+        
         /// <summary>
-        /// Is the controller API being active
+        /// True if the controller is/should be enabled
         /// </summary>
-        /// <param name="self">unused</param>
-        /// <returns>true if the controller is active</returns>
-        public static bool IsControllerApiEnabled(this XRInputSubsystem self)
+        public static bool controllerEnabled
         {
-            return Native.GetControllerActive();
+            get
+            {
+                return Native.GetControllerActive();
+            }
+            set
+            {
+                Native.SetControllerActive(value);
+            }
         }
 
         /// <summary>
-        /// Is the Eye Tracking API enabled/
+        /// True if eye tracking is/should be enabled
         /// </summary>
-        /// <param name="self">unused</param>
-        /// <returns>true if the eye tracker is active.</returns>
-        public static bool IsEyeTrackingApiEnabled(this XRInputSubsystem self)
+        public static bool eyeTrackingEnabled
         {
-            return Native.GetEyeTrackerActive();
-        }
-
-        /// <summary>
-        /// Enable/disable the Controller API
-        /// </summary>
-        /// <param name="self">unused</param>
-        /// <param name="enabled">true to enable, false to disable</param>
-        public static void SetControllerApiEnabled(this XRInputSubsystem self, bool enabled)
-        {
-            Native.SetControllerActive(enabled);
-        }
-
-        /// <summary>
-        /// Enable/disable the Eye Tracking API
-        /// </summary>
-        /// <param name="self">unused</param>
-        /// <param name="enabled">true to enable, false to disable</param>
-        public static void SetEyeTrackingApiEnabled(this XRInputSubsystem self, bool enabled)
-        {
-            Native.SetEyeTrackerActive(enabled);
+            get
+            {
+                return Native.GetEyeTrackerActive();
+            }
+            set
+            {
+                Native.SetEyeTrackerActive(value);
+            }
         }
     }
 

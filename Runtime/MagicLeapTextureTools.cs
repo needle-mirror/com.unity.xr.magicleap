@@ -8,7 +8,7 @@ using UnityEngine.XR.Management;
 
 namespace UnityEngine.XR.MagicLeap
 {
-    public class MagicLeapTextureTools
+    public static class MagicLeapTextureTools
     {
 #if UNITY_EDITOR
         public static bool CheckTextureCompression()
@@ -17,9 +17,8 @@ namespace UnityEngine.XR.MagicLeap
             {
                 string assetPath = AssetDatabase.GUIDToAssetPath(guid);
                 TextureImporter textureImporter = AssetImporter.GetAtPath(assetPath) as TextureImporter;
-                if (textureImporter)
-                    if (IsIncompatibleComprestion(textureImporter.GetPlatformTextureSettings("Android").format))
-                        return false;
+                if (textureImporter && IsIncompatibleComprestion(textureImporter.GetPlatformTextureSettings("Android").format))
+                    return false;
             }
 
             return true;
@@ -54,9 +53,8 @@ namespace UnityEngine.XR.MagicLeap
                 // Re-import incompatible assets
                 string assetPath = AssetDatabase.GUIDToAssetPath(guid);
                 TextureImporter textureImporter = AssetImporter.GetAtPath(assetPath) as TextureImporter;
-                if (textureImporter)
-                    if (IsIncompatibleComprestion(textureImporter.GetPlatformTextureSettings("Android").format))
-                        AssetDatabase.ImportAsset(assetPath);
+                if (textureImporter && IsIncompatibleComprestion(textureImporter.GetPlatformTextureSettings("Android").format))
+                    AssetDatabase.ImportAsset(assetPath);
             }
         }
 

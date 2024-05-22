@@ -87,7 +87,7 @@ namespace UnityEngine.XR.MagicLeap
         /// An enumerator which can be used by a <c>foreach</c> statement to iterate over
         /// the elements in a <see cref="PlaneBoundaryCollection"/>.
         /// </summary>
-        public struct Enumerator
+        public struct Enumerator : IDisposable
         {
             internal Enumerator(PlaneBoundaryCollection collection)
             {

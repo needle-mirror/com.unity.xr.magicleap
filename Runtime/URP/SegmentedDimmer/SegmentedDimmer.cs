@@ -243,11 +243,20 @@ namespace URP.SegmentedDimmer
                 int sliceCount = m_XRMultipass ? 1 : 2;
                 TextureDimension texDimension = m_XRMultipass ? TextureDimension.Tex2D : TextureDimension.Tex2DArray;
                 VRTextureUsage vrUsage = m_XRMultipass ? VRTextureUsage.None : VRTextureUsage.TwoEyes;
+#if UNITY_2023_3_OR_NEWER
+                m_RenderTexture = RTHandles.Alloc(textureWidth, textureHeight, sliceCount, 
+                    DepthBits.None, GraphicsFormat.R8_UNorm, FilterMode.Point, TextureWrapMode.Clamp,
+                    texDimension, false, false, false, false,
+                    1, 0, MSAASamples.None, false, false, false,
+                    RenderTextureMemoryless.None, vrUsage, "SegmentedDimmer");
+
+#else
                 m_RenderTexture = RTHandles.Alloc(textureWidth, textureHeight, sliceCount, 
                     DepthBits.None, GraphicsFormat.R8_UNorm, FilterMode.Point, TextureWrapMode.Clamp,
                     texDimension, false, false, false, false,
                     1, 0, MSAASamples.None, false, false,
                     RenderTextureMemoryless.None, vrUsage, "SegmentedDimmer");
+#endif
 
                 if (m_RenderTexture == null)
                 {
@@ -473,7 +482,7 @@ namespace URP.SegmentedDimmer
             }
         }
 
-        // Relish/Android allows us to override the alpha during the yflip, other platforms will need to blit it in a renderpass
+        // MagicLeap/Android allows us to override the alpha during the yflip, other platforms will need to blit it in a renderpass
         [DllImport("UnityMagicLeap", CallingConvention = CallingConvention.Cdecl, EntryPoint = "UnityMagicLeap_SegmentedDimmer_SetTexture")]
         private static extern void SetSegmentedDimmerTexture(IntPtr texture);
 

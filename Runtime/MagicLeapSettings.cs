@@ -24,7 +24,7 @@ namespace UnityEngine.XR.MagicLeap
         /// Subsystems implemented outside the MagicLeap XR Plugin can utilize this class to be loaded
         /// by the MagicLeapLoader instead of its usual defaults.
         /// </summary>
-        internal class Subsystems
+        internal static class Subsystems
         {
             private static Dictionary<Type, string> s_OverrideMap = new Dictionary<Type, string>();
 
@@ -81,6 +81,9 @@ namespace UnityEngine.XR.MagicLeap
         [SerializeField, Tooltip("Enable MLAudio Support. Replaces default Android Audio Support.")]
         bool m_EnableMLAudio;
 
+        /// <summary>
+        /// Get/set depth precision.
+        /// </summary>
         public Rendering.DepthPrecision depthPrecision
         {
             get { return m_DepthPrecision; }
@@ -88,7 +91,7 @@ namespace UnityEngine.XR.MagicLeap
         }
 
         /// <summary>
-        /// Get/set if we wish to force Multipass rendering.
+        /// Get/set if Multipass rendering should be forced.
         /// </summary>
         public bool forceMultipass
         {
@@ -96,12 +99,18 @@ namespace UnityEngine.XR.MagicLeap
             set { m_ForceMultipass = value; }
         }
 
+        /// <summary>
+        /// Get/set if graphics should be headlocked.
+        /// </summary>
         public bool headlockGraphics
         {
             get { return m_HeadlockGraphics; }
             set { m_HeadlockGraphics = value; }
         }
 
+        /// <summary>
+        /// Get/set if MLAudio should be used instead of Android default.
+        /// </summary>
         public bool enableMLAudio
         {
             get { return m_EnableMLAudio; }

@@ -47,27 +47,30 @@ namespace UnityEngine.XR.MagicLeap.Meshing
         }
 
         /// <summary>
-        /// Setter for the meshing batch size.
+        /// Set the batch size for the meshing subsystem.
         /// </summary>
-        public static int batchSize
+        /// <param name="batchSize">int representing batch size of meshes.</param>
+        public static void SetBatchSize(int batchSize)
         {
-            set { UnityMagicLeap_MeshingSetBatchSize(value); }
+            UnityMagicLeap_MeshingSetBatchSize(batchSize);
         }
 
         /// <summary>
-        /// Setter for the meshing density.
+        /// Set the density for the meshing subsystem.
         /// </summary>
-        public static float density
+        /// <param name="density">float representing density of meshes.</param>
+        public static void SetDensity(float density)
         {
-            set { UnityMagicLeap_MeshingSetDensity(value); }
+            UnityMagicLeap_MeshingSetDensity(density);
         }
 
         /// <summary>
-        /// Setter for the Meshing settings.
+        /// Set the meshing settings of the meshing subsystem.
         /// </summary>
-        public static MLMeshingSettings meshingSettings
+        /// <param name="meshingSettings">MLMeshingSettings representing settings used for Magic Leap's Meshing System.</param>
+        public static void SetMeshingSettings(MLMeshingSettings meshingSettings)
         {
-            set { UnityMagicLeap_MeshingUpdateSettings(ref value); }
+            UnityMagicLeap_MeshingUpdateSettings(ref meshingSettings);
         }
 
 #if UNITY_ANDROID
@@ -89,17 +92,17 @@ namespace UnityEngine.XR.MagicLeap.Meshing
         [DllImport("UnityMagicLeap")]
         internal static extern void UnityMagicLeap_MeshingReleaseConfidence(MeshId meshId);
 #else
-        internal static void UnityMagicLeap_MeshingUpdateSettings(ref MLMeshingSettings newSettings) { }
+        internal static void UnityMagicLeap_MeshingUpdateSettings(ref MLMeshingSettings newSettings) { /* Dummy for non-Android Compilation */ }
 
-        internal static void UnityMagicLeap_MeshingSetDensity(float density) { }
+        internal static void UnityMagicLeap_MeshingSetDensity(float density) { /* Dummy for non-Android Compilation */ }
 
-        internal static void UnityMagicLeap_MeshingSetBounds(Vector3 center, Quaternion rotation, Vector3 extents) { }
+        internal static void UnityMagicLeap_MeshingSetBounds(Vector3 center, Quaternion rotation, Vector3 extents) { /* Dummy for non-Android Compilation */ }
 
-        internal static void UnityMagicLeap_MeshingSetBatchSize(int batchSize) {}
+        internal static void UnityMagicLeap_MeshingSetBatchSize(int batchSize) { /* Dummy for non-Android Compilation */ }
 
         internal static IntPtr UnityMagicLeap_MeshingAcquireConfidence(MeshId meshId, out int count) { count = 0; return IntPtr.Zero; }
 
-        internal static void UnityMagicLeap_MeshingReleaseConfidence(MeshId meshId) { }
+        internal static void UnityMagicLeap_MeshingReleaseConfidence(MeshId meshId) { /* Dummy for non-Android Compilation */ }
 #endif // UNITY_ANDROID
     }
 

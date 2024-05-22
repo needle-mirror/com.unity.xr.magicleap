@@ -21,6 +21,7 @@ namespace UnityEngine.XR.MagicLeap
     {
         const string kLogTag = "Unity-Anchors";
 
+        [Conditional("DEVELOPMENT_BUILD")]
         static void DebugLog(string msg)
         {
             MLLog.Debug(kLogTag, msg);
@@ -70,36 +71,30 @@ namespace UnityEngine.XR.MagicLeap
             return new Vector3(position.x, position.y, -position.z);
         }
 
-        static Quaternion FlipHandedness(Quaternion rotation)
-        {
-            return new Quaternion(rotation.x, rotation.y, -rotation.z, -rotation.w);
-        }
-
 #if !UNITY_2020_2_OR_NEWER
         /// <summary>
-        /// Method for creating the Magic Leap Provider 
+        /// Method for creating the Anchor Provider
         /// </summary>
-        /// <returns>A generic <c>Provider</c> representing the Magic Leap Provider.</returns>
-        protected override Provider CreateProvider() => new MagicLeapProvider();
+        /// <returns>A generic <c>Provider</c> representing the Anchor Provider.</returns>
+        protected override Provider CreateProvider() => new AnchorProvider();
 #endif
 
-        class MagicLeapProvider : Provider
+        public class AnchorProvider : Provider
         {
-            ulong m_TrackerHandle = Native.InvalidHandle;
+            private ulong m_TrackerHandle = Native.InvalidHandle;
 
-            PerceptionHandle m_PerceptionHandle;
-
-            /// <summary>
-            /// The privilege required to access persistent coordinate frames
-            /// </summary>
-            const uint k_MLPivilegeID_PwFoundObjRead = 201;
+            private PerceptionHandle m_PerceptionHandle;
 
             /// <summary>
             /// The squared amount by which a coordinate frame has to move for its anchor to be reported as "updated"
             /// </summary>
-            const float k_CoordinateFramePositionEpsilonSquared = .0001f;
+            private const float k_CoordinateFramePositionEpsilonSquared = .0001f;
 
-            public MagicLeapProvider()
+            private List<ReferenceFrame> m_PendingAdds = new List<ReferenceFrame>();
+            private List<ReferenceFrame> m_ReferenceFrames = new List<ReferenceFrame>();
+            private List<TrackableId> m_PendingRemoves = new List<TrackableId>();
+
+            public AnchorProvider()
             {
                 m_PerceptionHandle = PerceptionHandle.Acquire();
             }
@@ -377,10 +372,6 @@ namespace UnityEngine.XR.MagicLeap
                     return false;
                 }
             }
-
-            List<ReferenceFrame> m_PendingAdds = new List<ReferenceFrame>();
-            List<ReferenceFrame> m_ReferenceFrames = new List<ReferenceFrame>();
-            List<TrackableId> m_PendingRemoves = new List<TrackableId>();
         }
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
@@ -391,7 +382,7 @@ namespace UnityEngine.XR.MagicLeap
             {
                 id = "MagicLeap-Anchor",
 #if UNITY_2020_2_OR_NEWER
-                providerType = typeof(MagicLeapAnchorSubsystem.MagicLeapProvider),
+                providerType = typeof(MagicLeapAnchorSubsystem.AnchorProvider),
                 subsystemTypeOverride = typeof(MagicLeapAnchorSubsystem),
 #else
                 subsystemImplementationType = typeof(MagicLeapAnchorSubsystem),

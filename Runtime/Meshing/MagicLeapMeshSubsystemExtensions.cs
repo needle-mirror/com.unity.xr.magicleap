@@ -46,7 +46,7 @@ namespace UnityEngine.XR.MagicLeap
                 if (feature.HasFlag(Feature.Meshing))
                     settings.flags ^= MLMeshingFlags.PointCloud;
 
-                MeshingSettings.meshingSettings = settings;
+                MeshingSettings.SetMeshingSettings(settings);
             }
             else
             {

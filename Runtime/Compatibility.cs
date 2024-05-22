@@ -7,7 +7,9 @@ namespace UnityEngine.XR.MagicLeap.Compatibility
         private T @value = default(T);
         private bool _Resolved = false;
 
-        private Func<T> _Resolver = new Func<T>(() => (T)Activator.CreateInstance(typeof(T)));
+        private readonly object lockObj = new object();
+
+        private readonly Func<T> _Resolver = new Func<T>(() => (T)Activator.CreateInstance(typeof(T)));
 
         public Lazy() {}
 
@@ -22,7 +24,7 @@ namespace UnityEngine.XR.MagicLeap.Compatibility
             {
                 if (!_Resolved)
                 {
-                    lock (this)
+                    lock (lockObj)
                     {
                         // double test _Resolved because multiple threads might hit the lock before resolution.
                         if (!_Resolved)

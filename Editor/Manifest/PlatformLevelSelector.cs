@@ -7,6 +7,9 @@ using UnityEngine;
 
 namespace UnityEditor.XR.MagicLeap
 {
+    /// <summary>
+    /// Internal class for selecting the Android API level for use with Magic Leap.
+    /// </summary>
     internal static class PlatformLevelSelector
     {
         public static int SelectorGUI(int value)

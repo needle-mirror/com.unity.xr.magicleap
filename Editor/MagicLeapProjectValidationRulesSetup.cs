@@ -13,7 +13,7 @@ using Unity.XR.CoreUtils.Editor;
 namespace UnityEditor.XR.MagicLeap
 {
 #if PROJECT_VALIDATION_AVAILABLE
-    internal class MagicLeapProjectValidationRulesSetup
+    internal static class MagicLeapProjectValidationRulesSetup
     {
         static BuildTargetGroup[] s_BuildTargetGroups =
             ((BuildTargetGroup[])Enum.GetValues(typeof(BuildTargetGroup))).Distinct().ToArray();

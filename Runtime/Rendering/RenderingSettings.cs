@@ -58,7 +58,7 @@ namespace UnityEngine.XR.MagicLeap.Rendering
     public static class RenderingSettings
     {
         const float kDefaultFarClip = 10f;
-        const float kDefaultNearClip = 5f;
+        const float kDefaultNearClip = 0.5f;
         // TODO / FIXME :: All the string marshalling being done here is probably sub-optimal,
         // but it needs to be profiled first.
 
@@ -66,6 +66,13 @@ namespace UnityEngine.XR.MagicLeap.Rendering
         // in MagicLeap units (meters), so we do all the conversion here to keep logic
         // elsewhere as simple as possible.
         internal static float s_CachedCameraScale = 1.0f;
+        internal static float s_CachedMinNearClip;
+        internal static float s_CachedNearClip;
+        internal static float s_CachedMaxFarClip;
+        internal static float s_CachedFarClip;
+        internal static float s_CachedFocusDistance;
+        internal static float s_CachedSinglePassEnabled;
+        internal static float s_CachedFocus;
 
         /// <summary>
         /// Getter/internal setter for the camera scale
@@ -122,9 +129,7 @@ namespace UnityEngine.XR.MagicLeap.Rendering
         {
             get
             {
-                float farClip = kDefaultFarClip;
-                UnityMagicLeap_RenderingTryGetParameter("FarClipDistance", out farClip);
-                return farClip;
+                return UnityMagicLeap_RenderingTryGetParameter("FarClipDistance", out s_CachedFarClip) ? s_CachedFarClip : kDefaultFarClip;
             }
             internal set { UnityMagicLeap_RenderingSetParameter("FarClipDistance", value); }
         }
@@ -136,9 +141,7 @@ namespace UnityEngine.XR.MagicLeap.Rendering
         {
             get
             {
-                float focus = 0f;
-                UnityMagicLeap_RenderingTryGetParameter("FocusDistance", out focus);
-                return focus;
+                return UnityMagicLeap_RenderingTryGetParameter("FocusDistance", out s_CachedFocus) ? s_CachedFocusDistance : 0f;
             }
             internal set { UnityMagicLeap_RenderingSetParameter("FocusDistance", value); }
         }
@@ -150,8 +153,8 @@ namespace UnityEngine.XR.MagicLeap.Rendering
         {
             get
             {
-                float maxFarClip = float.PositiveInfinity;
-                UnityMagicLeap_RenderingTryGetParameter("MaxFarClipDistance", out maxFarClip);
+                float maxFarClip;
+                maxFarClip = UnityMagicLeap_RenderingTryGetParameter("MaxFarClipDistance", out s_CachedMaxFarClip) ? s_CachedMaxFarClip : float.PositiveInfinity;
                 return RenderingUtility.ToUnityUnits(maxFarClip, s_CachedCameraScale);
             }
         }
@@ -172,9 +175,7 @@ namespace UnityEngine.XR.MagicLeap.Rendering
         {
             get
             {
-                float minNearClip = 0.5f;
-                UnityMagicLeap_RenderingTryGetParameter("MinNearClipDistance", out minNearClip);
-                return minNearClip;
+                return UnityMagicLeap_RenderingTryGetParameter("MinNearClipDistance", out s_CachedMinNearClip) ? s_CachedMinNearClip : kDefaultNearClip;
             }
         }
 
@@ -185,9 +186,7 @@ namespace UnityEngine.XR.MagicLeap.Rendering
         {
             get
             {
-                float nearClip = 0.5f;
-                UnityMagicLeap_RenderingTryGetParameter("NearClipDistance", out nearClip);
-                return nearClip;
+                return UnityMagicLeap_RenderingTryGetParameter("NearClipDistance", out s_CachedNearClip) ? s_CachedNearClip : kDefaultNearClip;
             }
             internal set { UnityMagicLeap_RenderingSetParameter("NearClipDistance", value); }
         }
@@ -201,8 +200,8 @@ namespace UnityEngine.XR.MagicLeap.Rendering
         {
             get
             {
-                float enabled = 0.0f;
-                UnityMagicLeap_RenderingTryGetParameter("SinglePassEnabled", out enabled);
+                float enabled;
+                enabled = UnityMagicLeap_RenderingTryGetParameter("SinglePassEnabled", out s_CachedSinglePassEnabled) ? s_CachedSinglePassEnabled : 0.0f;
                 return IsFlagSet(enabled);
             }
             internal set { UnityMagicLeap_RenderingSetParameter("SinglePassEnabled", value ? 1.0f : 0.0f); }
@@ -276,12 +275,12 @@ namespace UnityEngine.XR.MagicLeap.Rendering
         [DllImport(kLibrary)]
         internal static extern void UnityMagicLeap_RenderingSetIsHeadlocked(bool isHeadlocked);
 #else
-        internal static void UnityMagicLeap_RenderingSetParameter(string key, float newValue) {}
+        internal static void UnityMagicLeap_RenderingSetParameter(string key, float newValue) { /* Dummy for non-Android Compilation */ }
         internal static bool UnityMagicLeap_RenderingTryGetParameter(string key, out float value) { value = 0f; return false; }
         internal static DepthPrecision UnityMagicLeap_RenderingGetDepthPrecision() { return DepthPrecision.Depth32; }
-        internal static void UnityMagicLeap_RenderingSetDepthPrecision(DepthPrecision depthPrecision) {}
+        internal static void UnityMagicLeap_RenderingSetDepthPrecision(DepthPrecision depthPrecision) { /* Dummy for non-Android Compilation */ }
         internal static bool UnityMagicLeap_RenderingGetIsHeadlocked() { return false; }
-        internal static void UnityMagicLeap_RenderingSetIsHeadlocked(bool isHeadlocked) {}
+        internal static void UnityMagicLeap_RenderingSetIsHeadlocked(bool isHeadlocked) { /* Dummy for non-Android Compilation */ }
 #endif // UNITY_ANDROID
 
         // device-specific calls.

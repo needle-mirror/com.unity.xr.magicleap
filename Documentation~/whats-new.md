@@ -1,4 +1,4 @@
-# What's new in version [7.0.0-pre.1]
+# What's new in version [7.0.0]
 
 This is a preview release of the XR Provider for Magic Leap 2.
 

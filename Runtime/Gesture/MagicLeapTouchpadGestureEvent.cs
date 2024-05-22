@@ -267,15 +267,15 @@ namespace UnityEngine.XR.MagicLeap
                 m_Type == other.type;
         }
 
-        GestureId m_Id;
-        GestureState m_State;
-        byte m_ControllerId;
-        float m_Angle;
-        MagicLeapTouchpadGestureDirection m_Direction;
-        float m_Distance;
-        Vector3 m_PositionAndForce;
-        float m_Radius;
-        float m_Speed;
-        MagicLeapInputControllerTouchpadGestureType m_Type;
+        private GestureId m_Id;
+        private GestureState m_State;
+        private byte m_ControllerId;
+        private float m_Angle;
+        private MagicLeapTouchpadGestureDirection m_Direction;
+        private float m_Distance;
+        private Vector3 m_PositionAndForce;
+        private float m_Radius;
+        private float m_Speed;
+        private MagicLeapInputControllerTouchpadGestureType m_Type;
     }
 }

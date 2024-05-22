@@ -569,18 +569,16 @@ namespace UnityEngine.XR.MagicLeap
 
         IEnumerator Init()
         {
-            //MagicLeapLogger.Debug(kLogTag, "Checking for XRGeneralSettings.Instance");
             while (XRGeneralSettings.Instance == null)
             {
-                //MagicLeapLogger.Debug(kLogTag, "Waiting for XRGeneralSettings.Instance to spawn");
                 yield return null;
             }
-            //MagicLeapLogger.Debug(kLogTag, "Checking for XRGeneralSettings.Instance.Manager");
+
             while (XRGeneralSettings.Instance.Manager == null)
             {
-                //MagicLeapLogger.Debug(kLogTag, "Waiting for XRGeneralSettings.Instance.Manager to spawn");
                 yield return null;
             }
+
             m_Loader = XRGeneralSettings.Instance.Manager.ActiveLoaderAs<MagicLeapLoader>();
             MLLog.Assert(m_Loader != null, kLogTag, "Cannot get reference to MagicLeapLoader!");
             if (m_Loader != null)
@@ -636,8 +634,8 @@ namespace UnityEngine.XR.MagicLeap
             UpdateBatchSize();
 
             var settings = GetMeshingSettings();
-            MeshingSettings.meshingSettings = settings;
-            MeshingSettings.density = density;
+            MeshingSettings.SetMeshingSettings(settings);
+            MeshingSettings.SetDensity(density);
 
             m_SettingsDirty = false;
 #if UNITY_EDITOR
@@ -654,7 +652,7 @@ namespace UnityEngine.XR.MagicLeap
 
         void UpdateBatchSize()
         {
-            MeshingSettings.batchSize = batchSize;
+            MeshingSettings.SetBatchSize(batchSize);
         }
 
         void Reset()

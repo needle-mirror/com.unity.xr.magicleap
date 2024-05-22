@@ -19,18 +19,25 @@ namespace UnityEngine.XR.MagicLeap
         /// Create a Magic Leap provider
         /// </summary>
         /// <returns>Magic Leap implementation of a Session Subsystem.</returns>
-        protected override Provider CreateProvider() => new MagicLeapProvider();
+        protected override Provider CreateProvider() => new SessionProvider();
 #endif
 
-        class MagicLeapProvider : Provider
+        public class SessionProvider : Provider
         {
-            PerceptionHandle m_PerceptionHandle;
+            private PerceptionHandle m_PerceptionHandle;
 
-            public MagicLeapProvider()
+            /// <summary>
+            /// Constructor for SessionProvider
+            /// </summary>
+            public SessionProvider()
             {
                 m_PerceptionHandle = PerceptionHandle.Acquire();
             }
 
+            /// <summary>
+            /// Get the session's availability
+            /// </summary>
+            /// <returns>Session availability promise</returns>
             public override Promise<SessionAvailability> GetAvailabilityAsync()
             {
                 var availability =
@@ -42,6 +49,10 @@ namespace UnityEngine.XR.MagicLeap
                 return Promise<SessionAvailability>.CreateResolvedPromise(availability);
             }
 
+            /// <summary>
+            /// Tracking state of the HMD
+            /// </summary>
+            /// <returns>Tracking state status</returns>
             public override TrackingState trackingState
             {
                 get
@@ -63,11 +74,22 @@ namespace UnityEngine.XR.MagicLeap
                 }
             }
 
+            /// <summary>
+            /// Magic Leap Requested Features
+            /// </summary>
+            /// <returns>Features requested for use at runtime</returns>
             public override Feature requestedFeatures => MagicLeapFeatures.requestedFeatures;
 
+            /// <summary>
+            /// Get the configuration of available feature descriptions
+            /// </summary>
+            /// <returns>Array of Configuration descriptors</returns>
             public override NativeArray<ConfigurationDescriptor> GetConfigurationDescriptors(Allocator allocator)
                 => MagicLeapFeatures.AcquireConfigurationDescriptors(allocator);
 
+            /// <summary>
+            /// Get/Set the tracking mode of the device
+            /// </summary>
             public override Feature requestedTrackingMode
             {
                 get => MagicLeapFeatures.requestedFeatures.Intersection(Feature.AnyTrackingMode);
@@ -103,6 +125,9 @@ namespace UnityEngine.XR.MagicLeap
                 }
             }
 
+            /// <summary>
+            /// Update requested features
+            /// </summary>
             public override void Update(XRSessionUpdateParams updateParams, Configuration configuration)
             {
                 // Magic Leap supports almost everything working at the same time except Point Clouds and Meshing
@@ -123,6 +148,9 @@ namespace UnityEngine.XR.MagicLeap
                 MagicLeapFeatures.currentFeatures = configuration.features;
             }
 
+            /// <summary>
+            /// Destroy/Dispose of the current Perception instance
+            /// </summary>
             public override void Destroy()
             {
                 m_PerceptionHandle.Dispose();
@@ -137,7 +165,7 @@ namespace UnityEngine.XR.MagicLeap
             {
                 id = "MagicLeap-Session",
 #if UNITY_2020_2_OR_NEWER
-                providerType = typeof(MagicLeapSessionSubsystem.MagicLeapProvider),
+                providerType = typeof(MagicLeapSessionSubsystem.SessionProvider),
                 subsystemTypeOverride = typeof(MagicLeapSessionSubsystem),
 #else
                 subsystemImplementationType = typeof(MagicLeapSessionSubsystem),

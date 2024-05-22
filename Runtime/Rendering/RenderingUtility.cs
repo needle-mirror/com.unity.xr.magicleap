@@ -24,7 +24,6 @@ namespace UnityEngine.XR.MagicLeap.Rendering
 #if ML_RENDERING_VALIDATION
             if (!(Mathf.Approximately(scale.x, scale.y) && Mathf.Approximately(scale.x, scale.z)))
             {
-                MLWarnings.WarnedAboutNonUniformScale.Trigger();
                 return (scale.x + scale.y + scale.z) / 3;
             }
 #endif

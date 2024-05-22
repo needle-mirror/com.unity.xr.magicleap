@@ -33,13 +33,13 @@ namespace UnityEngine.XR.MagicLeap
         /// <seealso cref="PlaneBoundaryCollection"/>
         public PlaneBoundaryCollection GetAllBoundariesForPlane(TrackableId trackableId)
         {
-            return magicLeapProvider.GetAllBoundariesForPlane(trackableId);
+            return planeProvider.GetAllBoundariesForPlane(trackableId);
         }
 
 #if UNITY_2020_2_OR_NEWER
-        MagicLeapProvider magicLeapProvider => (MagicLeapProvider)provider;
+        PlaneProvider planeProvider => (PlaneProvider)provider;
 #else
-        MagicLeapProvider magicLeapProvider;
+        PlaneProvider planeProvider;
 
         /// <summary>
         /// Create the Magic Leap provider
@@ -47,8 +47,8 @@ namespace UnityEngine.XR.MagicLeap
         /// <returns>Magic Leap implementaion of a plane provider.</returns>
         protected override Provider CreateProvider()
         {
-            magicLeapProvider = new MagicLeapProvider();
-            return magicLeapProvider;
+            planeProvider = new PlaneProvider();
+            return planeProvider;
         }
 #endif
 
@@ -58,33 +58,33 @@ namespace UnityEngine.XR.MagicLeap
             return new TrackableId(planeId, planeTrackableIdSalt);
         }
 
-        class MagicLeapProvider : Provider
+        public class PlaneProvider : Provider
         {
-            ulong m_PlanesTracker = Native.k_InvalidHandle;
+            private ulong m_PlanesTracker = Native.k_InvalidHandle;
 
-            ulong m_QueryHandle = Native.k_InvalidHandle;
+            private ulong m_QueryHandle = Native.k_InvalidHandle;
 
-            uint m_MaxResults = 4;
+            private uint m_MaxResults = 4;
 
-            uint m_LastNumResults;
+            private uint m_LastNumResults;
 
-            Dictionary<TrackableId, BoundedPlane> m_Planes = new Dictionary<TrackableId, BoundedPlane>();
+            private Dictionary<TrackableId, BoundedPlane> m_Planes = new Dictionary<TrackableId, BoundedPlane>();
 
-            MLPlaneBoundariesList m_BoundariesList;
+            private MLPlaneBoundariesList m_BoundariesList;
 
-            MLPlanesQueryFlags m_RequestedPlaneDetectionMode;
+            private MLPlanesQueryFlags m_RequestedPlaneDetectionMode;
 
-            MLPlanesQueryFlags m_CurrentPlaneDetectionMode;
+            private MLPlanesQueryFlags m_CurrentPlaneDetectionMode;
 
-            PerceptionHandle m_PerceptionHandle;
+            private PerceptionHandle m_PerceptionHandle;
 
             // todo: 2019-05-22: Unity.Collections.NativeHashMap would be better
             // but introduces another package dependency. Probably not worth it
             // for just this one thing, but if it becomes a dependency, we should
             // switch to using the NativeHashMap (or NativeHashSet if it exists).
-            static HashSet<TrackableId> s_CurrentSet = new HashSet<TrackableId>();
+            private static HashSet<TrackableId> s_CurrentSet = new HashSet<TrackableId>();
 
-            public MagicLeapProvider()
+            public PlaneProvider()
             {
                 m_PerceptionHandle = PerceptionHandle.Acquire();
             }
@@ -341,7 +341,7 @@ namespace UnityEngine.XR.MagicLeap
             {
                 id = "MagicLeap-Planes",
 #if UNITY_2020_2_OR_NEWER
-                providerType = typeof(MagicLeapPlaneSubsystem.MagicLeapProvider),
+                providerType = typeof(MagicLeapPlaneSubsystem.PlaneProvider),
                 subsystemTypeOverride = typeof(MagicLeapPlaneSubsystem),
 #else
                 subsystemImplementationType = typeof(MagicLeapPlaneSubsystem),

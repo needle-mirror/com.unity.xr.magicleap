@@ -124,7 +124,7 @@ namespace UnityEngine.XR.MagicLeap
             return new Enumerator(this);
         }
 
-        public struct Enumerator
+        public struct Enumerator : IDisposable
         {
             internal Enumerator(NativeFixedList<T> list)
             {

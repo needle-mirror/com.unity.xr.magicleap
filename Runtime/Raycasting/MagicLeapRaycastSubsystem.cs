@@ -20,13 +20,13 @@ namespace UnityEngine.XR.MagicLeap
         /// <returns>An <see cref="AsyncRaycastResult"/> which can be used to check for completion and retrieve the raycast result.</returns>
         public AsyncRaycastResult AsyncRaycast(RaycastQuery query)
         {
-            return magicLeapProvider.AsyncRaycast(query);
+            return raycastProvider.AsyncRaycast(query);
         }
 
 #if UNITY_2020_2_OR_NEWER
-        MagicLeapProvider magicLeapProvider => (MagicLeapProvider)provider;
+        RaycastProvider raycastProvider => (RaycastProvider)provider;
 #else
-        MagicLeapProvider magicLeapProvider;
+        RaycastProvider raycastProvider;
 
         /// <summary>
         /// Create a Magic Leap provider
@@ -34,28 +34,23 @@ namespace UnityEngine.XR.MagicLeap
         /// <returns>Concrete implementation of raycast provider</returns>
         protected override Provider CreateProvider()
         {
-            magicLeapProvider = new MagicLeapProvider();
-            return magicLeapProvider;
+            raycastProvider = new RaycastProvider();
+            return raycastProvider;
         }
 #endif
 
-        class MagicLeapProvider : Provider
+        public class RaycastProvider : Provider
         {
-            ulong m_TrackerHandle = Native.InvalidHandle;
+            private ulong m_TrackerHandle = Native.InvalidHandle;
 
-            PerceptionHandle m_PerceptionHandle;
-
-            static Vector3 FlipHandedness(Vector3 v)
-            {
-                return new Vector3(v.x, v.y, -v.z);
-            }
+            private PerceptionHandle m_PerceptionHandle;
 
             public AsyncRaycastResult AsyncRaycast(RaycastQuery query)
             {
                 return new AsyncRaycastResult(m_TrackerHandle, query);
             }
 
-            public MagicLeapProvider()
+            public RaycastProvider()
             {
                 m_PerceptionHandle = PerceptionHandle.Acquire();
             }
@@ -111,7 +106,7 @@ namespace UnityEngine.XR.MagicLeap
             {
                 id = "MagicLeap-Raycast",
 #if UNITY_2020_2_OR_NEWER
-                providerType = typeof(MagicLeapRaycastSubsystem.MagicLeapProvider),
+                providerType = typeof(MagicLeapRaycastSubsystem.RaycastProvider),
                 subsystemTypeOverride = typeof(MagicLeapRaycastSubsystem),
 #else
                 subsystemImplementationType = typeof(MagicLeapRaycastSubsystem),
