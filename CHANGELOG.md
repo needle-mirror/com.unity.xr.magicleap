@@ -4,6 +4,10 @@ uid: magic-leap-changelog
 
 # Changelog
 
+## [7.1.1] - 2024-07-23
+
+- Fix crash due to incorrect Android NDK usage during compilation of package libraries.
+
 ## [7.1.0] - 2024-05-22
 
 - Deprecation messaging for deprecation after Unity 6
