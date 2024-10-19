@@ -247,7 +247,7 @@ namespace UnityEngine.XR.MagicLeap
             {
                 // For texture compression, we have to use reflection since the API is internal
                 // This check validate that all the different parts of the API did not change
-                message = "API for PlayerSettings \"Texture compression format\" validation has changed, validation code needs to be updated.\nUntil then, validation for the DXT texture format will bi disabled, please manually make sure that setting is correct.",
+                message = "API for PlayerSettings \"Texture compression format\" validation has changed, validation code needs to be updated.\nUntil then, validation for the DXT texture format will be disabled, please manually make sure that setting is correct.",
                 checkPredicate = () => s_isTextureCompressionAPIOk,
                 fixIt = () =>
                 {

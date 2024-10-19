@@ -137,12 +137,7 @@ namespace UnityEditor.XR.MagicLeap
             }
         }
 
-        /// <summary>
-        /// Check to see if we should include Runtime Plugins for non-Magicleap builds
-        /// </summary>
-        /// <param name="path">Unused</param>
-        /// <returns>Return false for MagicLeap supported platforms. True otherwise.</returns>
-        public bool ShouldIncludeRuntimePluginsInBuild(string path)
+        internal bool IsMagicleapPlatform()
         {
 #if UNITY_ANDROID
             XRGeneralSettings generalSettings = XRGeneralSettingsPerBuildTarget.XRGeneralSettingsForBuildTarget(BuildPipeline.GetBuildTargetGroup(EditorUserBuildSettings.activeBuildTarget));
@@ -155,8 +150,17 @@ namespace UnityEditor.XR.MagicLeap
                     return true;
             }
 #endif // UNITY_ANDROID
-
             return false;
+        }
+
+        /// <summary>
+        /// Check to see if we should include Runtime Plugins for non-Magicleap builds
+        /// </summary>
+        /// <param name="path">Unused</param>
+        /// <returns>Return false for MagicLeap supported platforms. True otherwise.</returns>
+        public bool ShouldIncludeRuntimePluginsInBuild(string path)
+        {
+            return IsMagicleapPlatform();
         }
 
         /// <summary>
@@ -207,38 +211,46 @@ namespace UnityEditor.XR.MagicLeap
             }
         }
 
+        internal void CleanUpBootConfig(BuildReport report)
+        {
+            var bootConfig = new BootConfig(report);
+            bootConfig.ReadBootConfg();
+            
+            bootConfig.ClearEntryForKey(kHaveAndroidWindowSupportBootSettingsKey);
+            bootConfig.ClearEntryForKey(kUseNullDisplayManagerBootSettingsKey);
+            bootConfig.ClearEntryForKey(kVulkanForceDisableETCSupport);
+            bootConfig.ClearEntryForKey(kVulkanForceDisableASTCSupport);
+            bootConfig.ClearEntryForKey(kVulkanDisablePreTransform);
+            bootConfig.ClearEntryForKey(kAndroidAudioUseMLAudio);
+            
+            bootConfig.WriteBootConfig();
+        }
+        
         /// <summary>
         /// Update BootConfig settings
         /// </summary>
         /// <param name="report">Report containing information about the build.</param>
         void UpdateBootConfig(BuildReport report, MagicLeapSettings mlSettings)
         {
-            BootConfig bootConfig = new BootConfig(report);
+            // we've already determined that this is the Magic Leap platform
+            // but we want to ensure that we've not somehow selected a non-android build target
+            if (report.summary.platform != BuildTarget.Android) 
+                return;
+            
+            var bootConfig = new BootConfig(report);
             bootConfig.ReadBootConfg();
 
-            if (report.summary.platform == BuildTarget.Android)
-            {
-                bootConfig.SetValueForKey(kHaveAndroidWindowSupportBootSettingsKey, "0", true);
-                bootConfig.SetValueForKey(kUseNullDisplayManagerBootSettingsKey, "1", true);
-                bootConfig.SetValueForKey(kVulkanForceDisableETCSupport, "1", true);
-                bootConfig.SetValueForKey(kVulkanForceDisableASTCSupport, "1", true);
-                bootConfig.SetValueForKey(kVulkanDisablePreTransform, "1", true);
+            bootConfig.SetValueForKey(kHaveAndroidWindowSupportBootSettingsKey, "0", true);
+            bootConfig.SetValueForKey(kUseNullDisplayManagerBootSettingsKey, "1", true);
+            bootConfig.SetValueForKey(kVulkanForceDisableETCSupport, "1", true);
+            bootConfig.SetValueForKey(kVulkanForceDisableASTCSupport, "1", true);
+            bootConfig.SetValueForKey(kVulkanDisablePreTransform, "1", true);
 
-                if (mlSettings.enableMLAudio)
-                    bootConfig.SetValueForKey(kAndroidAudioUseMLAudio, "1", true);
-                else
-                    bootConfig.SetValueForKey(kAndroidAudioUseMLAudio, "0", true);
-            }
+            if (mlSettings.enableMLAudio)
+                bootConfig.SetValueForKey(kAndroidAudioUseMLAudio, "1", true);
             else
-            {
-                bootConfig.ClearEntryForKey(kHaveAndroidWindowSupportBootSettingsKey);
-                bootConfig.ClearEntryForKey(kUseNullDisplayManagerBootSettingsKey);
-                bootConfig.ClearEntryForKey(kVulkanForceDisableETCSupport);
-                bootConfig.ClearEntryForKey(kVulkanForceDisableASTCSupport);
-                bootConfig.ClearEntryForKey(kVulkanDisablePreTransform);
-                bootConfig.ClearEntryForKey(kAndroidAudioUseMLAudio);
-            }
-
+                bootConfig.SetValueForKey(kAndroidAudioUseMLAudio, "0", true);
+                
             bootConfig.WriteBootConfig();
         }
 
@@ -249,6 +261,12 @@ namespace UnityEditor.XR.MagicLeap
         /// <param name="report">Report containing information about the build.</param>
         public void OnPreprocessBuild(BuildReport report)
         {
+            if (!IsMagicleapPlatform())
+            {
+                CleanUpBootConfig(report);
+                return;
+            }
+
             // Assign each library a "ShouldIncludeInBuild" delegate to indicate whether the plugin
             // should be placed in a build on a specific platform.  As of right now it's only important
             // for runtime on the device but that could change to have standalone include remoting libs
@@ -295,6 +313,9 @@ namespace UnityEditor.XR.MagicLeap
         /// <param name="path">The path to the root of the Unity Library Gradle project.</param>
         public void OnPostGenerateGradleAndroidProject(string path)
         {
+            if (!IsMagicleapPlatform())
+                return;
+
             string manifestPath = System.IO.Path.Combine(path, "src", "main", "AndroidManifest.xml");
             Debug.Log($"Android manifest path = {manifestPath}");
 

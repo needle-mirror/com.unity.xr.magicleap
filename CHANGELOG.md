@@ -4,6 +4,13 @@ uid: magic-leap-changelog
 
 # Changelog
 
+- Please add changes below this line -----------------------------------
+- Deleted orphaned .meta file which was causing warning when opening project.
+
+## [7.1.2] - 2024-10-19
+
+- Fix errant bootconfig settings that could sneak into Android
+
 ## [7.1.1] - 2024-07-23
 
 - Fix crash due to incorrect Android NDK usage during compilation of package libraries.
@@ -15,7 +22,7 @@ uid: magic-leap-changelog
 - Adding support within the MagicLeapLoader to support the XRHandSubsystem.
 - Updated controller tracking api to be enabled by default.
 - Change ML2s projection type request to better align with Unity's depth model.
-
+sd
 ## [7.0.0] - 2023-01-25
 
 - When there is no SegmentedDimmer RenderFeature to control the ML2 dimmer, the depthbuffer will be used to prime the dimmer data.
